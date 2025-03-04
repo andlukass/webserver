@@ -1,4 +1,4 @@
 .vscode
 webserver
-./nginx.conf
+nginx.conf
 .DS*
