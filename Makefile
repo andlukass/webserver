@@ -1,7 +1,7 @@
 CFLAGS = -std=c++98 #-Wall -Werror -Wextra
 CC = g++
 
-SRCS = main.cpp                    \
+SRCS =  ./src/main.cpp             \
 		./src/Utils.cpp            \
 		./src/Parser.cpp           \
 		./src/ServerConfig.cpp     \

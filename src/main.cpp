@@ -2,9 +2,9 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "./includes/ServerConfig.hpp"
-#include "./includes/Exception.hpp"
-#include "./includes/Parser.hpp"
+#include "../includes/ServerConfig.hpp"
+#include "../includes/Exception.hpp"
+#include "../includes/Parser.hpp"
 
 void handleFlags(int argc, char *argv[])
 {
