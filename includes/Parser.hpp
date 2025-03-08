@@ -13,10 +13,6 @@ private:
     std::vector<ServerConfig> _serversList;
 
     void parseServerDirective(std::string &config);
-    void parseLocationDirective(std::string &config, ServerConfig &server);
-    void parseErrorPageDirective(std::string &config, ServerConfig &server);
-
-    std::string getSimpleDirectiveValue(std::string &config);
 
 public:
     Parser(const std::string &configPath);

@@ -2,3 +2,5 @@
 webserver
 nginx.conf
 .DS*
+*.o
+*.out

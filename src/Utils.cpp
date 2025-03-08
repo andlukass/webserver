@@ -25,13 +25,15 @@ std::string Utils::trimStart(std::string &str)
     return str;
 }
 
-std::string Utils::concatStringVector(const std::vector<std::string>& vec)
+std::string Utils::concatStringVector(const std::vector<std::string> &vec)
 {
     std::string result;
 
-    for (size_t i = 0; i < vec.size(); ++i) {
+    for (size_t i = 0; i < vec.size(); ++i)
+    {
         result += vec[i];
-        if (i != vec.size() - 1) {
+        if (i != vec.size() - 1)
+        {
             result += ", ";
         }
     }
@@ -39,13 +41,15 @@ std::string Utils::concatStringVector(const std::vector<std::string>& vec)
     return result;
 }
 
-std::string Utils::concatConstChars(const char* str[])
+std::string Utils::concatConstChars(const char *str[])
 {
     std::string result;
 
-    for (size_t i = 0; str[i]; i++) {
+    for (size_t i = 0; str[i]; i++)
+    {
         result += std::string(str[i]);
-        if (str[i + 1]) {
+        if (str[i + 1])
+        {
             result += ", ";
         }
     }
