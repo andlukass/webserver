@@ -201,9 +201,13 @@ void Parser::parse()
     std::string str = this->_rawFile;
 
     std::string nextWord = getNextWord(str);
-    if (nextWord != "server")
-        throw Exception("Unexpected prop: \"" + nextWord + "\" expecting: \"server\"");
-    parseServerDirective(str);
+    while (!nextWord.empty())
+    {
+        if (nextWord != "server")
+            throw Exception("Unexpected prop: \"" + nextWord + "\" expecting: \"server\"");
+        parseServerDirective(str);
+        nextWord = getNextWord(str);
+    }
 }
 
 void Parser::addServerConfig(ServerConfig newServer)
