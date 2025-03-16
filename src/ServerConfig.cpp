@@ -7,7 +7,6 @@ ServerConfig::ServerConfig()
     this->_host = "0.0.0.0";
     this->_serverName = "localhost";
     this->_locations.insert(std::make_pair("/", Location("/")));
-    this->_errorPages.insert(std::pair<int, std::string>(404, "404.html"));
     this->_maxBodySize = "1M";
 }
 
@@ -47,6 +46,11 @@ void ServerConfig::print()
     std::cout << "Port: " << this->_port << "\n";
     std::cout << "ServerName: " << this->_serverName << "\n";
     std::cout << "MaxBodySize: " << this->_maxBodySize << "\n";
+    std::cout << "ErrorPages: " << "\n";
+    for (std::map<int, std::string>::iterator it = this->_errorPages.begin(); it != this->_errorPages.end(); ++it)
+    {
+        std::cout << "Status - " << it->first << " | Page - " << it->second << std::endl;
+    }
 }
 
 void ServerConfig::setPort(std::string port)
@@ -66,4 +70,11 @@ void ServerConfig::setServerName(std::string serverName)
 void ServerConfig::setMaxBodySize(std::string maxBodySize)
 {
     this->_maxBodySize = maxBodySize;
+}
+
+void ServerConfig::addErrorPage(int status, std::string path)
+{
+    if (status < 300 || status > 599)
+        throw Exception("Invalid status");
+    this->_errorPages[status] = path;
 }

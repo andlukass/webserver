@@ -177,6 +177,31 @@ void parseListenDirective(std::string &config, ServerConfig &server)
     config.erase(0, 1);
 }
 
+void parseErrorPageDirective(std::string &config, ServerConfig &server)
+{
+    Utils::trimStart(config);
+    size_t error_page_directive_len = config.find_first_of(";");
+    if (error_page_directive_len == std::string::npos)
+        throw Exception("Unclosed error_page directive, expecting \";\" ");
+    std::string fullValue = config.substr(0, error_page_directive_len);
+    config.erase(0, error_page_directive_len + 1);
+    std::vector<std::string> arguments = Utils::split(fullValue, "\n \t");
+    if (arguments.size() <= 1)
+        throw Exception("Invalid arguments at error_page directive");
+    std::string path = arguments[arguments.size() - 1];
+    for (size_t i = 0; i < arguments.size(); i++)
+    {
+        if (i == (arguments.size() - 1))
+            break;
+        if (arguments[i].find_first_not_of("0123456789") != std::string::npos)
+            throw Exception("Invalid status at error_page directive, must be only numeric");
+        int status = std::atoi(arguments[i].c_str());
+        if (status < 300 || status > 599 || arguments[i].size() > 3)
+            throw Exception("Invalid status at error_page directive, must be more than 300, and less than 599");
+        server.addErrorPage(status, path);
+    }
+}
+
 std::string getSimpleDirectiveValue(std::string &config)
 {
     std::string nextWord = getNextWord(config);
@@ -208,10 +233,9 @@ void Parser::parseServerDirective(std::string &config)
             server.setMaxBodySize(getSimpleDirectiveValue(config));
             if (!isValidSizeValue(server.getMaxBodySize()))
                 throw Exception("Invalid prop: \"" + server.getMaxBodySize() + "\" in client_max_body_size");
-            std::cout << server.getMaxBodySize() << "\n";
         }
         else if (nextWord == "error_page")
-            server.getMaxBodySize();
+            parseErrorPageDirective(config, server);
         else if (nextWord == "}" || nextWord.empty())
             break;
         else

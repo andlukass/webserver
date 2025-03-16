@@ -56,3 +56,21 @@ std::string Utils::concatConstChars(const char *str[])
 
     return result;
 }
+
+std::vector<std::string> Utils::split(const std::string &str, const std::string &delimiters)
+{
+    std::vector<std::string> result;
+    size_t start = 0, end;
+
+    while ((end = str.find_first_of(delimiters, start)) != std::string::npos)
+    {
+        if (end > start)
+            result.push_back(str.substr(start, end - start));
+        start = end + 1;
+    }
+
+    if (start < str.size())
+        result.push_back(str.substr(start));
+
+    return result;
+}

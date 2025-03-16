@@ -18,6 +18,8 @@ public:
 
     static std::string concatConstChars(const char *str[]);
 
+    static std::vector<std::string> split(const std::string &str, const std::string &delimiters);
+
     template <typename T>
     static bool vectorContains(std::vector<T> &vec, const T &a)
     {

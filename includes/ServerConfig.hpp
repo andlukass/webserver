@@ -7,6 +7,7 @@
 #include <map>
 #include <cstdlib>
 #include "Location.hpp"
+#include "Exception.hpp"
 
 class ServerConfig
 {
@@ -15,7 +16,7 @@ private:
     std::string _host;
     std::string _port;
     std::string _serverName;
-    std::map<int, std::string> _errorPages;
+    std::map<int, std::string> _errorPages;     // status -> path
     std::map<std::string, Location> _locations; // path
 
 public:
@@ -36,4 +37,6 @@ public:
     void setPort(std::string port);
     void setServerName(std::string serverName);
     void setMaxBodySize(std::string maxBodySize);
+
+    void addErrorPage(int status, std::string path);
 };
