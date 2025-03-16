@@ -27,7 +27,7 @@ public:
     std::string getHost() const;
     std::string getPort() const;
     std::string getServerName() const;
-    std::string getBodySize() const;
+    std::string getMaxBodySize() const;
     std::map<int, std::string> getErrorPages() const;
     std::map<std::string, Location> getLocations() const;
 

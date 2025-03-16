@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Exception.hpp"
 #include <fstream>
 #include <string>
 #include <cctype>
@@ -16,8 +17,6 @@ public:
     static std::string concatStringVector(const std::vector<std::string> &vec);
 
     static std::string concatConstChars(const char *str[]);
-
-    static bool isValidIPv6(const std::string &address);
 
     template <typename T>
     static bool vectorContains(std::vector<T> &vec, const T &a)

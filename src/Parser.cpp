@@ -40,6 +40,34 @@ std::string getNextWord(std::string &str)
     return word;
 }
 
+bool isValidSizeValue(std::string str)
+{
+    long long num;
+
+    Utils::trimStart(str);
+    size_t endNumbers = str.find_first_not_of("0123456789");
+    if (endNumbers == std::string::npos)
+        endNumbers = str.size();
+    if (endNumbers > 10 || endNumbers == 0)
+        return false;
+
+    std::string numbers = str.substr(0, endNumbers);
+    str = str.substr(endNumbers, str.size());
+    if (std::string("MmGgKk").find(std::string(1, str[0])) != std::string::npos)
+        str.erase(0, 1);
+    Utils::trimStart(str);
+    if (str[0])
+        return false;
+
+    std::istringstream ss(numbers);
+    if (!(ss >> num))
+        throw Exception("Invalid number passed to isValidSizeValue");
+    if (num > 2147483647 || num < 0)
+        return false;
+
+    return true;
+}
+
 void parseLocationDirective(std::string &config, ServerConfig &server)
 {
     std::string path = getNextWord(config);
@@ -93,7 +121,6 @@ void parseIPV6(std::string &config, ServerConfig &server)
         Utils::trimStart(config);
         if (config[0] != ';')
             throw Exception("Unexpected token: \"" + std::string(1, config[0]) + "\" expecting: \";\" (IPV6)");
-        server.setPort("80");
     }
     else if (config[0] == ':')
     {
@@ -118,15 +145,9 @@ void parseIPV4(std::string &config, ServerConfig &server)
         if (config[0] != ';')
             throw Exception("Listen directive has invalid white space (IPV4)");
         if (temp.find(".") != std::string::npos)
-        {
             server.setHost(temp);
-            server.setPort("80");
-        }
         else
-        {
             server.setPort(temp);
-            server.setHost("0.0.0.0");
-        }
     }
     else if (config[0] == ':')
     {
@@ -183,9 +204,14 @@ void Parser::parseServerDirective(std::string &config)
         else if (nextWord == "server_name")
             server.setServerName(getSimpleDirectiveValue(config));
         else if (nextWord == "client_max_body_size")
+        {
             server.setMaxBodySize(getSimpleDirectiveValue(config));
+            if (!isValidSizeValue(server.getMaxBodySize()))
+                throw Exception("Invalid prop: \"" + server.getMaxBodySize() + "\" in client_max_body_size");
+            std::cout << server.getMaxBodySize() << "\n";
+        }
         else if (nextWord == "error_page")
-            server.getBodySize();
+            server.getMaxBodySize();
         else if (nextWord == "}" || nextWord.empty())
             break;
         else

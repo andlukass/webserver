@@ -8,7 +8,7 @@ ServerConfig::ServerConfig()
     this->_serverName = "localhost";
     this->_locations.insert(std::make_pair("/", Location("/")));
     this->_errorPages.insert(std::pair<int, std::string>(404, "404.html"));
-    this->_maxBodySize = "2m";
+    this->_maxBodySize = "1M";
 }
 
 std::string ServerConfig::getPort() const
@@ -26,7 +26,7 @@ std::string ServerConfig::getServerName() const
     return this->_serverName;
 }
 
-std::string ServerConfig::getBodySize() const
+std::string ServerConfig::getMaxBodySize() const
 {
     return this->_maxBodySize;
 }
