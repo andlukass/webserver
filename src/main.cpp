@@ -5,6 +5,8 @@
 #include "../includes/ServerConfig.hpp"
 #include "../includes/Exception.hpp"
 #include "../includes/Parser.hpp"
+#include "../includes/Server.hpp"
+
 
 void handleFlags(int argc, char *argv[])
 {
@@ -26,6 +28,9 @@ void handleFlags(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
+    // change 0 to 1 to turn on parsing
+    // TODO: remove when not needed
+    #if 0
     if (argc < 2)
     {
         std::cout << "Usage: " << argv[0] << " <config_file> [option]\n";
@@ -50,4 +55,18 @@ int main(int argc, char *argv[])
         std::cout << e.what() << "\n";
         return 1;
     };
+    #endif
+
+    int port = 8080;
+
+    try {
+        Server server;
+        server.start();
+    }
+    catch (std::exception &e) {
+        std::cerr << "Error: " << e.what() << "\n";
+        return 1;
+    }
+
+    return 0;
 }

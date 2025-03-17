@@ -5,6 +5,7 @@ SRCS =  ./src/main.cpp             \
 		./src/Utils.cpp            \
 		./src/Parser.cpp           \
 		./src/ServerConfig.cpp     \
+		./src/Server.cpp
 
 NAME = webserver
 
