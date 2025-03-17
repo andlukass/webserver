@@ -2,22 +2,30 @@
 
 #include <string>
 #include <vector>
+#include "Exception.hpp"
 
 class Location
 {
-    std::string path;
-    std::string root;      // path to the actual directory
-    std::string index;     // file if is directory
-    std::string autoindex; // turn on/off directory listing
-    std::vector<std::string> denyHttps;
+    std::string _path;
+    std::string _autoindex;          // turn on/off directory listing
+    std::string _root;               // path to the actual directory
+    std::vector<std::string> _index; // file if is directory
+    bool _isExact;                   // tells if the path must be a exact match or just start with it
+    std::vector<std::string> _allow_methods;
 
 public:
-    Location(const std::string &path)
-    {
-    }
+    Location(const std::string &path, const bool &isExact);
 
-    std::string getRoot() const { return this->root; }
-    std::string getIndex() const { return this->index; }
-    std::string getAutoindex() const { return this->autoindex; }
-    std::vector<std::string> getDenyHttps() const { return this->denyHttps; }
+    bool getIsExact() const;
+    std::string getPath() const;
+    std::string getRoot() const;
+    std::string getAutoindex() const;
+    std::vector<std::string> getIndex() const;
+    std::vector<std::string> getAllowMethods() const;
+
+    void setIsExact(bool isExect);
+    void setRoot(std::string root);
+    void setAutoindex(std::string autoindex);
+    void addIndex(std::string index);
+    void addAllowMethod(std::string method);
 };

@@ -6,7 +6,6 @@ ServerConfig::ServerConfig()
     this->_port = "80";
     this->_host = "0.0.0.0";
     this->_serverName = "localhost";
-    this->_locations.insert(std::make_pair("/", Location("/")));
     this->_maxBodySize = "1M";
 }
 
@@ -35,7 +34,7 @@ std::map<int, std::string> ServerConfig::getErrorPages() const
     return this->_errorPages;
 }
 
-std::map<std::string, Location> ServerConfig::getLocations() const
+std::vector<Location> ServerConfig::getLocations() const
 {
     return this->_locations;
 }
@@ -49,8 +48,20 @@ void ServerConfig::print()
     std::cout << "ErrorPages: " << "\n";
     for (std::map<int, std::string>::iterator it = this->_errorPages.begin(); it != this->_errorPages.end(); ++it)
     {
-        std::cout << "Status - " << it->first << " | Page - " << it->second << std::endl;
+        std::cout << "\tStatus - " << it->first << " | Page - " << it->second << std::endl;
     }
+
+    std::cout << "Locations: " << "\n";
+    for (size_t i = 0; i < this->_locations.size(); i++)
+    {
+        std::cout << "\tPath -> " << this->_locations[i].getPath() << "\n"
+                  << "\tIsExact: " << (this->_locations[i].getIsExact() ? "Yes" : "No") << "\n"
+                  << "\tRoot: " << this->_locations[i].getRoot() << "\n"
+                  << "\tIndex: " << Utils::concatStringVector(this->_locations[i].getIndex()) << "\n"
+                  << "\tAutoindex: " << this->_locations[i].getAutoindex() << "\n"
+                  << "\tAllowMethods: " << Utils::concatStringVector(this->_locations[i].getAllowMethods()) << "\n";
+    }
+    std::cout << "====================================================" << std::endl;
 }
 
 void ServerConfig::setPort(std::string port)
@@ -77,4 +88,9 @@ void ServerConfig::addErrorPage(int status, std::string path)
     if (status < 300 || status > 599)
         throw Exception("Invalid status");
     this->_errorPages[status] = path;
+}
+
+void ServerConfig::addLocation(Location location)
+{
+    this->_locations.push_back(location);
 }

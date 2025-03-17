@@ -1,7 +1,8 @@
 #include "../includes/Parser.hpp"
 
 const char *validServerProps[] = {"location", "listen", "server_name", "error_page", "client_max_body_size", NULL};
-const char *validLocationProps[] = {"root", "index", "autoindex", "allowed_https", NULL};
+const char *validLocationProps[] = {"root", "index", "autoindex", "allow_methods", NULL};
+const char *validMethods[] = {"GET", "HEAD", "POST", "DELETE", "PUT", "PATCH", "TRACE", "CONNECT", "OPTIONS", NULL};
 
 Parser::Parser(const std::string &configPath)
 {
@@ -15,7 +16,7 @@ int findSeparatorIndex(const std::string &str)
     for (size_t i = 0; i < str.length(); ++i)
     {
         char ch = str[i];
-        if (!(std::isalnum(ch) || ch == '_' || ch == '.' || ch == '-'))
+        if (!(std::isalnum(ch)) && ch != '_' && ch != '-' && ch != '/' && ch != '.')
         {
             return i;
         }
@@ -27,7 +28,7 @@ std::string getNextWord(std::string &str)
 {
     while (str[0] && (std::isspace(str[0])))
         str.erase(0, 1);
-    int separatorIndex = findSeparatorIndex(str);
+    int separatorIndex = (str).find_first_of(" \n\t{};");
     if (separatorIndex == -1)
         return str;
     std::string word = str;
@@ -68,20 +69,34 @@ bool isValidSizeValue(std::string str)
     return true;
 }
 
-void parseLocationDirective(std::string &config, ServerConfig &server)
+void parseAllowedMethodsDirective(std::string &config, Location &location)
 {
-    std::string path = getNextWord(config);
-    Location location(path);
-    std::string initiator = getNextWord(config);
-    if (initiator != "{")
-        throw Exception("Unexpected token: \"" + initiator + "\" expecting: \"{\"");
-    while (config[0])
+    Utils::trimStart(config);
+    size_t error_page_directive_len = config.find_first_of(";");
+    if (error_page_directive_len == std::string::npos)
+        throw Exception("Unclosed error_page directive, expecting \";\" ");
+    std::string fullValue = config.substr(0, error_page_directive_len);
+    config.erase(0, error_page_directive_len + 1);
+    std::vector<std::string> arguments = Utils::split(fullValue, "\n \t");
+    for (size_t i = 0; i < arguments.size(); i++)
     {
-        std::string nextWord = getNextWord(config);
-        if (nextWord == "}")
-            return;
+        if (!Utils::constCharsIncludes(validMethods, arguments[i]))
+            throw Exception("Invalid method: \"" + arguments[i] + "\" in allowed_methods directive");
+        location.addAllowMethod(arguments[i]);
     }
-    throw Exception("Location directive is unclosed, expecting: \"}\"");
+}
+
+void parseIndexDirective(std::string &config, Location &location)
+{
+    Utils::trimStart(config);
+    size_t error_page_directive_len = config.find_first_of(";");
+    if (error_page_directive_len == std::string::npos)
+        throw Exception("Unclosed error_page directive, expecting \";\" ");
+    std::string fullValue = config.substr(0, error_page_directive_len);
+    config.erase(0, error_page_directive_len + 1);
+    std::vector<std::string> arguments = Utils::split(fullValue, "\n \t");
+    for (size_t i = 0; i < arguments.size(); i++)
+        location.addIndex(arguments[i]);
 }
 
 std::string getIpOrPort(std::string &config, const std::string &alloweds)
@@ -205,10 +220,45 @@ void parseErrorPageDirective(std::string &config, ServerConfig &server)
 std::string getSimpleDirectiveValue(std::string &config)
 {
     std::string nextWord = getNextWord(config);
+    // std::cout << "got >> " << nextWord << "\n";
     std::string terminator = getNextWord(config);
     if (terminator != ";")
         throw Exception("Unexpected token: \"" + terminator + "\" expecting: \";\"");
     return nextWord;
+}
+void parseLocationDirective(std::string &config, ServerConfig &server)
+{
+    std::string path = getNextWord(config);
+    bool isExact = false;
+    if (path == "=")
+    {
+        isExact = true;
+        path = getNextWord(config);
+    }
+    Location location(path, isExact);
+    std::string initiator = getNextWord(config);
+    if (initiator != "{")
+        throw Exception("Unexpected token: \"" + initiator + "\" expecting: \"{\"");
+    while (config[0])
+    {
+        std::string nextWord = getNextWord(config);
+        if (nextWord == "root")
+            location.setRoot(getSimpleDirectiveValue(config));
+        else if (nextWord == "index")
+            parseIndexDirective(config, location);
+        else if (nextWord == "autoindex")
+            location.setAutoindex(getSimpleDirectiveValue(config));
+        else if (nextWord == "allow_methods")
+            parseAllowedMethodsDirective(config, location);
+        else if (nextWord == "}")
+        {
+            server.addLocation(location);
+            return;
+        }
+        else
+            throw Exception("Unexpected prop: \"" + nextWord + "\" expecting: \"" + Utils::concatConstChars(validLocationProps) + "\"");
+    }
+    throw Exception("Location directive is unclosed, expecting: \"}\"");
 }
 
 void Parser::parseServerDirective(std::string &config)

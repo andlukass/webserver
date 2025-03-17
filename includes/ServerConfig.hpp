@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include "Location.hpp"
 #include "Exception.hpp"
+#include "Utils.hpp"
 
 class ServerConfig
 {
@@ -16,8 +17,8 @@ private:
     std::string _host;
     std::string _port;
     std::string _serverName;
-    std::map<int, std::string> _errorPages;     // status -> path
-    std::map<std::string, Location> _locations; // path
+    std::map<int, std::string> _errorPages; // status -> path
+    std::vector<Location> _locations;
 
 public:
     ServerConfig();
@@ -30,7 +31,7 @@ public:
     std::string getServerName() const;
     std::string getMaxBodySize() const;
     std::map<int, std::string> getErrorPages() const;
-    std::map<std::string, Location> getLocations() const;
+    std::vector<Location> getLocations() const;
 
     // setters
     void setHost(std::string host);
@@ -39,4 +40,5 @@ public:
     void setMaxBodySize(std::string maxBodySize);
 
     void addErrorPage(int status, std::string path);
+    void addLocation(Location location);
 };

@@ -47,16 +47,16 @@ There is only one top directive: "server". There can be multiple servers directi
 
 #### index
 
-    The path to a file inside the server's file system that the server will redirect to in case the requested URL is a directory.
+    The file list to the to search inside the server's file system that it will redirect to, in case the requested URL is a directory.
 
 #### autoindex
 
     Indicates whether the server should show the directory listing when the requested URL is a directory and it doesn't have an index set.
     It can be a string containing 'on' or 'off'.
 
-#### deny_https
+#### allow_methods
 
-    The list HTTP methods that should not be accepted inside the location.
+    The list of allowed HTTP methods inside the location.
     Can be one or multiple of the following string separeted by white spaces:
     GET | HEAD | POST | PUT | DELETE | PATCH | TRACE | CONNECT | OPTIONS
 

@@ -57,6 +57,16 @@ std::string Utils::concatConstChars(const char *str[])
     return result;
 }
 
+bool Utils::constCharsIncludes(const char *str[], const std::string &toFind)
+{
+    for (size_t i = 0; str[i]; i++)
+    {
+        if (std::string(str[i]) == toFind)
+            return true;
+    }
+    return false;
+}
+
 std::vector<std::string> Utils::split(const std::string &str, const std::string &delimiters)
 {
     std::vector<std::string> result;

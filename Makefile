@@ -4,6 +4,7 @@ CC = g++
 SRCS =  ./src/main.cpp             \
 		./src/Utils.cpp            \
 		./src/Parser.cpp           \
+		./src/Location.cpp         \
 		./src/ServerConfig.cpp     \
 
 NAME = webserver
