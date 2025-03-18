@@ -50,3 +50,8 @@ std::string ClientMaxBodySize::getValue() const
 {
     return this->_value;
 }
+
+ClientMaxBodySize *ClientMaxBodySize::clone() const
+{
+    return new ClientMaxBodySize(*this);
+}

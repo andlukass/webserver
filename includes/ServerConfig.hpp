@@ -10,6 +10,7 @@ class ServerConfig
 {
 public:
     ServerConfig(const std::string &filePath);
+    ~ServerConfig();
     void print();
 
 private:

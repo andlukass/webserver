@@ -23,3 +23,8 @@ bool Autoindex::getValue() const
 {
     return this->_value;
 }
+
+Autoindex *Autoindex::clone() const
+{
+    return new Autoindex(*this);
+}

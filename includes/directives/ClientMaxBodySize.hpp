@@ -11,6 +11,7 @@ public:
     std::string getValue() const;
     void parse(std::string &config);
     void print();
+    ClientMaxBodySize *clone() const;
 
 private:
     std::string _value;

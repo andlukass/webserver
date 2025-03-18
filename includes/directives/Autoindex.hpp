@@ -11,6 +11,7 @@ public:
     void print();
     void parse(std::string &config);
     bool getValue() const;
+    Autoindex *clone() const;
 
 private:
     bool _value;

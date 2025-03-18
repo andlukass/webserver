@@ -98,3 +98,8 @@ int Listen::getPortInt() const
 {
     return this->_portInt;
 }
+
+Listen *Listen::clone() const
+{
+    return new Listen(*this);
+}

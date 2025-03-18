@@ -21,3 +21,8 @@ std::vector<std::string> MultiDirective::getValue() const
 {
     return this->_value;
 }
+
+MultiDirective *MultiDirective::clone() const
+{
+    return new MultiDirective(*this);
+}

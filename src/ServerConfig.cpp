@@ -2,11 +2,17 @@
 
 ServerConfig::ServerConfig(const std::string &filePath)
 {
+    // std::cout << "ServerConfig default constructor ========================================" << std::endl;
     this->_config = Utils::readFile(filePath);
     if (this->_config.empty())
         throw Exception("Error reading file: " + filePath);
     this->removeComments();
     this->parse();
+}
+
+ServerConfig::~ServerConfig()
+{
+    // std::cout << "ServerConfig destructor ======================================== serverssize: " << this->_serversConfig.size() << std::endl;
 }
 
 void ServerConfig::print()

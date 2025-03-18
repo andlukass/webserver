@@ -20,3 +20,8 @@ std::string Root::getValue() const
 {
     return this->_value;
 }
+
+Root *Root::clone() const
+{
+    return new Root(*this);
+}

@@ -4,27 +4,55 @@ const char *validLocationProps[] = {"root", "index", "autoindex", "allow_methods
 
 Location::Location() : Directive("location")
 {
-    this->_lastIndex = 0;
+    // std::cout << "Location default constructor ===============================index: " << std::endl;
+}
+
+void deleteProps(LocationValue value)
+{
+    for (size_t i = 0; validLocationProps[i]; i++)
+        delete value[validLocationProps[i]];
 }
 
 Location::~Location()
 {
+    // std::cout << "Location destructor ===============================index: " << std::endl;
+    for (int i = 0; i < this->_value.size(); i++)
+    {
+        delete this->_value[i]["path"];
+        deleteProps(this->_value[i]);
+    }
+}
+
+Location::Location(const Location &other) : Directive(other._name)
+{
+    // std::cout << "Location copy constructor ===============================index: " << std::endl;
+    for (int i = 0; i < other._value.size(); i++)
+    {
+        this->_value.push_back(LocationValue());
+        this->_value[i]["path"] = other._value[i].at("path")->clone();
+        for (size_t j = 0; validLocationProps[j]; j++)
+            this->_value[i][validLocationProps[j]] = other._value[i].at(validLocationProps[j])->clone();
+    }
 }
 
 void Location::init()
 {
+    // std::cout << "Location INIT ======================================= " << std::endl;
     this->_value.push_back(LocationValue());
-    this->_value[this->_lastIndex]["allow_methods"] = new AllowMethods();
-    this->_value[this->_lastIndex]["autoindex"] = new Autoindex();
-    this->_value[this->_lastIndex]["index"] = new MultiDirective("index");
-    this->_value[this->_lastIndex]["root"] = new Root();
-    this->_value[this->_lastIndex]["path"] = new Path();
+    size_t index = this->_value.size() - 1;
+    this->_value[index]["allow_methods"] = new AllowMethods();
+    this->_value[index]["autoindex"] = new Autoindex();
+    this->_value[index]["index"] = new MultiDirective("index");
+    this->_value[index]["root"] = new Root();
+    this->_value[index]["path"] = new Path();
 }
 
 void Location::parse(std::string &config)
 {
     this->init();
-    this->_value[this->_lastIndex]["path"]->parse(config);
+    size_t index = this->_value.size() - 1;
+
+    this->_value[index]["path"]->parse(config);
     std::string initiator = getNextWord(config);
     if (initiator != "{")
         throw Exception("Unexpected token: \"" + initiator + "\" expecting: \"{\"");
@@ -32,14 +60,13 @@ void Location::parse(std::string &config)
     std::string nextWord = this->getNextWord(config);
     while (!nextWord.empty() && nextWord != "}")
     {
-        if (!this->_value[this->_lastIndex][nextWord] || nextWord == "path")
+        if (!this->_value[index][nextWord] || nextWord == "path")
             throw Exception("Unexpected prop: \"" + nextWord + "\" expecting: \"" + Utils::concatConstChars(validLocationProps) + "\"");
-        this->_value[this->_lastIndex][nextWord]->parse(config);
+        this->_value[index][nextWord]->parse(config);
         nextWord = this->getNextWord(config);
     }
     if (nextWord != "}")
         throw Exception("Location directive is unclosed, expecting: \"}\"");
-    this->_lastIndex++;
 }
 
 void printProps(LocationValue value)
@@ -53,8 +80,8 @@ void printProps(LocationValue value)
 
 void Location::print()
 {
-    std::cout << "Location: " << std::endl;
-    for (int i = 0; i < this->_lastIndex; i++)
+    std::cout << "Location: " << this->_value.size() << std::endl;
+    for (int i = 0; i < this->_value.size(); i++)
     {
         this->_value[i]["path"]->print();
         printProps(this->_value[i]);
@@ -64,4 +91,9 @@ void Location::print()
 std::vector<LocationValue> Location::getValue() const
 {
     return this->_value;
+}
+
+Location *Location::clone() const
+{
+    return new Location(*this);
 }

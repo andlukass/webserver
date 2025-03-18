@@ -4,6 +4,7 @@ const char *validServerProps[] = {"listen", "server_name", "client_max_body_size
 
 ServerDirective::ServerDirective() : Directive("server")
 {
+    // std::cout << "ServerDirective default constructor ========================================" << std::endl;
     this->_value["listen"] = new Listen();
     this->_value["server_name"] = new MultiDirective("server_name");
     this->_value["client_max_body_size"] = new ClientMaxBodySize();
@@ -13,8 +14,22 @@ ServerDirective::ServerDirective() : Directive("server")
     this->_value["location"] = new Location();
 }
 
+ServerDirective::ServerDirective(const ServerDirective &other) : Directive(other._name)
+{
+    std::cout << "ServerDirective copy constructor ========================================" << std::endl;
+    for (size_t i = 0; validServerProps[i]; i++)
+        this->_value[validServerProps[i]] = other._value.at(validServerProps[i])->clone();
+}
+
 ServerDirective::~ServerDirective()
 {
+    // std::cout << "ServerDirective destructor ========================================" << std::endl;
+
+    for (size_t i = 0; validServerProps[i]; i++)
+    {
+        // std::cout << "deleting " << validServerProps[i] << std::endl;
+        delete this->_value[validServerProps[i]];
+    }
 }
 
 void ServerDirective::parse(std::string &config)
@@ -39,10 +54,14 @@ void ServerDirective::print()
 {
     for (size_t i = 0; validServerProps[i]; i++)
         this->_value[validServerProps[i]]->print();
-    std::cout << "==========================================" << std::endl;
 }
 
 std::map<std::string, Directive *> ServerDirective::getValue() const
 {
     return this->_value;
+}
+
+ServerDirective *ServerDirective::clone() const
+{
+    return new ServerDirective(*this);
 }

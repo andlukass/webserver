@@ -25,3 +25,8 @@ std::vector<std::string> AllowMethods::getValue() const
 {
     return this->_value;
 }
+
+AllowMethods *AllowMethods::clone() const
+{
+    return new AllowMethods(*this);
+}

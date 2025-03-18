@@ -17,11 +17,13 @@ class Location : public Directive
 public:
     Location();
     ~Location();
+    Location(const Location &other);
 
     std::vector<LocationValue> getValue() const;
     void parse(std::string &config);
     void print();
     void init();
+    Location *clone() const;
 
 private:
     int _lastIndex;

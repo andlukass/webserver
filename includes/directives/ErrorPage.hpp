@@ -11,6 +11,7 @@ public:
     void print();
     void parse(std::string &config);
     std::map<int, std::string> getValue() const;
+    ErrorPage *clone() const;
 
 private:
     std::map<int, std::string> _value;

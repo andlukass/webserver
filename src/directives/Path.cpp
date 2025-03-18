@@ -31,3 +31,8 @@ bool Path::getIsExact() const
 {
     return this->_isExact;
 }
+
+Path *Path::clone() const
+{
+    return new Path(*this);
+}

@@ -12,6 +12,7 @@ public:
     void parse(std::string &config);
     std::string getValue() const;
     bool getIsExact() const;
+    Path *clone() const;
 
 private:
     std::string _value;

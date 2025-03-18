@@ -9,10 +9,18 @@
 class Directive
 {
 public:
-    Directive(const std::string &name) : _name(name) {}
+    Directive(const std::string &name) : _name(name)
+    {
+        // std::cout << "Directive default constructor ========================================" << std::endl;
+    }
+    virtual ~Directive()
+    {
+        // std::cout << "Directive destructor ========================================" << std::endl;
+    }
 
     virtual void parse(std::string &config) = 0;
     virtual void print() = 0;
+    virtual Directive *clone() const = 0;
     static std::string getNextWord(std::string &config);
 
 protected:

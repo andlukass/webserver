@@ -11,6 +11,7 @@ public:
     void print();
     void parse(std::string &config);
     std::vector<std::string> getValue() const;
+    AllowMethods *clone() const;
 
 private:
     std::vector<std::string> _value;

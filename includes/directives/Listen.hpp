@@ -13,6 +13,7 @@ public:
     std::string getIp() const;
     std::string getPort() const;
     void parse(std::string &config);
+    Listen *clone() const;
 
 private:
     std::string _ip;

@@ -11,6 +11,7 @@ public:
     void print();
     void parse(std::string &config);
     std::string getValue() const;
+    Root *clone() const;
 
 private:
     std::string _value;
