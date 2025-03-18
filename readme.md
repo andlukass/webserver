@@ -14,7 +14,6 @@ There is only one top directive: "server". There can be multiple servers directi
 
     The ip and port that the server will be listening.
     Can be one of the following:
-    - a string containing only numbers
     - a string containing only numbers, followed by a colon, and a port number
     - an IPV4 address
     - an IPV4 address followed by a colon, and a port number
@@ -23,8 +22,16 @@ There is only one top directive: "server". There can be multiple servers directi
 
 ### server_name
 
-    A string representing the name of the server.
+    A list of strings representing the names of the server.
     If more than one is declared inside the same server, the last one will be considered.
+
+#### root
+
+    The original path inside the server's file system from which the location path will be redirected.
+
+#### index
+
+    The file list to the to search inside the server's file system that it will redirect to, in case the requested URL is a directory.
 
 ### error_page
 
@@ -41,13 +48,9 @@ There is only one top directive: "server". There can be multiple servers directi
 
 ---
 
-#### root
+### root && index
 
-    The original path inside the server's file system from which the location path will be redirected.
-
-#### index
-
-    The file list to the to search inside the server's file system that it will redirect to, in case the requested URL is a directory.
+    Within a location block, the root and index directives can also be defined. If specified, they will override the corresponding directives set in the server block for that specific location.
 
 #### autoindex
 

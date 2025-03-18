@@ -1,19 +1,20 @@
 #include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include "../includes/ServerConfig.hpp"
+#include <cstdlib>
 #include "../includes/Exception.hpp"
-#include "../includes/Parser.hpp"
+#include "../includes/ServerConfig.hpp"
 
-void handleFlags(int argc, char *argv[])
+enum
+{
+    NONE,
+    TEST
+};
+
+int handleFlags(int argc, char *argv[])
 {
     if (argc > 3)
         throw Exception("Invalid number of options, try -h");
     if (argc == 2)
-        return;
-    if ((std::string(argv[2]) != "-t" && std::string(argv[2]) != "-h"))
-        throw Exception("Invalid flag, try -h");
+        return NONE;
     if (std::string(argv[2]) == "-h")
     {
         std::cout << "Usage: " << argv[0] << " <config_file> [option]\n";
@@ -22,32 +23,30 @@ void handleFlags(int argc, char *argv[])
         std::cout << "-h: show this help message\n";
         exit(0);
     }
+    else if (std::string(argv[2]) == "-t")
+        return TEST;
+    else
+        throw Exception("Invalid flag, try -h");
 }
 
 int main(int argc, char *argv[])
 {
     if (argc < 2)
-    {
-        std::cout << "Usage: " << argv[0] << " <config_file> [option]\n";
-        return 1;
-    }
+        return (std::cout << "Usage: " << argv[0] << " <config_file> [option]\n", 1);
     try
     {
-        handleFlags(argc, argv);
-        Parser parser(argv[1]);
+        int flag = handleFlags(argc, argv);
 
-        parser.parse();
-
-        std::vector<ServerConfig> servers = parser.getServerList();
-        for (size_t i = 0; i < servers.size(); ++i)
-        {
-            std::cout << i << ": " << std::endl;
-            servers[i].print();
-        }
+        ServerConfig serverConfig(argv[1]);
+        if (flag == TEST)
+            return (serverConfig.print(), 0);
+        std::cout << "Server started.....( not really :') )\n";
+        while (1)
+            ;
+        return (0);
     }
     catch (std::exception &e)
     {
-        std::cout << e.what() << "\n";
-        return 1;
+        return (std::cout << e.what() << "\n", 1);
     };
 }

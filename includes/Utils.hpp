@@ -5,6 +5,8 @@
 #include <string>
 #include <cctype>
 #include <sstream>
+#include <vector>
+#include <map>
 
 class Utils
 {
@@ -13,6 +15,8 @@ public:
     static std::string readFile(const std::string &filePath);
 
     static std::string trimStart(std::string &str);
+
+    static std::string trim(std::string &str);
 
     static std::string concatStringVector(const std::vector<std::string> &vec);
 
@@ -32,4 +36,12 @@ public:
         }
         return false;
     }
+
+    // template <typename KeyType, typename ValueType>
+    // static bool mapContains(const std::map<KeyType, ValueType> &m, const KeyType &key)
+    // {
+    //     // Verifica se a chave existe no mapa
+    //     typename std::map<KeyType, ValueType>::const_iterator it = m.find(key);
+    //     return it != m.end();
+    // }
 };

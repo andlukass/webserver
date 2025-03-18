@@ -2,7 +2,7 @@
 
 std::string Utils::readFile(const std::string &filePath)
 {
-    std::ifstream file(filePath);
+    std::ifstream file(filePath.c_str());
     if (!file)
         return "";
 
@@ -22,6 +22,16 @@ std::string Utils::trimStart(std::string &str)
 {
     while (str[0] && (std::isspace(str[0])))
         str.erase(0, 1);
+    return str;
+}
+
+std::string Utils::trim(std::string &str)
+{
+    trimStart(str);
+    size_t end = str.size();
+    while (end > 0 && std::isspace(str[end - 1]))
+        --end;
+    str = str.substr(0, end);
     return str;
 }
 
