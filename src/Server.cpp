@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <cstring>
 
-
 Server::Server() {
     _port = 8080;
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
