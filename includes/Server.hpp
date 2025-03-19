@@ -4,21 +4,21 @@
 #include <iostream>
 
 class Server {
-private:
-  int  _socketFd;
-  int  _port;
+   private:
+    int _socketFd;
+    int _port;
 
-  // just for the sake of orthodox form, not really needed
-  Server(const Server& other);
-  Server& operator=(const Server& other);
-  void acceptClient();
+    // just for the sake of orthodox form, not really needed
+    Server(const Server& other);
+    Server& operator=(const Server& other);
+    void acceptClient();
 
-public:
-  Server();
-  ~Server();
+   public:
+    Server();
+    ~Server();
 
-  void  start();
-  void  stop();
-  };
+    void start();
+    void stop();
+};
 
-#endif //SERVER_HPP
+#endif  // SERVER_HPP
