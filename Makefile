@@ -1,6 +1,6 @@
 CFLAGS = -std=c++98 #-Wall -Werror -Wextra
 CC = g++
-
+		
 SRCS =  ./src/main.cpp                         \
 		./src/Utils.cpp                        \
 		./src/ServerConfig.cpp                 \
@@ -15,6 +15,7 @@ SRCS =  ./src/main.cpp                         \
 		./src/directives/Path.cpp              \
 		./src/directives/Location.cpp          \
 		./src/directives/MultiDirective.cpp    \
+		./src/Server.cpp
 
 NAME = webserver
 
