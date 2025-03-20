@@ -1,58 +1,37 @@
+#include <cstdlib>
 #include <iostream>
-#include <map>
-#include <string>
-#include <vector>
 
 #include "../includes/Exception.hpp"
-#include "../includes/Parser.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/ServerConfig.hpp"
 
-void handleFlags(int argc, char *argv[]) {
+enum { NONE, TEST };
+
+int handleFlags(int argc, char *argv[]) {
     if (argc > 3) throw Exception("Invalid number of options, try -h");
-    if (argc == 2) return;
-    if ((std::string(argv[2]) != "-t" && std::string(argv[2]) != "-h"))
-        throw Exception("Invalid flag, try -h");
+    if (argc == 2) return NONE;
     if (std::string(argv[2]) == "-h") {
         std::cout << "Usage: " << argv[0] << " <config_file> [option]\n";
         std::cout << "Options: (only one per run)\n";
         std::cout << "-t: test the configuration file\n";
         std::cout << "-h: show this help message\n";
         exit(0);
-    }
+    } else if (std::string(argv[2]) == "-t")
+        return TEST;
+    else
+        throw Exception("Invalid flag, try -h");
 }
 
 int main(int argc, char *argv[]) {
-// change 0 to 1 to turn on parsing
-// TODO: remove when not needed
-#if 0
-    if (argc < 2)
-    {
-        std::cout << "Usage: " << argv[0] << " <config_file> [option]\n";
-        return 1;
-    }
-    try
-    {
-        handleFlags(argc, argv);
-        Parser parser(argv[1]);
+    if (argc < 2) return (std::cout << "Usage: " << argv[0] << " <config_file> [option]\n", 1);
+    try {
+        int flag = handleFlags(argc, argv);
 
-        parser.parse();
-
-        std::vector<ServerConfig> servers = parser.getServerList();
-        for (size_t i = 0; i < servers.size(); ++i)
-        {
-            std::cout << i << ": " << std::endl;
-            servers[i].print();
-        }
-    }
-    catch (std::exception &e)
-    {
-        std::cout << e.what() << "\n";
-        return 1;
+        ServerConfig serverConfig(argv[1]);
+        if (flag == TEST) return (serverConfig.print(), 0);
+    } catch (std::exception &e) {
+        return (std::cout << e.what() << "\n", 1);
     };
-#endif
-
-    int port = 8080;
 
     try {
         Server server;
@@ -61,6 +40,4 @@ int main(int argc, char *argv[]) {
         std::cerr << "Error: " << e.what() << "\n";
         return 1;
     }
-
-    return 0;
 }

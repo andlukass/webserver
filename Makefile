@@ -1,10 +1,20 @@
 CFLAGS = -std=c++98 #-Wall -Werror -Wextra
 CC = g++
-
-SRCS =  ./src/main.cpp             \
-		./src/Utils.cpp            \
-		./src/Parser.cpp           \
-		./src/ServerConfig.cpp     \
+		
+SRCS =  ./src/main.cpp                         \
+		./src/Utils.cpp                        \
+		./src/ServerConfig.cpp                 \
+		./src/directives/Directive.cpp         \
+		./src/directives/Autoindex.cpp         \
+		./src/directives/AllowMethods.cpp      \
+		./src/directives/ServerDirective.cpp   \
+		./src/directives/ClientMaxBodySize.cpp \
+		./src/directives/ErrorPage.cpp         \
+		./src/directives/Listen.cpp            \
+		./src/directives/Root.cpp              \
+		./src/directives/Path.cpp              \
+		./src/directives/Location.cpp          \
+		./src/directives/MultiDirective.cpp    \
 		./src/Server.cpp
 
 NAME = webserver

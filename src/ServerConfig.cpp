@@ -1,69 +1,51 @@
-
 #include "../includes/ServerConfig.hpp"
 
-ServerConfig::ServerConfig()
+ServerConfig::ServerConfig(const std::string &filePath)
 {
-    this->_port = "80";
-    this->_host = "0.0.0.0";
-    this->_serverName = "localhost";
-    this->_locations.insert(std::make_pair("/", Location("/")));
-    this->_errorPages.insert(std::pair<int, std::string>(404, "404.html"));
-    this->_maxBodySize = "2m";
+    // std::cout << "ServerConfig default constructor ========================================" << std::endl;
+    this->_config = Utils::readFile(filePath);
+    if (this->_config.empty())
+        throw Exception("Error reading file: " + filePath);
+    this->removeComments();
+    this->parse();
 }
 
-std::string ServerConfig::getPort() const
+ServerConfig::~ServerConfig()
 {
-    return this->_port;
-}
-
-std::string ServerConfig::getHost() const
-{
-    return this->_host;
-}
-
-std::string ServerConfig::getServerName() const
-{
-    return this->_serverName;
-}
-
-std::string ServerConfig::getBodySize() const
-{
-    return this->_maxBodySize;
-}
-
-std::map<int, std::string> ServerConfig::getErrorPages() const
-{
-    return this->_errorPages;
-}
-
-std::map<std::string, Location> ServerConfig::getLocations() const
-{
-    return this->_locations;
+    // std::cout << "ServerConfig destructor ======================================== serverssize: " << this->_serversConfig.size() << std::endl;
 }
 
 void ServerConfig::print()
 {
-    std::cout << "Host: " << this->_host << "\n";
-    std::cout << "Port: " << this->_port << "\n";
-    std::cout << "ServerName: " << this->_serverName << "\n";
-    std::cout << "MaxBodySize: " << this->_maxBodySize << "\n";
+    for (size_t i = 0; i < this->_serversConfig.size(); ++i)
+    {
+        std::cout << "server " << i << ": " << std::endl;
+        this->_serversConfig[i].print();
+    }
 }
 
-void ServerConfig::setPort(std::string port)
+void ServerConfig::removeComments()
 {
-    this->_port = port;
+    size_t pos = 0;
+    while ((pos = this->_config.find("#", pos)) != std::string::npos)
+    {
+        size_t end = this->_config.find("\n", pos);
+        if (end == std::string::npos)
+            end = this->_config.size();
+        this->_config.erase(pos, end - pos);
+    }
 }
 
-void ServerConfig::setHost(std::string host)
+void ServerConfig::parse()
 {
-    this->_host = host;
-}
-
-void ServerConfig::setServerName(std::string serverName)
-{
-    this->_serverName = serverName;
-}
-void ServerConfig::setMaxBodySize(std::string maxBodySize)
-{
-    this->_maxBodySize = maxBodySize;
+    std::string directive = Directive::getNextWord(this->_config);
+    while (!directive.empty())
+    {
+        if (directive != "server")
+            throw Exception("Unexpected prop: \"" + directive + "\" expecting: \"server\"");
+        ServerDirective server;
+        server.parse(this->_config);
+        this->_serversConfig.push_back(server);
+        directive = Directive::getNextWord(this->_config);
+    }
 }

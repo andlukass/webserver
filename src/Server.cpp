@@ -60,7 +60,7 @@ void Server::start() {
         std::cerr << "Error: listen failed" << std::endl;
         exit(EXIT_FAILURE);
     }
-    std::cout << "Server started and listening on port " << _port << std::endl;
+    std::cout << "Server started (for real!) and listening on port " << _port << std::endl;
 
     while (true) {
         acceptClient();
