@@ -1,18 +1,19 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
+
 #include "Directive.hpp"
 
-class AllowMethods : public Directive
-{
-public:
+class AllowMethods : public Directive {
+   public:
     AllowMethods();
-    void print();
     void parse(std::string &config);
+    void print() const;
     std::vector<std::string> getValue() const;
     AllowMethods *clone() const;
+    AllowMethods *cast() const;
 
-private:
+   private:
     std::vector<std::string> _value;
 };

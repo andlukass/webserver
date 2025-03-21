@@ -29,15 +29,16 @@ int main(int argc, char *argv[]) {
 
         ServerConfig serverConfig(argv[1]);
         if (flag == TEST) return (serverConfig.print(), 0);
-    } catch (std::exception &e) {
-        return (std::cout << e.what() << "\n", 1);
-    };
 
-    try {
+        // I think we can do something like this
+        // for (size_t i = 0; i < serverConfig.getServersCount(); ++i) {
+        //     Server server(serverConfig.getServer(i));
+        //     server.start();
+        // }
+
         Server server;
         server.start();
     } catch (std::exception &e) {
-        std::cerr << "Error: " << e.what() << "\n";
-        return 1;
+        return (std::cout << e.what() << "\n", 1);
     }
 }

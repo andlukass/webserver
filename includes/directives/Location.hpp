@@ -1,31 +1,28 @@
 #pragma once
 
-#include <string>
 #include <iostream>
 #include <map>
-#include "Directive.hpp"
+#include <string>
+
 #include "AllowMethods.hpp"
 #include "Autoindex.hpp"
-#include "Root.hpp"
-#include "Path.hpp"
+#include "Directive.hpp"
 #include "MultiDirective.hpp"
+#include "Path.hpp"
+#include "Root.hpp"
 
-typedef std::map<std::string, Directive *> LocationValue;
-
-class Location : public Directive
-{
-public:
+class Location : public Directive {
+   public:
     Location();
     ~Location();
     Location(const Location &other);
 
-    std::vector<LocationValue> getValue() const;
+    const std::vector<DirectiveMap> &getValue() const;
     void parse(std::string &config);
-    void print();
+    void print() const;
     void init();
     Location *clone() const;
 
-private:
-    int _lastIndex;
-    std::vector<LocationValue> _value;
+   private:
+    std::vector<DirectiveMap> _value;
 };

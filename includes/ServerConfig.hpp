@@ -1,19 +1,21 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
+
 #include "./Exception.hpp"
 #include "./Utils.hpp"
 #include "./directives/ServerDirective.hpp"
 
-class ServerConfig
-{
-public:
+class ServerConfig {
+   public:
     ServerConfig(const std::string &filePath);
     ~ServerConfig();
-    void print();
+    void print() const;
+    size_t getServersCount() const;
+    const ServerDirective &getServer(size_t index) const;
 
-private:
+   private:
     std::string _config;
     std::vector<ServerDirective> _serversConfig;
 

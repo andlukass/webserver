@@ -1,18 +1,18 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
+
 #include "Directive.hpp"
 
-class Root : public Directive
-{
-public:
+class Root : public Directive {
+   public:
     Root();
-    void print();
+    void print() const;
     void parse(std::string &config);
     std::string getValue() const;
     Root *clone() const;
 
-private:
+   private:
     std::string _value;
 };
