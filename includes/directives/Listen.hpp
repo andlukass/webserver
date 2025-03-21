@@ -1,21 +1,21 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
+
 #include "Directive.hpp"
 
-class Listen : public Directive
-{
-public:
+class Listen : public Directive {
+   public:
     Listen();
-    void print();
+    void print() const;
     int getPortInt() const;
     std::string getIp() const;
     std::string getPort() const;
     void parse(std::string &config);
     Listen *clone() const;
 
-private:
+   private:
     std::string _ip;
     std::string _port;
     int _portInt;

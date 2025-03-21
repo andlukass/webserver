@@ -29,15 +29,27 @@ int main(int argc, char *argv[]) {
 
         ServerConfig serverConfig(argv[1]);
         if (flag == TEST) return (serverConfig.print(), 0);
-    } catch (std::exception &e) {
-        return (std::cout << e.what() << "\n", 1);
-    };
 
-    try {
+        // To run the servers I think we can do something like this
+        // for (size_t i = 0; i < serverConfig.getServersCount(); ++i) {
+        //     Server server(serverConfig.getServer(i));
+        //     server.start();
+        // }
         Server server;
         server.start();
+
+        // getServer returns a ServerDirective, we can use the getters like that:
+        //  ServerDirective serverDirective = serverConfig.getServer(0);
+        //  serverDirective.getListen()->getIp(); // string
+        //  serverDirective.getServerName()->getValue(); // string vector
+        //  etc..
+        //  serverDirective.getLocationsCount(); // size_t
+        //  serverDirective.getLocation(0).getPath()->getValue(); // string
+        //  serverDirective.getLocation(0).getPath()->getIsExact(); // bool
+        //  serverDirective.getLocation(0).getAllowMethods()->getValue(); // string vector
+        //  etc...
+
     } catch (std::exception &e) {
-        std::cerr << "Error: " << e.what() << "\n";
-        return 1;
+        return (std::cout << e.what() << "\n", 1);
     }
 }

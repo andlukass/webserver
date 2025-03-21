@@ -1,27 +1,36 @@
 #pragma once
 
-#include <string>
 #include <iostream>
 #include <map>
-#include "Directive.hpp"
+#include <string>
+
 #include "ClientMaxBodySize.hpp"
+#include "Directive.hpp"
 #include "ErrorPage.hpp"
 #include "Listen.hpp"
+#include "Locations.hpp"
 #include "MultiDirective.hpp"
-#include "Location.hpp"
+#include "Root.hpp"
 
-class ServerDirective : public Directive
-{
-public:
+class ServerDirective : public Directive {
+   public:
     ServerDirective();
     ServerDirective(const ServerDirective &other);
     ~ServerDirective();
 
-    std::map<std::string, Directive *> getValue() const;
     void parse(std::string &config);
-    void print();
+    void print() const;
     ServerDirective *clone() const;
 
-private:
-    std::map<std::string, Directive *> _value;
+    Listen *getListen() const;
+    ClientMaxBodySize *getClientMaxBodySize() const;
+    ErrorPage *getErrorPage() const;
+    Root *getRoot() const;
+    size_t getLocationsCount() const;
+    const LocationDirective &getLocation(size_t index) const;
+    MultiDirective *getIndex() const;
+    MultiDirective *getServerName() const;
+
+   private:
+    DirectiveMap _value;
 };

@@ -1,18 +1,18 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
+
 #include "Directive.hpp"
 
-class ErrorPage : public Directive
-{
-public:
+class ErrorPage : public Directive {
+   public:
     ErrorPage();
-    void print();
+    void print() const;
     void parse(std::string &config);
     std::map<int, std::string> getValue() const;
     ErrorPage *clone() const;
 
-private:
+   private:
     std::map<int, std::string> _value;
 };

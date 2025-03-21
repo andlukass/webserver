@@ -13,7 +13,8 @@ SRCS =  ./src/main.cpp                         \
 		./src/directives/Listen.cpp            \
 		./src/directives/Root.cpp              \
 		./src/directives/Path.cpp              \
-		./src/directives/Location.cpp          \
+		./src/directives/Locations.cpp         \
+		./src/directives/LocationDirective.cpp \
 		./src/directives/MultiDirective.cpp    \
 		./src/Server.cpp
 

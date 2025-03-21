@@ -1,38 +1,25 @@
 #include "../../includes/directives/Path.hpp"
 
-Path::Path() : Directive("path")
-{
+Path::Path() : Directive("path") {
     this->_value = "";
     this->_isExact = false;
 }
 
-void Path::parse(std::string &config)
-{
+void Path::parse(std::string &config) {
     this->_value = getNextWord(config);
-    if (this->_value == "=")
-    {
+    if (this->_value == "=") {
         this->_isExact = true;
         this->_value = getNextWord(config);
     }
 }
 
-void Path::print()
-{
+void Path::print() const {
     std::string exact = this->_isExact ? "= " : "";
     std::cout << this->_name << ": " << exact << this->_value << std::endl;
 }
 
-std::string Path::getValue() const
-{
-    return this->_value;
-}
+std::string Path::getValue() const { return this->_value; }
 
-bool Path::getIsExact() const
-{
-    return this->_isExact;
-}
+bool Path::getIsExact() const { return this->_isExact; }
 
-Path *Path::clone() const
-{
-    return new Path(*this);
-}
+Path *Path::clone() const { return new Path(*this); }
