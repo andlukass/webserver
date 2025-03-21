@@ -4,15 +4,12 @@
 #include <map>
 #include <string>
 
-#include "AllowMethods.hpp"
-#include "Autoindex.hpp"
 #include "ClientMaxBodySize.hpp"
 #include "Directive.hpp"
 #include "ErrorPage.hpp"
 #include "Listen.hpp"
-#include "Location.hpp"
+#include "Locations.hpp"
 #include "MultiDirective.hpp"
-#include "Path.hpp"
 #include "Root.hpp"
 
 class ServerDirective : public Directive {
@@ -26,14 +23,11 @@ class ServerDirective : public Directive {
     ServerDirective *clone() const;
 
     Listen *getListen() const;
-    Autoindex *getAutoindex() const;
-    AllowMethods *getAllowMethods() const;
     ClientMaxBodySize *getClientMaxBodySize() const;
     ErrorPage *getErrorPage() const;
     Root *getRoot() const;
-    Path *getPath() const;
     size_t getLocationsCount() const;
-    const DirectiveMap &getLocation(size_t index) const;
+    const LocationDirective &getLocation(size_t index) const;
     MultiDirective *getIndex() const;
     MultiDirective *getServerName() const;
 
