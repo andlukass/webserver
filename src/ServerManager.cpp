@@ -2,6 +2,28 @@
 
 #include <poll.h>
 
+/*
+TODO: Future Configuration Validations (maybe parser already validates some or all)
+
+1. Unique IP:Port Check
+Ensure no two servers are configured with the same IP:Port.
+
+2. Required Configuration Fields
+Verify required fields like server_name, root, and listen are present and valid.
+
+3. client_max_body_size Validation
+Ensure client_max_body_size is positive and reasonable.
+
+4. Check File Paths
+Validate the existence of directories specified by root and other path-based fields.
+
+5. Method Restrictions (allow_methods)
+Ensure allow_methods contains valid HTTP methods like GET, POST, etc.
+
+6. Error Pages
+Ensure paths for custom error pages (e.g., error_page 404) are valid.
+*/
+
 ServerManager::ServerManager(const ServerConfig& config) {
     std::string ip;
     int port;
