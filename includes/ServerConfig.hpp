@@ -1,3 +1,4 @@
+// TODO: (Yulia) make sure that this allowed. As far as I know it's not C++98 standard :(
 #pragma once
 
 #include <iostream>

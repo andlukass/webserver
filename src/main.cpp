@@ -4,6 +4,7 @@
 #include "../includes/Exception.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/ServerConfig.hpp"
+#include "../includes/ServerManager.hpp"
 
 enum { NONE, TEST };
 
@@ -23,9 +24,6 @@ int handleFlags(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-    std::string ip;
-    int port;
-
     if (argc < 2) return (std::cout << "Usage: " << argv[0] << " <config_file> [option]\n", 1);
     try {
         int flag = handleFlags(argc, argv);
@@ -33,29 +31,21 @@ int main(int argc, char *argv[]) {
         ServerConfig serverConfig(argv[1]);
         if (flag == TEST) return (serverConfig.print(), 0);
 
-        // To run the servers I think we can do something like this
-        // for (size_t i = 0; i < serverConfig.getServersCount(); ++i) {
-        //     Server server(serverConfig.getServer(i));
-        //     server.start();
-        // }
-        ip = serverConfig.getServer(0).getListen()->getIp();
-        port = serverConfig.getServer(0).getListen()->getPortInt();
-        Server server(port, ip);
-        server.start();
-
-        // getServer returns a ServerDirective, we can use the getters like that:
-        //  ServerDirective serverDirective = serverConfig.getServer(0);
-        //  serverDirective.getListen()->getIp(); // string
-        //  serverDirective.getListen()->getPortInt(); // int
-        //  serverDirective.getServerName()->getValue(); // string vector
-        //  etc..
-        //  serverDirective.getLocationsCount(); // size_t
-        //  serverDirective.getLocation(0).getPath()->getValue(); // string
-        //  serverDirective.getLocation(0).getPath()->getIsExact(); // bool
-        //  serverDirective.getLocation(0).getAllowMethods()->getValue(); // string vector
-        //  etc...
-
+        ServerManager allServers(serverConfig);
+        allServers.run();
     } catch (std::exception &e) {
         return (std::cout << e.what() << "\n", 1);
     }
 }
+
+// getServer returns a ServerDirective, we can use the getters like that:
+//  ServerDirective serverDirective = serverConfig.getServer(0);
+//  serverDirective.getListen()->getIp(); // string
+//  serverDirective.getListen()->getPortInt(); // int
+//  serverDirective.getServerName()->getValue(); // string vector
+//  etc..
+//  serverDirective.getLocationsCount(); // size_t
+//  serverDirective.getLocation(0).getPath()->getValue(); // string
+//  serverDirective.getLocation(0).getPath()->getIsExact(); // bool
+//  serverDirective.getLocation(0).getAllowMethods()->getValue(); // string vector
+//  etc...
