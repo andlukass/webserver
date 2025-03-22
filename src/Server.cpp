@@ -12,6 +12,7 @@
 
 Server::Server(int port, std::string ip) {
     // TODO: closer to the end of the project we can define, if _port and _ip should be const
+    std::cout << "Creating server with IP: " << ip << " and port: " << port << std::endl;
     _port = port;
     _ip = ip;
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -19,6 +20,7 @@ Server::Server(int port, std::string ip) {
         std::cerr << "Error: Can not create socket" << std::endl;
         exit(EXIT_FAILURE);
     }
+    std::cout << "Socket created successfully!" << std::endl;
 }
 
 Server::~Server() {
@@ -76,12 +78,16 @@ void Server::start() {
         exit(EXIT_FAILURE);
     }
 
+    std::cout << "Binding!" << std::endl;
+
     // Bind socket to resolved address (IP and port)
     if (bind(_socketFd, res->ai_addr, res->ai_addrlen) < 0) {
         std::cerr << "Error: Cannot bind socket" << std::endl;
         freeaddrinfo(res);
         exit(EXIT_FAILURE);
     }
+
+    std::cout << "Binding successful!" << std::endl;
 
     freeaddrinfo(res);
 
@@ -91,11 +97,6 @@ void Server::start() {
         exit(EXIT_FAILURE);
     }
     std::cout << "Server started (for real!) and listening on port " << _port << std::endl;
-
-    // Enter main loop to accept incoming client connections
-    while (true) {
-        acceptClient();
-    }
 }
 
 void Server::stop() {
@@ -104,3 +105,5 @@ void Server::stop() {
         _socketFd = -1;
     }
 }
+
+int Server::getSocketFd() const { return _socketFd; }

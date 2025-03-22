@@ -13,7 +13,6 @@ class Server {
     Server();
     Server(const Server& other);
     Server& operator=(const Server& other);
-    void acceptClient();
 
    public:
     Server(int port, std::string ip);
@@ -21,6 +20,8 @@ class Server {
 
     void start();
     void stop();
+    int getSocketFd() const;
+    void acceptClient();
 };
 
 #endif  // SERVER_HPP
