@@ -44,6 +44,7 @@ void Server::acceptClient() {
 }
 
 void Server::start() {
+    // Check if the socket is already closed or invalid
     if (_socketFd == -1) {
         std::cerr << "Error: Server already stopped" << std::endl;
         exit(EXIT_FAILURE);
@@ -53,10 +54,12 @@ void Server::start() {
     int opt = 1;
     setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
+    // Convert _port (int) to string for getaddrinfo
     std::stringstream portStream;
     portStream << _port;
     std::string portStr = portStream.str();
 
+    // Set up hints for getaddrinfo to request IPv4 and TCP socket
     struct addrinfo hints;
     std::memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;        // IPv4
@@ -64,6 +67,7 @@ void Server::start() {
     hints.ai_flags = AI_PASSIVE;      // allows even IP 0.0.0.0
 
     struct addrinfo* res;
+    // getaddrinfo converts IP and port string into a usable sockaddr structure
     // c_str returns pointer to first element of the internal string buffer
     int status = getaddrinfo(_ip.c_str(), portStr.c_str(), &hints, &res);
     if (status != 0) {
@@ -72,6 +76,7 @@ void Server::start() {
         exit(EXIT_FAILURE);
     }
 
+    // Bind socket to resolved address (IP and port)
     if (bind(_socketFd, res->ai_addr, res->ai_addrlen) < 0) {
         std::cerr << "Error: Cannot bind socket" << std::endl;
         freeaddrinfo(res);
@@ -80,12 +85,14 @@ void Server::start() {
 
     freeaddrinfo(res);
 
+    // Start listening on the socket with a queue size of 10
     if (listen(_socketFd, 10) < 0) {
         std::cerr << "Error: listen failed" << std::endl;
         exit(EXIT_FAILURE);
     }
     std::cout << "Server started (for real!) and listening on port " << _port << std::endl;
 
+    // Enter main loop to accept incoming client connections
     while (true) {
         acceptClient();
     }
