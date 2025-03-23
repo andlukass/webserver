@@ -30,6 +30,10 @@ Server::~Server() {
     }
 }
 
+
+#include <fstream>  // Ensure this is included for ifstream
+
+
 void Server::acceptClient() {
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
@@ -42,8 +46,38 @@ void Server::acceptClient() {
 
     std::cout << "Client connected!" << std::endl;
 
+    // Read the HTML file
+    std::ifstream file("./src/webcontent/webcontent.html", std::ios::in | std::ios::binary);
+    if (!file) {
+        std::cerr << "Error: Could not open HTML file" << std::endl;
+        close(clientFd);
+        return;
+    }
+    std::string htmlContent((std::istreambuf_iterator<char>(file)),
+                             std::istreambuf_iterator<char>());
+
+    // Build HTTP response header
+    std::string response = "HTTP/1.1 200 OK\r\n";
+    response += "Content-Type: text/html\r\n";
+
+    // Convert size to string using stringstream (for C++98)
+    std::stringstream ss;
+    ss << htmlContent.size();
+    std::string contentLength = ss.str();
+    response += "Content-Length: " + contentLength + "\r\n";
+
+    response += "Connection: close\r\n\r\n"; // Close connection after response
+    response += htmlContent;
+
+    // Send the response to the client
+    send(clientFd, response.c_str(), response.size(), 0);
+
+    std::cout << "HTML content sent to client!" << std::endl;
+
+    // Close the client connection
     close(clientFd);
 }
+
 
 void Server::start() {
     // Check if the socket is already closed or invalid
