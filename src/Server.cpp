@@ -8,8 +8,11 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <fstream>  // Ensure this is included for ifstream (to open file)
 #include <sstream>
 
+// TINA: change this instead of getting port and ip just get whole config. change it also in .h -
+// have _config instead of _ip and _port
 Server::Server(int port, std::string ip) {
     // TODO: closer to the end of the project we can define, if _port and _ip should be const
     std::cout << "Creating server with IP: " << ip << " and port: " << port << std::endl;
@@ -30,10 +33,6 @@ Server::~Server() {
     }
 }
 
-
-#include <fstream>  // Ensure this is included for ifstream
-
-
 void Server::acceptClient() {
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
@@ -47,6 +46,7 @@ void Server::acceptClient() {
     std::cout << "Client connected!" << std::endl;
 
     // Read the HTML file
+    // TINA: use getter
     std::ifstream file("./src/webcontent/webcontent.html", std::ios::in | std::ios::binary);
     if (!file) {
         std::cerr << "Error: Could not open HTML file" << std::endl;
@@ -54,7 +54,7 @@ void Server::acceptClient() {
         return;
     }
     std::string htmlContent((std::istreambuf_iterator<char>(file)),
-                             std::istreambuf_iterator<char>());
+                            std::istreambuf_iterator<char>());
 
     // Build HTTP response header
     std::string response = "HTTP/1.1 200 OK\r\n";
@@ -66,7 +66,7 @@ void Server::acceptClient() {
     std::string contentLength = ss.str();
     response += "Content-Length: " + contentLength + "\r\n";
 
-    response += "Connection: close\r\n\r\n"; // Close connection after response
+    response += "Connection: close\r\n\r\n";  // Close connection after response
     response += htmlContent;
 
     // Send the response to the client
@@ -77,7 +77,6 @@ void Server::acceptClient() {
     // Close the client connection
     close(clientFd);
 }
-
 
 void Server::start() {
     // Check if the socket is already closed or invalid
