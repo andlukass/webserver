@@ -6,6 +6,8 @@
 #include "../includes/ServerConfig.hpp"
 #include "../includes/ServerManager.hpp"
 
+// TODO: check for leaks before submitting program
+
 enum { NONE, TEST };
 
 int handleFlags(int argc, char *argv[]) {
