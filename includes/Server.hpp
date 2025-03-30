@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
+#include "./Webcontent.hpp"
 
 class Server {
    private:

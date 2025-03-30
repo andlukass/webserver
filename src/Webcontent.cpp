@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/03/31 01:04:27 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/03/31 01:20:28 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ Webcontent & Webcontent::operator=(const Webcontent &rhs) {
 	return(*this);
 }
 
-void	Webcontent::contentManager(int clientFd,std::string root) {
+void	Webcontent::contentManager(int clientFd, std::string root) {
 	// Read the HTML file
 
 	//TODO:handle request

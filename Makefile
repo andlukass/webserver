@@ -17,7 +17,8 @@ SRCS =  ./src/main.cpp                         \
 		./src/directives/LocationDirective.cpp \
 		./src/directives/MultiDirective.cpp    \
 		./src/Server.cpp \
-		./src/ServerManager.cpp
+		./src/ServerManager.cpp \
+		./src/Webcontent.cpp
 
 NAME = webserver
 
