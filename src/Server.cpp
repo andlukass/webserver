@@ -13,11 +13,12 @@
 
 // TINA: change this instead of getting port and ip just get whole config. change it also in .h -
 // have _config instead of _ip and _port
-Server::Server(int port, std::string ip) {
+Server::Server(int port, std::string ip, std::string root) {
     // TODO: closer to the end of the project we can define, if _port and _ip should be const
     std::cout << "Creating server with IP: " << ip << " and port: " << port << std::endl;
     _port = port;
     _ip = ip;
+	_root = root;
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketFd < 0) {
         std::cerr << "Error: Can not create socket" << std::endl;

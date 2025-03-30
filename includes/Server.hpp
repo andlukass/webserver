@@ -8,6 +8,7 @@ class Server {
     int _socketFd;
     int _port;
     std::string _ip;
+	std::string _root;
 
     // just for the sake of orthodox form, not really needed
     Server();
@@ -15,7 +16,7 @@ class Server {
     Server& operator=(const Server& other);
 
    public:
-    Server(int port, std::string ip);
+    Server(int port, std::string ip, std::string root);
     ~Server();
 
     void start();
