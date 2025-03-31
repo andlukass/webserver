@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/03/31 01:44:18 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/03/31 02:05:34 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,17 +77,12 @@ std::string Webcontent::buildHttpResponse(std::string fileContent, std::string c
 
 std::string Webcontent::readFiles(const std::string& filePath) {
     std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
-    
-    if (!file) {
-        std::cerr << "Error: Could not open file: " << filePath << std::endl;
-        return "";  // Return empty string if file cannot be opened
-    }
-    
+
     // Read file content into a string
     std::string fileContent((std::istreambuf_iterator<char>(file)),
                             std::istreambuf_iterator<char>());
     
-    //file.close();  // Close the file after reading
+    file.close();  // Close the file after reading
     return fileContent;  // Return file content
 }
 
@@ -115,6 +110,12 @@ void	Webcontent::contentManager(int clientFd, std::string root) {
 
     // Read the requested file
     std::string filePath = root + fileName;
+	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
+	if (!file) {
+        std::cerr << "Error: Could not open file: " << filePath << std::endl;
+		filePath = "./src/webcontent/errorpage.html";
+	}
+
     std::string fileContent = readFiles(filePath);
 
 	    // std::ifstream file("./src/webcontent/webcontent.html", std::ios::in | std::ios::binary);
@@ -135,6 +136,5 @@ void	Webcontent::contentManager(int clientFd, std::string root) {
     std::cout << "Sent file: " << filePath << std::endl;
 
 	// std::cout << "HTML content sent to client!" << std::endl;
-
 
 }
