@@ -27,13 +27,16 @@ Ensure paths for custom error pages (e.g., error_page 404) are valid.
 ServerManager::ServerManager(const ServerConfig& config) {
     std::string ip;
     int port;
+	std::string root;
 
     for (size_t i = 0; i < config.getServersCount(); i++) {
         ip = config.getServer(i).getListen()->getIp();
         port = config.getServer(i).getListen()->getPortInt();
+		//TINA, TODO later I need the root here, I can only get the clientFd
+		root = config.getServer(i).getRoot()->getValue();
         // if this causes problems, we can switch to std::vector<Server*>
         try {
-            _servers.push_back(new Server(port, ip));
+            _servers.push_back(new Server(port, ip, root));
         } catch (std::exception& e) {
             throw Exception("Failed to initialize server " + ip + ":" +
                             config.getServer(i).getListen()->getPort());

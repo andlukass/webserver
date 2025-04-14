@@ -1,20 +1,13 @@
 #include "../includes/Server.hpp"
 
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <cstdlib>
-#include <cstring>
-#include <sstream>
-
-Server::Server(int port, std::string ip) {
+// TINA: change this instead of getting port and ip just get whole config. change it also in .h -
+// have _config instead of _ip and _port
+Server::Server(int port, std::string ip, std::string root) {
     // TODO: closer to the end of the project we can define, if _port and _ip should be const
     std::cout << "Creating server with IP: " << ip << " and port: " << port << std::endl;
     _port = port;
     _ip = ip;
+	_root = root;
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketFd < 0) {
         std::cerr << "Error: Can not create socket" << std::endl;
@@ -30,10 +23,6 @@ Server::~Server() {
     }
 }
 
-
-#include <fstream>  // Ensure this is included for ifstream
-
-
 void Server::acceptClient() {
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
@@ -46,38 +35,10 @@ void Server::acceptClient() {
 
     std::cout << "Client connected!" << std::endl;
 
-    // Read the HTML file
-    std::ifstream file("./src/webcontent/webcontent.html", std::ios::in | std::ios::binary);
-    if (!file) {
-        std::cerr << "Error: Could not open HTML file" << std::endl;
-        close(clientFd);
-        return;
-    }
-    std::string htmlContent((std::istreambuf_iterator<char>(file)),
-                             std::istreambuf_iterator<char>());
-
-    // Build HTTP response header
-    std::string response = "HTTP/1.1 200 OK\r\n";
-    response += "Content-Type: text/html\r\n";
-
-    // Convert size to string using stringstream (for C++98)
-    std::stringstream ss;
-    ss << htmlContent.size();
-    std::string contentLength = ss.str();
-    response += "Content-Length: " + contentLength + "\r\n";
-
-    response += "Connection: close\r\n\r\n"; // Close connection after response
-    response += htmlContent;
-
-    // Send the response to the client
-    send(clientFd, response.c_str(), response.size(), 0);
-
-    std::cout << "HTML content sent to client!" << std::endl;
-
+	Webcontent::contentManager(clientFd, _root);
     // Close the client connection
     close(clientFd);
 }
-
 
 void Server::start() {
     // Check if the socket is already closed or invalid
