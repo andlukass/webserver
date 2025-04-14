@@ -79,12 +79,15 @@
 11. **Optimize and refactor** for performance and maintainability.
 
 ## Task split:
-Lucas: ASAP: take the whole class from Lucas
+Lucas: ASAP: take the whole class from Parser
 for all the I/O operations between the client and the server (listen included), • poll() (or equivalent) must monitor both reading and writing simultaneously
+
 Tina: ASAP: put static methods into Yulia class
 • Your server must have default error pages if none are provide, • You must be able to serve a fully static website, Clients must be able to upload files.
 • You need at least the GET, POST, and DELETE methods, ◦ Enable or disable directory listing. autoindex
+
 Yulia:
+Lear CGI, implement some working part
 ◦ Execute CGI based on certain file extension (for example .php).
 
 
