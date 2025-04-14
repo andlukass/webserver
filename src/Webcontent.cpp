@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/03/31 02:05:34 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/14 16:53:40 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,19 @@ std::string Webcontent::parseRequestedFile(const std::string& request) {
 }
 
 std::string Webcontent::getMimeType(const std::string& fileName) {
-    if (fileName.find(".html") != std::string::npos) return "text/html";
-    if (fileName.find(".css") != std::string::npos) return "text/css";
-    if (fileName.find(".js") != std::string::npos) return "application/javascript";
-    if (fileName.find(".jpg") != std::string::npos) return "image/jpeg";
-    if (fileName.find(".png") != std::string::npos) return "image/png";
-    return "text/plain";  // Default to plain text
+    if (fileName.find(".html") != std::string::npos)//I'm not sure what we need here 
+		return ("text/html");
+	else if (fileName.find(".css") != std::string::npos)
+		return ("text/css");
+    else if (fileName.find(".js") != std::string::npos)
+		return ("application/javascript");
+    else if (fileName.find(".jpg") != std::string::npos)
+		return ("image/jpeg");
+    else if (fileName.find(".png") != std::string::npos)
+		return ("image/png");
+	else
+		return (".html");
+    //return "text/plain";  // default to plain text, I think it should work with this
 }
 
 std::string Webcontent::buildHttpResponse(std::string fileContent, std::string contentType) {
@@ -87,25 +94,22 @@ std::string Webcontent::readFiles(const std::string& filePath) {
 }
 
 void	Webcontent::contentManager(int clientFd, std::string root) {
-	// Read the HTML file
-
-	//TODO:handle request
-    // TINA: use getter
-
+	
+	//it might be better instead of memory alloc, it is not working with more than 1024 char though
 	char buffer[1024];
-    ssize_t bytesReceived = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
-    if (bytesReceived <= 0) {
-        close(clientFd);
+    ssize_t httpHeader = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
+    if (httpHeader <= 0) {
+        close(clientFd); //mabye it is unnecessary since Yulia already close the clienFD in ServerManager
         return;
     }
 
-    buffer[bytesReceived] = '\0';  // Null-terminate the received data //This part connects with domain request, try to type there something
+    buffer[httpHeader] = '\0';
     std::string request(buffer);
 
     // Extract requested file from the GET request
     std::string fileName = parseRequestedFile(request);
     if (fileName.empty()) {
-        fileName = "index.html";  // Default to index.html if no file is specified
+        fileName = "index.html";  // default to index.html if no file is specified
     }
 
     // Read the requested file
