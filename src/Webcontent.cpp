@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/14 17:34:38 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/14 18:50:15 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,9 @@ std::string Webcontent::buildHttpResponse(std::string fileContent, std::string c
 	return(response.str());
 }
 
-std::string Webcontent::readFiles(std::ifstream& file) {
+std::string Webcontent::readFiles(const std::string& filePath) {
+	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
+
     // read file content into a string, maybe I should use this at the http header file
     std::string fileContent((std::istreambuf_iterator<char>(file)),
                             std::istreambuf_iterator<char>());
@@ -122,7 +124,7 @@ void	Webcontent::contentManager(int clientFd, std::string root) {
 
 	//std::cout << "Sent file: " << filePath << std::endl; for some reason it always shows the error path, but it's working
 	
-    std::string fileContent = readFiles(file);
+    std::string fileContent = readFiles(filePath);
     std::string contentType = getMimeType(fileName);// we need these two to send the content
 
     // build and send response

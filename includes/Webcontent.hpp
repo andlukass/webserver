@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:52:05 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/14 17:11:56 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/14 18:50:37 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,5 @@ class Webcontent {
 		static	std::string	parseRequestedFile(const std::string& request);
 		static	std::string getMimeType(const std::string& fileName);
 		static std::string buildHttpResponse(std::string fileContent, std::string contentType);	
-		static std::string readFiles(std::ifstream& file);
+		static std::string readFiles(const std::string& filePath);
 };
