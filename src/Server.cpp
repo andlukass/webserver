@@ -1,6 +1,5 @@
 #include "../includes/Server.hpp"
 
-// TINA: change this instead of getting port and ip just get whole config. change it also in .h -
 // have _config instead of _ip and _port
 Server::Server(int port, std::string ip, std::string root) {
     // TODO: closer to the end of the project we can define, if _port and _ip should be const

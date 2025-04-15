@@ -1,1 +1,0 @@
-2. Should I do static functions for webcontent class?
