@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/17 01:36:10 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/17 01:48:34 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ std::string Server::getMimeType(const std::string& fileName) {
 std::string Server::buildHttpResponse(std::string fileContent, std::string contentType) {
 
 	std::stringstream response;
-    response << "HTTP/1.1 200 OK\r\n" // this is something connected to the error messages I think, but I do in a different way
+    response << "HTTP/1.1 200 OK\r\n" //
              << "Content-Type: " << contentType << "\r\n"
              << "Content-Length: " << fileContent.size() << "\r\n"
              << "Connection: close\r\n\r\n" // Carriage Return (\r), Line Feed (\n): together represent standard way of ending a line in HTTP headers
