@@ -6,29 +6,28 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/16 23:34:23 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/17 00:16:11 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Webcontent.hpp"
+#include "../includes/Server.hpp"
 
-Webcontent::Webcontent() {
-}
+// Webcontent::Webcontent() {
+// }
 
-Webcontent::~Webcontent() {
-}
+// Webcontent::~Webcontent() {
+// }
 
-Webcontent::Webcontent(const Webcontent &copy) {
-	(void)copy;
-}
+// Webcontent::Webcontent(const Webcontent &copy) {
+// 	(void)copy;
+// }
 
-Webcontent & Webcontent::operator=(const Webcontent &rhs) {
-	(void)rhs;
-	return(*this);
-}
+// Webcontent & Webcontent::operator=(const Webcontent &rhs) {
+// 	(void)rhs;
+// 	return(*this);
+// }
 
-
-std::string Webcontent::parseRequestedFile(const std::string& request) {
+std::string Server::parseRequestedFile(const std::string& request) {
 	
 	std::cout << "THIS IS THE REQUEST " << request << std::endl;
     size_t start = request.find("GET ") + 4;
@@ -45,7 +44,7 @@ std::string Webcontent::parseRequestedFile(const std::string& request) {
     return filePath.substr(1);  // remove the leading "/" so not from the 0
 }
 
-std::string Webcontent::getMimeType(const std::string& fileName) {
+std::string Server::getMimeType(const std::string& fileName) {
     if (fileName.find(".html") != std::string::npos)//I'm not sure what we need here 
 		return ("text/html");
 	else if (fileName.find(".css") != std::string::npos)
@@ -61,7 +60,7 @@ std::string Webcontent::getMimeType(const std::string& fileName) {
     //return "text/plain";  // default to plain text, I think it should work with this
 }
 
-std::string Webcontent::buildHttpResponse(std::string fileContent, std::string contentType) {
+std::string Server::buildHttpResponse(std::string fileContent, std::string contentType) {
 
 	std::stringstream response;
     response << "HTTP/1.1 200 OK\r\n" // this is something connected to the error messages I think, but I do in a different way
@@ -73,7 +72,7 @@ std::string Webcontent::buildHttpResponse(std::string fileContent, std::string c
 	return(response.str());
 }
 
-std::string Webcontent::readFiles(const std::string& filePath) {
+std::string Server::readFiles(const std::string& filePath) {
 	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);// it is needed because if it's error it has to read again
 
     // read file content into a string, maybe I should use this at the http header file
@@ -83,7 +82,7 @@ std::string Webcontent::readFiles(const std::string& filePath) {
     return (fileContent);  // Return file content
 }
 
-void	Webcontent::contentManager(int clientFd, std::string root) {
+void	Server::contentManager(int clientFd) {
 	
 	//it might be better instead of memory alloc, it is not working with more than 1024 char though
 	char buffer[1024];
@@ -104,7 +103,7 @@ void	Webcontent::contentManager(int clientFd, std::string root) {
     }
 
     // Read the requested file
-    std::string filePath = root + fileName;
+    std::string filePath = _config.getRoot()->getValue() + fileName;
 	//c_str ->C type contact char*, std::ios::in->default read input mode, std::ios::binar->
 	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
 	if (!file) {

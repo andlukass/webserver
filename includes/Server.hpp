@@ -32,6 +32,12 @@ class Server {
     void stop();
     int getSocketFd() const;
     void acceptClient();
+
+	void		contentManager(int clientFd);
+	std::string	parseRequestedFile(const std::string& request);
+	std::string	getMimeType(const std::string& fileName);
+	std::string	buildHttpResponse(std::string fileContent, std::string contentType);	
+	std::string	readFiles(const std::string& filePath);
 };
 
 #endif  // SERVER_HPP

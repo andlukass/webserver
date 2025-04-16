@@ -31,7 +31,7 @@ void Server::acceptClient() {
 
     std::cout << "Client connected!" << std::endl;
 
-	//Webcontent::contentManager(clientFd, _root);
+	contentManager(clientFd);
     // Close the client connection
     close(clientFd);
 }
