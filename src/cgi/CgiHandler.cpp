@@ -28,6 +28,7 @@ std::string CgiHandler::execute() {
 
     // TODO: remember to add validations for not existing file
     // TODO: pass env variables
+    // TODO: check for fd leaks before delivering
     if (pid == 0) {
         // CHILD
         close(fd[0]);                // close read end
