@@ -12,13 +12,12 @@
 #include <cstring>
 #include <sstream>
 #include "./Webcontent.hpp"
+#include "./directives/ServerDirective.hpp"
 
 class Server {
    private:
     int _socketFd;
-    int _port;
-    std::string _ip;
-	std::string _root;
+    const ServerDirective& _config;
 
     // just for the sake of orthodox form, not really needed
     Server();
@@ -26,7 +25,7 @@ class Server {
     Server& operator=(const Server& other);
 
    public:
-    Server(int port, std::string ip, std::string root);
+   Server(const ServerDirective& config);
     ~Server();
 
     void start();

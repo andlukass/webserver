@@ -6,6 +6,9 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <cstdlib>
+#include <stdio.h>
+
 
 CgiHandler::CgiHandler(const std::string& scriptPath) : _scriptPath(scriptPath) {}
 

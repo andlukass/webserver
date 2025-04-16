@@ -1,12 +1,9 @@
 #include "../includes/Server.hpp"
 
-// have _config instead of _ip and _port
-Server::Server(int port, std::string ip, std::string root) {
+Server::Server(const ServerDirective& config) : _config(config){
     // TODO: closer to the end of the project we can define, if _port and _ip should be const
-    std::cout << "Creating server with IP: " << ip << " and port: " << port << std::endl;
-    _port = port;
-    _ip = ip;
-	_root = root;
+    std::cout << "Creating server with IP: " << config.getListen()->getIp() << " and port: " << config.getListen()->getPort() << std::endl;
+
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketFd < 0) {
         std::cerr << "Error: Can not create socket" << std::endl;
@@ -34,7 +31,7 @@ void Server::acceptClient() {
 
     std::cout << "Client connected!" << std::endl;
 
-	Webcontent::contentManager(clientFd, _root);
+	//Webcontent::contentManager(clientFd, _root);
     // Close the client connection
     close(clientFd);
 }
@@ -52,7 +49,7 @@ void Server::start() {
 
     // Convert _port (int) to string for getaddrinfo
     std::stringstream portStream;
-    portStream << _port;
+    portStream << _config.getListen()->getPort();
     std::string portStr = portStream.str();
 
     // Set up hints for getaddrinfo to request IPv4 and TCP socket
@@ -65,7 +62,7 @@ void Server::start() {
     struct addrinfo* res;
     // getaddrinfo converts IP and port string into a usable sockaddr structure
     // c_str returns pointer to first element of the internal string buffer
-    int status = getaddrinfo(_ip.c_str(), portStr.c_str(), &hints, &res);
+    int status = getaddrinfo(_config.getListen()->getIp().c_str(), portStr.c_str(), &hints, &res);
     if (status != 0) {
         // gai_strerror gets error message from getaddrinfo
         std::cerr << "Error: getaddrinfo failed: " << gai_strerror(status) << std::endl;
@@ -90,7 +87,7 @@ void Server::start() {
         std::cerr << "Error: listen failed" << std::endl;
         exit(EXIT_FAILURE);
     }
-    std::cout << "Server started (for real!) and listening on port " << _port << std::endl;
+    std::cout << "Server started (for real!) and listening on port " << _config.getListen()->getPort() << std::endl;
 }
 
 void Server::stop() {
@@ -100,4 +97,6 @@ void Server::stop() {
     }
 }
 
-int Server::getSocketFd() const { return _socketFd; }
+int Server::getSocketFd() const {
+	 return _socketFd;
+}

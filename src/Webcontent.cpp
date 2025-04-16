@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/14 18:50:15 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/16 23:34:23 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ Webcontent & Webcontent::operator=(const Webcontent &rhs) {
 
 
 std::string Webcontent::parseRequestedFile(const std::string& request) {
+	
+	std::cout << "THIS IS THE REQUEST " << request << std::endl;
     size_t start = request.find("GET ") + 4;
     size_t end = request.find(" ", start);
     if (start == std::string::npos || end == std::string::npos) {
@@ -60,34 +62,22 @@ std::string Webcontent::getMimeType(const std::string& fileName) {
 }
 
 std::string Webcontent::buildHttpResponse(std::string fileContent, std::string contentType) {
-	// Build HTTP response header
-	// std::string response = "HTTP/1.1 200 OK\r\n";
-	// response += "Content-Type: text/html\r\n";
-
-	// // Convert size to string using stringstream (for C++98)
-	// std::stringstream ss;
-	// ss << fileContent.size();
-	// std::string contentLength = ss.str();
-	// response += "Content-Length: " + contentLength + "\r\n";
-
-	// response += "Connection: close\r\n\r\n";  // Close connection after response
-	// response += fileContent;
 
 	std::stringstream response;
     response << "HTTP/1.1 200 OK\r\n" // this is something connected to the error messages I think, but I do in a different way
              << "Content-Type: " << contentType << "\r\n"
              << "Content-Length: " << fileContent.size() << "\r\n"
-             << "Connection: close\r\n\r\n"
+             << "Connection: close\r\n\r\n" // Carriage Return (\r), Line Feed (\n): together represent standard way of ending a line in HTTP headers
              << fileContent;
+
 	return(response.str());
 }
 
 std::string Webcontent::readFiles(const std::string& filePath) {
-	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
+	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);// it is needed because if it's error it has to read again
 
     // read file content into a string, maybe I should use this at the http header file
-    std::string fileContent((std::istreambuf_iterator<char>(file)),
-                            std::istreambuf_iterator<char>());
+    std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     
     file.close();  // close the file after reading
     return (fileContent);  // Return file content
@@ -129,8 +119,8 @@ void	Webcontent::contentManager(int clientFd, std::string root) {
 
     // build and send response
     std::string response = buildHttpResponse(fileContent, contentType);
-	std::cout << "This is the HTTP response over the network to the client (here the browser) through the open socket connection: \n" <<
-	response << std::endl;
+	//std::cout << "This is the HTTP response over the network to the client (here the browser) through the open socket connection: \n" <<
+	//response << std::endl;
     send(clientFd, response.c_str(), response.size(), 0);
 
 	// std::cout << "HTML content sent to client!" << std::endl;
