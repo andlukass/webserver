@@ -6,11 +6,13 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/17 00:16:11 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/17 01:36:10 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <algorithm>
+
 
 // Webcontent::Webcontent() {
 // }
@@ -27,21 +29,24 @@
 // 	return(*this);
 // }
 
-std::string Server::parseRequestedFile(const std::string& request) {
+std::pair<std::string, std::string> Server::parseRequestedFile(const std::string& request) {
 	
-	std::cout << "THIS IS THE REQUEST " << request << std::endl;
-    size_t start = request.find("GET ") + 4;
-    size_t end = request.find(" ", start);
-    if (start == std::string::npos || end == std::string::npos) {
-        return "";
-    }
+    size_t methodEnd = request.find(' ');
+	if(methodEnd == std::string::npos)
+		return (std::pair<std::string, std::string>("", ""));
+	
+	std::string method = request.substr(0, methodEnd);
+	size_t pathStart = methodEnd + 1;
+    size_t pathEnd = request.find(' ', pathStart);
+    if (pathEnd == std::string::npos)
+        return (std::pair<std::string, std::string>(method, ""));
 
-    std::string filePath = request.substr(start, end - start);
+    std::string filePath = request.substr(pathStart, pathEnd - pathStart);
     if (filePath == "/" || filePath.empty()) {
-        return "index.html";  // default file
+        return (std::pair<std::string, std::string>(method, "index.html"));  // default file
     }
 
-    return filePath.substr(1);  // remove the leading "/" so not from the 0
+    return (std::pair<std::string, std::string>(method, filePath.substr(1)));  // remove the leading "/" so not from the 0
 }
 
 std::string Server::getMimeType(const std::string& fileName) {
@@ -95,11 +100,24 @@ void	Server::contentManager(int clientFd) {
 
     buffer[httpHeader] = '\0';
     std::string request(buffer);
-	std::cout << "THIS IS THE REQUEST" << request << std::endl;
+	std::cout << "THIS IS THE REQUEST " << request << std::endl;
     // Extract requested file from the GET request
-    std::string fileName = parseRequestedFile(request);
-    if (fileName.empty()) {
-        fileName = "index.html";  // default to index.html if no file is specified
+    std::pair<std::string, std::string> parsedRequest = parseRequestedFile(request);
+
+	std::string method = parsedRequest.first;
+	std::string fileName = parsedRequest.second;
+	
+	const std::vector<std::string>& allowedMethods = _config.getLocation(0).getAllowMethods()->getValue();
+	if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end()) {
+		std::cerr << "Method not allowed: " << method << std::endl;
+		std::string errorResponse = "HTTP/1.1 405 Method Not Allowed\r\nConnection: close\r\n\r\n";
+		send(clientFd, errorResponse.c_str(), errorResponse.size(), 0);
+		return;
+	}
+
+		
+	if (fileName.empty()) {
+        fileName = "index.html";  // default to index.html if no file is specified, but this is anyway bring us there
     }
 
     // Read the requested file
