@@ -56,6 +56,7 @@ void Server::contentManager(int clientFd) {
     // it might be better instead of memory alloc, it is not working with more than 1024 char though
     char buffer[1024];
     ssize_t receivedData = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
+    // std::cout << receivedData << std::endl;
     if (receivedData <= 0) {
         close(clientFd);  // mabye it is unnecessary since Yulia already close the clienFD in
                           // ServerManager. YULIA: I took out closing from ServerManager
