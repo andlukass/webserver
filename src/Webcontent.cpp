@@ -6,7 +6,7 @@
 /*   By: yioffe <yioffe@student.42lisboa.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/17 13:58:20 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/17 16:14:52 by yioffe           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,14 +110,14 @@ std::string Server::readFiles(const std::string& filePath) {
     return (fileContent);  // Return file content
 }
 
-void	Server::contentManager(int clientFd) {
-	
-	//it might be better instead of memory alloc, it is not working with more than 1024 char though
-	char buffer[1024];
+void Server::contentManager(int clientFd) {
+    // it might be better instead of memory alloc, it is not working with more than 1024 char though
+    char buffer[1024];
     ssize_t receivedData = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
-	std::cout << receivedData << std::endl;
+    std::cout << receivedData << std::endl;
     if (receivedData <= 0) {
-        close(clientFd); //mabye it is unnecessary since Yulia already close the clienFD in ServerManager
+        close(clientFd);  // mabye it is unnecessary since Yulia already close the clienFD in
+                          // ServerManager
         return;
     }
 
@@ -150,6 +150,7 @@ void	Server::contentManager(int clientFd) {
     std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
     bool error = false;
     if (!file) {
+        // TODO [CGI] - now it returns error, because we can't open HTML with that. we can fix later
         std::cerr << "Error: Could not open file: " << filePath << std::endl;
         filePath = "./src/webcontent/errorpage";  // it puts the error .html I'm not sure if it's
                                                   // the way to go, maybe there are different type
