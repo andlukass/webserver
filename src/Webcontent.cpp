@@ -6,7 +6,7 @@
 /*   By: yioffe <yioffe@student.42lisboa.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/17 16:14:52 by yioffe           ###   ########.fr       */
+/*   Updated: 2025/04/17 16:58:44 by yioffe           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void Server::contentManager(int clientFd) {
     // it might be better instead of memory alloc, it is not working with more than 1024 char though
     char buffer[1024];
     ssize_t receivedData = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
-    std::cout << receivedData << std::endl;
+    // std::cout << receivedData << std::endl;
     if (receivedData <= 0) {
         close(clientFd);  // mabye it is unnecessary since Yulia already close the clienFD in
                           // ServerManager
