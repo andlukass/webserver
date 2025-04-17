@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/17 02:31:21 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/17 13:58:20 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,14 +96,14 @@ void	Server::contentManager(int clientFd) {
 	
 	//it might be better instead of memory alloc, it is not working with more than 1024 char though
 	char buffer[1024];
-    ssize_t httpHeader = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
-	std::cout << httpHeader << std::endl;
-    if (httpHeader <= 0) {
+    ssize_t receivedData = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
+	std::cout << receivedData << std::endl;
+    if (receivedData <= 0) {
         close(clientFd); //mabye it is unnecessary since Yulia already close the clienFD in ServerManager
         return;
     }
 
-    buffer[httpHeader] = '\0';
+    buffer[receivedData] = '\0';
     std::string request(buffer);
 	std::cout << "THIS IS THE REQUEST " << request << std::endl;
     // Extract requested file from the GET request
