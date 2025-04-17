@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/17 01:48:34 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/17 02:27:52 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,15 +65,20 @@ std::string Server::getMimeType(const std::string& fileName) {
     //return "text/plain";  // default to plain text, I think it should work with this
 }
 
-std::string Server::buildHttpResponse(std::string fileContent, std::string contentType) {
+std::string Server::buildHttpResponse(std::string fileContent, std::string contentType, bool error) {
 
 	std::stringstream response;
-    response << "HTTP/1.1 200 OK\r\n" //
-             << "Content-Type: " << contentType << "\r\n"
-             << "Content-Length: " << fileContent.size() << "\r\n"
-             << "Connection: close\r\n\r\n" // Carriage Return (\r), Line Feed (\n): together represent standard way of ending a line in HTTP headers
-             << fileContent;
 
+	if(error == true)
+		response << "HTTP/1.1 404 Not Found\r\n";
+	else
+    	response << "HTTP/1.1 200 OK\r\n";
+
+	response << "Content-Type: " << contentType << "\r\n"
+				<< "Content-Length: " << fileContent.size() << "\r\n"
+				<< "Connection: close\r\n\r\n" // Carriage Return (\r), Line Feed (\n): together represent standard way of ending a line in HTTP headers
+				<< fileContent;
+	
 	return(response.str());
 }
 
@@ -124,9 +129,12 @@ void	Server::contentManager(int clientFd) {
     std::string filePath = _config.getRoot()->getValue() + fileName;
 	//c_str ->C type contact char*, std::ios::in->default read input mode, std::ios::binar->
 	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
+
+	bool error = false;
 	if (!file) {
         std::cerr << "Error: Could not open file: " << filePath << std::endl;
-		filePath = "./src/webcontent/errorpage.html"; // it puts the error .html I'm not sure if it's the way to go, maybe there are different type of errors here to send
+		filePath = "./src/webcontent/errorpage"; // it puts the error .html I'm not sure if it's the way to go, maybe there are different type of errors here to 
+        error = true;
 	}
 
 	//std::cout << "Sent file: " << filePath << std::endl; for some reason it always shows the error path, but it's working
@@ -135,7 +143,7 @@ void	Server::contentManager(int clientFd) {
     std::string contentType = getMimeType(fileName);// we need these two to send the content
 
     // build and send response
-    std::string response = buildHttpResponse(fileContent, contentType);
+    std::string response = buildHttpResponse(fileContent, contentType, error);
 	//std::cout << "This is the HTTP response over the network to the client (here the browser) through the open socket connection: \n" <<
 	//response << std::endl;
     send(clientFd, response.c_str(), response.size(), 0);

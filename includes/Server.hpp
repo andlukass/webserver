@@ -36,7 +36,7 @@ class Server {
 	void		contentManager(int clientFd);
 	std::pair<std::string, std::string>	parseRequestedFile(const std::string& request);
 	std::string	getMimeType(const std::string& fileName);
-	std::string	buildHttpResponse(std::string fileContent, std::string contentType);	
+	std::string	buildHttpResponse(std::string fileContent, std::string contentType, bool error);	
 	std::string	readFiles(const std::string& filePath);
 };
 
