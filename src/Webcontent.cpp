@@ -6,7 +6,7 @@
 /*   By: ngtina1999 <ngtina1999@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 00:51:23 by ngtina1999        #+#    #+#             */
-/*   Updated: 2025/04/17 02:27:52 by ngtina1999       ###   ########.fr       */
+/*   Updated: 2025/04/17 02:31:21 by ngtina1999       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,6 @@ void	Server::contentManager(int clientFd) {
     std::string filePath = _config.getRoot()->getValue() + fileName;
 	//c_str ->C type contact char*, std::ios::in->default read input mode, std::ios::binar->
 	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
-
 	bool error = false;
 	if (!file) {
         std::cerr << "Error: Could not open file: " << filePath << std::endl;

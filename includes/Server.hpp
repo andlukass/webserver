@@ -38,6 +38,7 @@ class Server {
 	std::string	getMimeType(const std::string& fileName);
 	std::string	buildHttpResponse(std::string fileContent, std::string contentType, bool error);	
 	std::string	readFiles(const std::string& filePath);
+	//void	Server::handlePOSTRequest();TODO
 };
 
 #endif  // SERVER_HPP
