@@ -19,7 +19,8 @@ SRCS =  ./src/main.cpp                         \
 		./src/Server.cpp \
 		./src/ServerManager.cpp \
 		./src/Webcontent.cpp \
-		./src/cgi/CgiHandler.cpp
+		./src/cgi/CgiHandler.cpp \
+		./src/HttpRequest.cpp
 
 NAME = webserver
 
