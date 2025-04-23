@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>404 - Page Not Found</title>
+  <title>Our Team</title>
   <style>
     * {
       margin: 0;
@@ -49,33 +49,47 @@
     }
 
     main {
-      padding: 10rem;
+      padding: 5rem 2rem;
       text-align: center;
     }
 
     h1 {
-      font-size: 4rem;
+      font-size: 3rem;
       margin-bottom: 1rem;
     }
 
-    p {
+    p.description {
       font-size: 1.2rem;
-      margin-bottom: 2rem;
+      margin-bottom: 4rem;
     }
 
-    a.button {
-      display: inline-block;
-      padding: 0.8rem 1.5rem;
-      background-color: #000000;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
+    .team-container {
+      display: flex;
+      justify-content: center;
+      gap: 10rem;
+      flex-wrap: wrap;
     }
 
-    a.button:hover {
-      background-color: #333333;
+    .team-member {
+      max-width: 200px;
+      text-align: center;
+    }
+
+    .team-member img {
+      width: 100%;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      background-color: #ccc; /* Placeholder background */
+    }
+
+    .team-member h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .team-member p {
+      font-size: 1rem;
+      color: #666;
     }
   </style>
 </head>
@@ -91,9 +105,26 @@
   </nav>
 
   <main>
-    <h1>404</h1>
-    <p>Oops! The page you're looking for doesn't exist.</p>
-    <a href="/" class="button">Go Back Home</a>
+    <h1>Meet the Team</h1>
+    <p class="description">The people behind this C++ webserver.</p>
+
+    <div class="team-container">
+      <div class="team-member">
+        <img src="/images/Lucas.jpg" alt="Team member photo" style="width: auto; height: 250px;" />
+        <h2>Lucas</h2>
+        <p>Parser Master</p>
+      </div>
+      <div class="team-member">
+        <img src="/images/Yulia.jpg" alt="Team member photo" style="width: auto; height: 250px;" />
+        <h2>Yulia</h2>
+        <p>CGI Expert</p>
+      </div>
+      <div class="team-member">
+        <img src="/images/Tina.jpg" alt="Team member photo" style="width: auto; height: 250px;" />
+        <h2>Tina</h2>
+        <p>Webcontent Specialist</p>
+      </div>
+    </div>
   </main>
 </body>
 </html>

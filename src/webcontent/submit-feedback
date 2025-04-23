@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>404 - Page Not Found</title>
+  <title>Feedback Submitted</title>
   <style>
     * {
       margin: 0;
@@ -54,7 +54,7 @@
     }
 
     h1 {
-      font-size: 4rem;
+      font-size: 3rem;
       margin-bottom: 1rem;
     }
 
@@ -91,9 +91,9 @@
   </nav>
 
   <main>
-    <h1>404</h1>
-    <p>Oops! The page you're looking for doesn't exist.</p>
-    <a href="/" class="button">Go Back Home</a>
+    <h1>Thank You!</h1>
+    <p>Your feedback has been successfully submitted.</p>
+    <a href="/feedback" class="button">Return to Feedback</a>
   </main>
 </body>
 </html>
