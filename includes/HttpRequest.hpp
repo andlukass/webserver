@@ -2,13 +2,14 @@
 #include <string>
 
 enum HttpMethod { METHOD_UNKNOWN, METHOD_GET, METHOD_POST, METHOD_DELETE };
-enum CgiType { CGI_NONE, PYTHON };
+enum CgiType { CGI_NONE, CGI_PYTHON };
 enum HttpVersion { HTTP_VERSION_UNKNOWN, HTTP_1_0, HTTP_1_1 };
 
 class HttpRequest {
    private:
     HttpMethod _method;
     std::string _rawUri;
+    std::string _cleanUri;
     std::string _path;
     std::map<std::string, std::string> _queryParams;
     HttpVersion _httpVersion;
@@ -24,7 +25,7 @@ class HttpRequest {
     // contentLength;
 
     bool parseRequestLine();
-    void parseHeaders();
+    void parseHeaders(const std::string& headersBlock);
     void parseBody();
     void detectCgiAndMime();
 
