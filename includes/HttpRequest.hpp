@@ -23,6 +23,11 @@ class HttpRequest {
     // contentType;
     // contentLength;
 
+    bool parseRequestLine();
+    void parseHeaders();
+    void parseBody();
+    void detectCgiAndMime();
+
    public:
     HttpRequest(const std::string& uri);  // we only allow requests with Uri
     ~HttpRequest();
@@ -43,6 +48,6 @@ class HttpRequest {
     bool getIsCgi() const;
     bool getIsValid() const;
 
-    // setters
+    // setters (not sure if we need)
     void setIsValid(bool value);
 };
