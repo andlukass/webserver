@@ -1,8 +1,9 @@
 #include "../includes/Server.hpp"
 
-Server::Server(const ServerDirective& config) : _config(config){
+Server::Server(const ServerDirective& config) : _config(config) {
     // TODO: closer to the end of the project we can define, if _port and _ip should be const
-    std::cout << "Creating server with IP: " << config.getListen()->getIp() << " and port: " << config.getListen()->getPort() << std::endl;
+    std::cout << "Creating server with IP: " << config.getListen()->getIp()
+              << " and port: " << config.getListen()->getPort() << std::endl;
 
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketFd < 0) {
@@ -31,9 +32,9 @@ void Server::acceptClient() {
 
     std::cout << "Client connected!" << std::endl;
 
-	contentManager(clientFd);
+    contentManager(clientFd);
     // Close the client connection
-    close(clientFd);
+    // close(clientFd);
 }
 
 void Server::start() {
@@ -87,7 +88,8 @@ void Server::start() {
         std::cerr << "Error: listen failed" << std::endl;
         exit(EXIT_FAILURE);
     }
-    std::cout << "Server started (for real!) and listening on port " << _config.getListen()->getPort() << std::endl;
+    std::cout << "Server started (for real!) and listening on port "
+              << _config.getListen()->getPort() << std::endl;
 }
 
 void Server::stop() {
@@ -97,6 +99,4 @@ void Server::stop() {
     }
 }
 
-int Server::getSocketFd() const {
-	 return _socketFd;
-}
+int Server::getSocketFd() const { return _socketFd; }
