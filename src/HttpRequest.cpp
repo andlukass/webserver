@@ -97,6 +97,8 @@ void HttpRequest::parseBody() {
     }
 }
 void HttpRequest::detectCgiAndMime() {
+    if (_cleanUri.empty() || _cleanUri == "/") _cleanUri = "/index.html";
+
     size_t dotPos = _cleanUri.rfind('.');
     if (dotPos != std::string::npos) {
         std::string ext = _cleanUri.substr(dotPos);
@@ -120,12 +122,12 @@ void HttpRequest::detectCgiAndMime() {
         else if (ext == ".png")
             _mimeType = "image/png";
         else
-            _mimeType = "text/plain";
+            _mimeType = "text/html";
 
     } else {
         _isCgi = false;
         _cgiType = CGI_NONE;
-        _mimeType = "text/plain";
+        _mimeType = "text/html";
     }
     return;
 }
@@ -150,3 +152,16 @@ void HttpRequest::initFromRaw() {
     parseBody();
     detectCgiAndMime();
 }
+
+HttpMethod HttpRequest::getMethod() const { return _method; };
+std::string HttpRequest::getRawUri() const { return _rawUri; };
+std::string HttpRequest::getCleanUri() const { return _cleanUri; };
+// std::string HttpRequest::getPath() const { return _path; };
+std::map<std::string, std::string> HttpRequest::getQueryParams() const { return _queryParams; };
+HttpVersion HttpRequest::getHttpVersion() const { return _httpVersion; };
+std::map<std::string, std::string> HttpRequest::getHeaders() const { return _headers; };
+std::string HttpRequest::getBody() const { return _body; };
+std::string HttpRequest::getMimeType() const { return _mimeType; };
+CgiType HttpRequest::getCgiType() const { return _cgiType; };
+bool HttpRequest::getIsCgi() const { return _isCgi; };
+bool HttpRequest::getIsValid() const { return _isValid; };

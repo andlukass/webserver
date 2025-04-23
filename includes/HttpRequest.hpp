@@ -10,7 +10,7 @@ class HttpRequest {
     HttpMethod _method;
     std::string _rawUri;
     std::string _cleanUri;
-    std::string _path;
+    // std::string _path;
     std::map<std::string, std::string> _queryParams;
     HttpVersion _httpVersion;
     std::map<std::string, std::string> _headers;
@@ -39,6 +39,7 @@ class HttpRequest {
     // getters
     HttpMethod getMethod() const;
     std::string getRawUri() const;
+    std::string getCleanUri() const;
     std::string getPath() const;
     std::map<std::string, std::string> getQueryParams() const;
     HttpVersion getHttpVersion() const;
