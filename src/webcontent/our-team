@@ -110,14 +110,14 @@
 
     <div class="team-container">
       <div class="team-member">
-        <img src="/images/Lucas.jpg" alt="Team member photo" style="width: auto; height: 250px;" />
-        <h2>Lucas</h2>
-        <p>Parser Master</p>
-      </div>
-      <div class="team-member">
         <img src="/images/Yulia.jpg" alt="Team member photo" style="width: auto; height: 250px;" />
         <h2>Yulia</h2>
         <p>CGI Expert</p>
+      </div>
+	  <div class="team-member">
+        <img src="/images/Lucas.jpg" alt="Team member photo" style="width: auto; height: 250px;" />
+        <h2>Lucas</h2>
+        <p>Parser Master</p>
       </div>
       <div class="team-member">
         <img src="/images/Tina.jpg" alt="Team member photo" style="width: auto; height: 250px;" />
