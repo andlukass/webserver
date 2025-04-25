@@ -1,7 +1,15 @@
-You can test our the website response, if you open another terminal and type: curl -i http://localhost:8002/
+Tina: You can test our the website response, if you open another terminal and type: curl -i http://localhost:8002/
 you should see this if it's okay, or 404,etc... if it's not okay OR you can check browser->devTools->Network, you reload there the page and it'll show you the status number
 
 HTTP/1.1 200 OK
 Content-Type: text/html
 Content-Length: 1288
 Connection: close
+
+Yulia:
+0. What parameters are mandatory in config?
+1. (addition to previous) now if there is no location we put default. maybe we can just fail it? 
+2. we need to check that no duplicated ip:port - on which side should we do it?
+3. ClientMaxBodySize - I think we need to convert it to long or size_t or something? based on letter that we get (m, g, k, b)
+4. I think bytes should be allowed in ClientMaxBodySize
+5. 
