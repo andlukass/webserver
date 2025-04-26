@@ -50,25 +50,34 @@
 
     main {
       padding: 5rem 2rem;
-      max-width: 600px;
+      max-width: 1200px;
       margin: 0 auto;
-      text-align: center;
+      display: flex;
+      gap: 4rem;
+      align-items: flex-start;
     }
 
-    h1 {
-      font-size: 3rem;
+    .form-section, .feedback-section {
+      flex: 1;
+    }
+
+    .form-section h1 {
+      font-size: 2.5rem;
       margin-bottom: 1rem;
+    }
+
+    .form-section p {
+      margin-bottom: 2rem;
     }
 
     form {
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      margin-top: 2rem;
     }
 
     input, textarea {
-	font-family: inherit;
+      font-family: inherit;
       padding: 0.8rem;
       font-size: 1rem;
       border: 1px solid #ccc;
@@ -76,7 +85,7 @@
     }
 
     button {
-	  font-family: inherit;
+      font-family: inherit;
       padding: 0.8rem 1.5rem;
       background-color: #000000;
       color: white;
@@ -92,7 +101,7 @@
     }
 
     .delete-section {
-      margin-top: 3rem;
+      margin-top: 2rem;
     }
 
     .delete-section form {
@@ -100,11 +109,10 @@
     }
 
     .delete-section p {
-	font-family: inherit;
       margin-bottom: 1rem;
     }
 
-	.delete-section button {
+    .delete-section button {
       background-color: #5e2b97;
     }
 
@@ -112,6 +120,31 @@
       background-color: #4a2178;
     }
 
+    .feedback-section {
+      background-color: #f9f9f9;
+      padding: 2rem;
+      border-radius: 10px;
+    }
+
+    .feedback-item {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .feedback-item:last-child {
+      border-bottom: none;
+    }
+
+    .feedback-item h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .feedback-item p {
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -126,23 +159,39 @@
   </nav>
 
   <main>
-    <h1>Leave Your Feedback</h1>
-    <p>We'd love to hear your thoughts on our 42Webserv project! 🖤</p>
+    <!-- Left side: Feedback form -->
+    <div class="form-section">
+      <h1>Leave Your Feedback</h1>
+      <p>We'd love to hear your thoughts on our 42Webserv project! 🖤</p>
 
-    <!-- Feedback POST Form -->
-    <form method="POST" action="/submit-feedback">
-      <input type="text" name="name" placeholder="Your Name" required />
-      <textarea name="message" rows="5" placeholder="Your feedback..." required></textarea>
-      <button type="submit">Send Feedback</button>
-    </form>
-
-    <!-- Simulated DELETE Section -->
-    <div class="delete-section">
-      <p>Want to delete your feedback?</p>
-      <form method="POST" action="/delete-feedback" onsubmit="return confirm('Are you sure you want to delete your feedback?');">
-        <input type="hidden" name="_method" value="DELETE" />
-        <button type="submit">Delete Feedback</button>
+      <!-- Feedback POST Form -->
+      <form method="POST" action="/submit-feedback">
+        <input type="text" name="name" placeholder="Your Name" required />
+        <textarea name="message" rows="5" placeholder="Your feedback..." required></textarea>
+        <button type="submit">Send Feedback</button>
       </form>
+
+      <!-- Simulated DELETE Section -->
+      <div class="delete-section">
+        <p>Want to delete your feedback?</p>
+        <form method="POST" action="/delete-feedback" onsubmit="return confirm('Are you sure you want to delete your feedback?');">
+          <input type="hidden" name="_method" value="DELETE" />
+          <button type="submit">Delete Feedback</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right side: Feedback already received -->
+    <div class="feedback-section">
+      <div class="feedback-item">
+        <h3>John Doe</h3>
+        <p>Amazing project! I learned so much about web servers. Keep it up!</p>
+      </div>
+      <div class="feedback-item">
+        <h3>Jane Smith</h3>
+        <p>Really impressive work. Thank you for making it open-source!</p>
+      </div>
+      <!-- Add more feedback items here -->
     </div>
   </main>
 </body>

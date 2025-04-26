@@ -67,9 +67,16 @@ void Server::contentManager(int clientFd) {
     HttpRequest request(buffer);
     request.initFromRaw();
 
-    // std::cout << "THIS IS THE REQUEST " << request.getRawUri() << std::endl;
+    //std::cout << "THIS IS THE REQUEST " << request.getRawUri() << std::endl;
 
     std::string method = methodToString(request.getMethod());
+
+	if (method == "POST") {
+		std::cout << "THIS IS THE BODY " << request.getBody() << std::endl;
+		
+	}
+
+
     std::string fileName = request.getCleanUri();
 
     const std::vector<std::string>& allowedMethods =
@@ -132,7 +139,7 @@ void Server::contentManager(int clientFd) {
 
     // build and send response
     std::string response = buildHttpResponse(fileContent, contentType, error);
-    // std::cout << "This is the HTTP response over the network to the client (here the browser)
+    // std::cout << "This is the HTTP response over the network to the client (here the browser) \\
     // through the open socket connection: \n" << response << std::endl;
     send(clientFd, response.c_str(), response.size(), 0);
     // YULIA: now ServerManager is not closing by itself
