@@ -71,13 +71,6 @@ void Server::contentManager(int clientFd) {
 
     std::string method = methodToString(request.getMethod());
 
-	if (method == "POST") {
-		std::cout << "THIS IS THE BODY " << request.getBody() << std::endl;
-		
-	}
-
-
-    std::string fileName = request.getCleanUri();
 
     const std::vector<std::string>& allowedMethods =
         _config.getLocation(0).getAllowMethods()->getValue();
@@ -87,6 +80,13 @@ void Server::contentManager(int clientFd) {
         send(clientFd, errorResponse.c_str(), errorResponse.size(), 0);
         return;
     }
+
+	if (method == "POST") {
+		std::cout << "THIS IS THE BODY " << request.getBody() << std::endl;
+		
+	}
+
+	std::string fileName = request.getCleanUri();
 
     // YULIA: I moved this logic to HttpRequest::detectCgiAndMime
 
