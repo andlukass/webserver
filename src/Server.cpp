@@ -31,13 +31,6 @@ int Server::acceptClient() {
         std::cout << "Client connected!" << clientFd << std::endl;
     }
     return clientFd;
-
-    // Client client(clientFd, _config);
-    // client.receive();
-    // HttpRequest request(_config, client.getBuffer());
-    // client.send(request.getResponse());
-    // Close the client connection
-    // close(clientFd);
 }
 
 void Server::start() {

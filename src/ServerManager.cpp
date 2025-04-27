@@ -46,13 +46,13 @@ void ServerManager::run() {
 
 
             // TODO: remove this (its just for debugging)
-            std::string revents = (_pollFds[i].revents & POLLIN) ? "POLLIN" : "POLLOUT";
-            std::string type = "";
-            if (server) type = "server";
-            if (client) type = "client";
-            if (!server && !client) type = "unknown";
-            if (server && client) type = "both";
-            std::cout << "<<<<<<poll called with fd: " << fd << " and revents: " << revents << " and type: " << type << ">>>>>>" << std::endl;
+            // std::string revents = (_pollFds[i].revents & POLLIN) ? "POLLIN" : "POLLOUT";
+            // std::string type = "";
+            // if (server) type = "server";
+            // if (client) type = "client";
+            // if (!server && !client) type = "unknown";
+            // if (server && client) type = "both";
+            // std::cout << "<<<<<<poll called with fd: " << fd << " and revents: " << revents << " and type: " << type << ">>>>>>" << std::endl;
             // ================================
 
 
