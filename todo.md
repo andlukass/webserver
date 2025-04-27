@@ -80,7 +80,7 @@
 
 ## Task split:
 Lucas:
-for all the I/O operations between the client and the server (listen included), • poll() (or equivalent) must monitor both reading and writing simultaneously
+(OK) for all the I/O operations between the client and the server (listen included), • poll() (or equivalent) must monitor both reading and writing simultaneously
 
 Tina:
 • Your server must have default error pages if none are provide, • You must be able to serve a fully static website, Clients must be able to upload files.

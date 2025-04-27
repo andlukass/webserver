@@ -217,6 +217,7 @@ void HttpRequest::parseResponse() {
     }
 
     std::string fileName = _cleanUri;
+    // TODO: root can be in the location block or in the server block
     std::string filePath = _config.getRoot()->getValue() + fileName;
     std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
     if (!file) {
