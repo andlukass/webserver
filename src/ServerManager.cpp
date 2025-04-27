@@ -88,7 +88,7 @@ void ServerManager::run() {
             } else if (_pollFds[i].revents & POLLOUT) {
                 HttpRequest request(client->getConfig(), client->getBuffer());
                 if (request.getResponse().empty()) continue;
-                ssize_t sentDataLength = client->send(request.getResponse());
+                client->send(request.getResponse());
                 std::cout << "CONECTION WITH CLIENT CLOSED: " << client->getFd() << std::endl;
                 client->close();
                 delete client;
