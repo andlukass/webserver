@@ -7,7 +7,7 @@
 #include "AllowMethods.hpp"
 #include "Autoindex.hpp"
 #include "Directive.hpp"
-#include "MultiDirective.hpp"
+#include "Index.hpp"
 #include "Path.hpp"
 #include "Root.hpp"
 
@@ -25,7 +25,7 @@ class LocationDirective : public Directive {
     AllowMethods *getAllowMethods() const;
     Root *getRoot() const;
     Path *getPath() const;
-    MultiDirective *getIndex() const;
+    Index *getIndex() const;
 
    private:
     DirectiveMap _value;

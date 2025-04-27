@@ -92,3 +92,37 @@ Lear CGI, implement some working part
 
 
 • Set the maximum allowed size for client request bodies.
+
+
+Lucas: maybe we can join the ServerConfig with Server in the future, it will be more clean and understandable
+
+/*
+Lucas: (is was in servermanager, since its all done, im letting it here)
+TODO: Future Configuration Validations (maybe parser already validates some or all)
+
+1. Unique IP:Port Check
+Ensure no two servers are configured with the same IP:Port.
+(OK. in the case of same ip and port, we should check if the server_name is different,
+if it is not, nginx just send the request to the first server in the config file that matches the ip and port)
+
+2. Required Configuration Fields
+Verify required fields like server_name, root, and listen are present and valid.
+(OK. server_name is not required, root is not required, but if not present, we should send a 500 error,
+listen is verified if is valid at parser and throw an error if not, if not present, it will be 0.0.0.0:80(like nginx default))
+
+3. client_max_body_size Validation
+Ensure client_max_body_size is positive and reasonable.
+(OK. checked in ClientMaxBodySize)
+
+4. Check File Paths
+Validate the existence of directories specified by root and other path-based fields.
+(OK. checked in HttpRequest)
+
+5. Method Restrictions (allow_methods)
+Ensure allow_methods contains valid HTTP methods like GET, POST, etc.
+(OK. checked in HttpRequest && AllowMethodsDirective)
+
+6. Error Pages
+Ensure paths for custom error pages (e.g., error_page 404) are valid.
+(OK. checked in HttpRequest)
+*/

@@ -62,4 +62,6 @@ class HttpRequest {
 
     // setters (not sure if we need)
     void setIsValid(bool value);
+
+	//void	HttpRequest::handlePOSTRequest();TODO
 };

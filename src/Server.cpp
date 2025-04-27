@@ -20,22 +20,22 @@ Server::~Server() {
     }
 }
 
-void Server::acceptClient() {
+int Server::acceptClient() {
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
 
     int clientFd = accept(_socketFd, (struct sockaddr*)&clientAddr, &clientLen);
     if (clientFd < 0) {
         std::cerr << "Error: Cannot accept client connection" << std::endl;
-        return;
+    } else {
+        std::cout << "Client connected!" << clientFd << std::endl;
     }
+    return clientFd;
 
-    std::cout << "Client connected!" << clientFd << std::endl;
-
-    Client client(clientFd);
-    client.receive();
-    HttpRequest request(_config, client.getBuffer());
-    client.send(request.getResponse());
+    // Client client(clientFd, _config);
+    // client.receive();
+    // HttpRequest request(_config, client.getBuffer());
+    // client.send(request.getResponse());
     // Close the client connection
     // close(clientFd);
 }
@@ -98,3 +98,5 @@ void Server::stop() {
 }
 
 int Server::getSocketFd() const { return _socketFd; }
+
+const ServerDirective& Server::getConfig() const { return _config; }

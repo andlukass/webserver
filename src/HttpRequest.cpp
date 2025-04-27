@@ -19,6 +19,7 @@ std::string statusToString(int errorStatus) {
 }
 
 void HttpRequest::buildErrorResponse(int errorStatus) {
+    std::cout << "Building error response" << std::endl;
     std::stringstream response;
     response << "HTTP/1.1 " << errorStatus << " " << statusToString(errorStatus) << "\r\n";
     if (errorStatus == NOT_FOUND) {
@@ -166,6 +167,9 @@ void HttpRequest::parseUri() {
    if (_cleanUri.empty() || _cleanUri == "/") {
         _cleanUri = serverIndex.empty() ? "/index.html" : serverIndex;
     }
+    if (_cleanUri.at(0) == '/') {
+        _cleanUri = _cleanUri.substr(1);
+    }
 }
 
 void HttpRequest::detectCgiAndMime() {
@@ -241,12 +245,7 @@ void HttpRequest::parseResponse() {
     std::string fileContent = Utils::readFile(filePath);
     std::string contentType = _mimeType;  // we need these two to send the content
 
-    // build and send response
     this->buildOKResponse(fileContent, contentType);
-    // std::cout << "===Response: \n" << this->_response <<  "======================\n" <<  std::endl;
-    // YULIA: now ServerManager is not closing by itself
-    // this->send();
-    // this->close();
 }
 
 void HttpRequest::initFromRaw() {

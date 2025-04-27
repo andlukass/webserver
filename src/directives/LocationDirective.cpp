@@ -5,7 +5,7 @@ const char *validLocationProps[] = {"root", "index", "autoindex", "allow_methods
 LocationDirective::LocationDirective() : Directive("server") {
     // std::cout << "LocationDirective default constructor ========================================"
     // << std::endl;
-    this->_value["index"] = new MultiDirective("index");
+    this->_value["index"] = new Index();
     this->_value["root"] = new Root();
     this->_value["path"] = new Path();
     this->_value["autoindex"] = new Autoindex();
@@ -71,6 +71,4 @@ Root *LocationDirective::getRoot() const { return dynamic_cast<Root *>(this->_va
 
 Path *LocationDirective::getPath() const { return dynamic_cast<Path *>(this->_value.at("path")); }
 
-MultiDirective *LocationDirective::getIndex() const {
-    return dynamic_cast<MultiDirective *>(this->_value.at("index"));
-}
+Index *LocationDirective::getIndex() const { return dynamic_cast<Index *>(this->_value.at("index")); }

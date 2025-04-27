@@ -31,9 +31,8 @@ class Server {
     void start();
     void stop();
     int getSocketFd() const;
-    void acceptClient();
-
-	//void	Server::handlePOSTRequest();TODO
+    int acceptClient();
+    const ServerDirective& getConfig() const;
 };
 
 #endif  // SERVER_HPP

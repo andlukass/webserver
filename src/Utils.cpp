@@ -1,18 +1,17 @@
 #include "../includes/Utils.hpp"
 
 std::string Utils::readFile(const std::string &filePath) {
-    std::ifstream file(filePath.c_str());
-    if (!file) return "";
+ std::ifstream file(
+        filePath.c_str(),
+        std::ios::in |
+            std::ios::binary);  // it is needed because if it's error it has to read again
 
-    std::string linha;
-    std::string finalString;
-    while (std::getline(file, linha)) {
-        finalString += "\n";
-        finalString += linha;
-    }
+    // read file content into a string, maybe I should use this at the http header file
+    std::string fileContent((std::istreambuf_iterator<char>(file)),
+                            std::istreambuf_iterator<char>());
 
-    file.close();
-    return finalString;
+    file.close();          // close the file after reading
+    return (fileContent);
 }
 
 std::string Utils::trimStart(std::string &str) {
