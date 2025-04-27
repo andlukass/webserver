@@ -5,14 +5,15 @@
 
 #include "Directive.hpp"
 
-class Autoindex : public Directive {
+class Index : public Directive {
    public:
-    Autoindex();
+    Index();
     void print() const;
     void parse(std::string &config);
-    bool getValue() const;
-    Autoindex *clone() const;
+    void validate();
+    std::string getValue() const;
+    Index *clone() const;
 
    private:
-    bool _value;
+    std::string _value;
 };

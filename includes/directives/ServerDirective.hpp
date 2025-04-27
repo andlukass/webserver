@@ -11,6 +11,7 @@
 #include "Locations.hpp"
 #include "MultiDirective.hpp"
 #include "Root.hpp"
+#include "Index.hpp"
 
 class ServerDirective : public Directive {
    public:
@@ -28,7 +29,7 @@ class ServerDirective : public Directive {
     Root *getRoot() const;
     size_t getLocationsCount() const;
     const LocationDirective &getLocation(size_t index) const;
-    MultiDirective *getIndex() const;
+    Index *getIndex() const;
     MultiDirective *getServerName() const;
 
    private:

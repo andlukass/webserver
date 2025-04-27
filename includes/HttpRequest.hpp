@@ -1,5 +1,7 @@
 #include <map>
 #include <string>
+#include "./directives/ServerDirective.hpp"
+#include "../includes/cgi/CgiHandler.hpp"
 
 enum HttpMethod { METHOD_UNKNOWN, METHOD_GET, METHOD_POST, METHOD_DELETE };
 enum CgiType { CGI_NONE, CGI_PYTHON };
@@ -19,6 +21,9 @@ class HttpRequest {
     CgiType _cgiType;
     bool _isCgi;
     bool _isValid;
+    int _status;
+    std::string _response;
+    const ServerDirective& _config;
 
     // cookies;
     // contentType;
@@ -28,9 +33,13 @@ class HttpRequest {
     void parseHeaders(const std::string& headersBlock);
     void parseBody();
     void detectCgiAndMime();
+    void parseUri();
+    void parseResponse();
+    void buildErrorResponse(int errorStatus);
+    void buildOKResponse(std::string fileContent, std::string contentType);
 
    public:
-    HttpRequest(const std::string& uri);  // we only allow requests with Uri
+    HttpRequest(const ServerDirective& config, const std::string& request);
     ~HttpRequest();
 
     // initialize all other values (_rawUri is initialized from a start)
@@ -49,6 +58,7 @@ class HttpRequest {
     CgiType getCgiType() const;
     bool getIsCgi() const;
     bool getIsValid() const;
+    std::string getResponse() const;
 
     // setters (not sure if we need)
     void setIsValid(bool value);

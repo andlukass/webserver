@@ -10,7 +10,7 @@ ServerDirective::ServerDirective() : Directive("server") {
     this->_value["listen"] = new Listen();
     this->_value["server_name"] = new MultiDirective("server_name");
     this->_value["client_max_body_size"] = new ClientMaxBodySize();
-    this->_value["index"] = new MultiDirective("index");
+    this->_value["index"] = new Index();
     this->_value["root"] = new Root();
     this->_value["error_page"] = new ErrorPage();
     this->_value["location"] = new Locations();
@@ -72,9 +72,7 @@ ClientMaxBodySize *ServerDirective::getClientMaxBodySize() const {
 
 Root *ServerDirective::getRoot() const { return dynamic_cast<Root *>(this->_value.at("root")); }
 
-MultiDirective *ServerDirective::getIndex() const {
-    return dynamic_cast<MultiDirective *>(this->_value.at("index"));
-}
+Index *ServerDirective::getIndex() const { return dynamic_cast<Index *>(this->_value.at("index")); }
 
 MultiDirective *ServerDirective::getServerName() const {
     return dynamic_cast<MultiDirective *>(this->_value.at("server_name"));

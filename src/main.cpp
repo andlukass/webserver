@@ -18,6 +18,7 @@ int handleFlags(int argc, char *argv[]) {
         std::cout << "Usage: " << argv[0] << " <config_file> [option]\n";
         std::cout << "Options: (only one per run)\n";
         std::cout << "-t: test the configuration file\n";
+        std::cout << "-c: run in CGI mode\n";
         std::cout << "-h: show this help message\n";
         exit(0);
     } else if (std::string(argv[2]) == "-t") {

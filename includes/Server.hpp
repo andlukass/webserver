@@ -11,8 +11,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
-#include "./Webcontent.hpp"
 #include "./directives/ServerDirective.hpp"
+#include "./HttpRequest.hpp"
 
 class Server {
    private:
@@ -33,11 +33,6 @@ class Server {
     int getSocketFd() const;
     void acceptClient();
 
-	void		contentManager(int clientFd);
-	std::pair<std::string, std::string>	parseRequestedFile(const std::string& request);
-	std::string	getMimeType(const std::string& fileName);
-	std::string	buildHttpResponse(std::string fileContent, std::string contentType, bool error);	
-	std::string	readFiles(const std::string& filePath);
 	//void	Server::handlePOSTRequest();TODO
 };
 

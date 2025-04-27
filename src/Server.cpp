@@ -1,5 +1,5 @@
 #include "../includes/Server.hpp"
-
+#include "../includes/Client.hpp"
 Server::Server(const ServerDirective& config) : _config(config) {
     // TODO: closer to the end of the project we can define, if _port and _ip should be const
     std::cout << "Creating server with IP: " << config.getListen()->getIp()
@@ -30,9 +30,12 @@ void Server::acceptClient() {
         return;
     }
 
-    std::cout << "Client connected!" << std::endl;
+    std::cout << "Client connected!" << clientFd << std::endl;
 
-    contentManager(clientFd);
+    Client client(clientFd);
+    client.receive();
+    HttpRequest request(_config, client.getBuffer());
+    client.send(request.getResponse());
     // Close the client connection
     // close(clientFd);
 }
@@ -48,11 +51,6 @@ void Server::start() {
     int opt = 1;
     setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-    // Convert _port (int) to string for getaddrinfo
-    std::stringstream portStream;
-    portStream << _config.getListen()->getPort();
-    std::string portStr = portStream.str();
-
     // Set up hints for getaddrinfo to request IPv4 and TCP socket
     struct addrinfo hints;
     std::memset(&hints, 0, sizeof(hints));
@@ -63,10 +61,10 @@ void Server::start() {
     struct addrinfo* res;
     // getaddrinfo converts IP and port string into a usable sockaddr structure
     // c_str returns pointer to first element of the internal string buffer
-    int status = getaddrinfo(_config.getListen()->getIp().c_str(), portStr.c_str(), &hints, &res);
-    if (status != 0) {
+    int addrInfoError = getaddrinfo(_config.getListen()->getIp().c_str(), _config.getListen()->getPort().c_str(), &hints, &res);
+    if (addrInfoError) {
         // gai_strerror gets error message from getaddrinfo
-        std::cerr << "Error: getaddrinfo failed: " << gai_strerror(status) << std::endl;
+        std::cerr << "Error: getaddrinfo failed: " << gai_strerror(addrInfoError) << std::endl;
         exit(EXIT_FAILURE);
     }
 

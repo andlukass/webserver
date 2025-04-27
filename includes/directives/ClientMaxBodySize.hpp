@@ -12,7 +12,6 @@ class ClientMaxBodySize : public Directive {
     void parse(std::string &config);
     void print() const;
     ClientMaxBodySize *clone() const;
-    ClientMaxBodySize *cast() const;
 
    private:
     std::string _value;

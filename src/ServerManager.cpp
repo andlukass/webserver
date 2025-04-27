@@ -27,7 +27,6 @@ Ensure paths for custom error pages (e.g., error_page 404) are valid.
 ServerManager::ServerManager(const ServerConfig& config) {
     for (size_t i = 0; i < config.getServersCount(); i++) {
         const ServerDirective& directive = config.getServer(i);
-        // if this causes problems, we can switch to std::vector<Server*>
         try {
             _servers.push_back(new Server(directive));
         } catch (std::exception& e) {
@@ -60,7 +59,7 @@ void ServerManager::run() {
             exit(EXIT_FAILURE);
         }
 
-        for (size_t i = 0; i < _pollFds.size(); ++i) {
+        for (size_t i = 0; i < _pollFds.size(); i++) {
             if (_pollFds[i].revents & POLLIN) {
                 _servers[i]->acceptClient();
             }
