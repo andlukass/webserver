@@ -5,6 +5,7 @@
 enum ErrorStatus {
     NOT_FOUND = 404,
     METHOD_NOT_ALLOWED = 405,
+    BAD_REQUEST = 400,
 };
 
 std::string statusToString(int errorStatus) {
@@ -13,6 +14,8 @@ std::string statusToString(int errorStatus) {
             return "404 Not Found";
         case METHOD_NOT_ALLOWED:
             return "405 Method Not Allowed";
+        case BAD_REQUEST:
+            return "400 Bad Request";
         default:
             return "";
     }
@@ -21,12 +24,19 @@ std::string statusToString(int errorStatus) {
 void HttpRequest::buildErrorResponse(int errorStatus) {
     std::cout << "Building error response" << std::endl;
     std::stringstream response;
+    std::string fileContent = Utils::readFile("./src/webcontent/errorpage");
     response << "HTTP/1.1 " << errorStatus << " " << statusToString(errorStatus) << "\r\n";
     if (errorStatus == NOT_FOUND) {
-        std::string fileContent = Utils::readFile("./src/webcontent/errorpage");
         if (fileContent.empty()) {
-            fileContent = "<html><body><h1>Not Found</h1></body></html>";
+            fileContent = "<html><body><h1>"+ statusToString(errorStatus) + "</h1></body></html>";
         }
+        response << "Content-Type: text/html\r\n";
+        response << "Content-Length: " << fileContent.size() << "\r\n";
+        response << "Connection: close\r\n\r\n";
+        response << fileContent;
+    }
+    if (errorStatus == BAD_REQUEST) {
+        fileContent = "<html><body><h1>" + statusToString(errorStatus) + "</h1></body></html>";
         response << "Content-Type: text/html\r\n";
         response << "Content-Length: " << fileContent.size() << "\r\n";
         response << "Connection: close\r\n\r\n";
@@ -203,7 +213,6 @@ void HttpRequest::detectCgiAndMime() {
         _cgiType = CGI_NONE;
         _mimeType = "text/html";
     }
-    return;
 }
 
 void HttpRequest::parseResponse() {
@@ -250,10 +259,14 @@ void HttpRequest::parseResponse() {
 }
 
 void HttpRequest::initFromRaw() {
-    if (!parseRequestLine()) return;
+    if (!parseRequestLine()) {
+        this->buildErrorResponse(BAD_REQUEST);
+        return;
+    }
     parseUri();
     size_t firstLineEnd = _rawUri.find("\r\n");
     if (firstLineEnd == std::string::npos) {
+        this->buildErrorResponse(BAD_REQUEST);
         _isValid = false;
         return;
     }
@@ -261,6 +274,7 @@ void HttpRequest::initFromRaw() {
 
     size_t headersEnd = _rawUri.find("\r\n\r\n");
     if (headersEnd == std::string::npos) {
+        this->buildErrorResponse(BAD_REQUEST);
         _isValid = false;
         return;
     }

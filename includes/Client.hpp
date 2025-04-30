@@ -9,7 +9,7 @@
 class Client {
     private:
         int _fd;
-        char _buffer[1024];
+        char _buffer[200000];
         const ServerDirective& _serverConfig;
 
     public:
