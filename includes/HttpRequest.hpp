@@ -1,5 +1,6 @@
 #include <map>
 #include <string>
+#include <algorithm>
 #include "./directives/ServerDirective.hpp"
 #include "../includes/cgi/CgiHandler.hpp"
 
