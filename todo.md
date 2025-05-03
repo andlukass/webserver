@@ -31,7 +31,9 @@
     - Handle edge cases (e.g., invalid headers, large requests).
     - Make the code more modular for easier maintenance and future features.
     - Improve error handling and logging for easier debugging and monitoring.
-
+ 
+## 12. **Handle properly errors in the parser**
+- When the parsers throws an error, we should properly send the user a message in the cli and make sure that there is no memory leaks.
 
 ## 1. **Receive HTTP Requests (Get Data)** - DONE
 - Implement a `recv()` method to read HTTP request data.
