@@ -24,7 +24,7 @@
 - It should really just send a 413 when the body size is bigger than the specified.
 
 ## 14. **Handle directory listing**
-- If autoindex is "on" and the request is for a directory, we should send as response a HTML page containing the list of files of that directory.
+- "Already handled". Just need to build the html page to it (there is a TODO on HttpRequest.cpp). It should list all the files in the directory, like a "ls", each item should be clickable to redirect to the path of it (its only use the a href of html).
 
 ## 15. **Define an HTTP redirect**
 - Idk exactly, those are the exact words of the subject.
