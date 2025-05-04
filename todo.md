@@ -29,7 +29,7 @@
 ## 15. **Define an HTTP redirect**
 - Idk exactly, those are the exact words of the subject.
 
-## 15. **Handle server_name**
+## 16. **Handle server_name**
 - Idk exactly, we need to see how it works.
 
 ## 1. **Receive HTTP Requests (Get Data)** - DONE
