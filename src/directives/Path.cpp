@@ -11,6 +11,7 @@ void Path::parse(std::string &config) {
         this->_isExact = true;
         this->_value = getNextWord(config);
     }
+    this->_value = Utils::cleanSlashes(this->_value);
 }
 
 void Path::print() const {

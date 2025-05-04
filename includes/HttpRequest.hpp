@@ -11,9 +11,10 @@ enum HttpVersion { HTTP_VERSION_UNKNOWN, HTTP_1_0, HTTP_1_1 };
 class HttpRequest {
    private:
     HttpMethod _method;
-    std::string _rawUri;
+    std::string _rawRequest;
     std::string _cleanUri;
-    // std::string _path;
+    std::string _rawHeaders;
+    std::string _locationPath;
     std::map<std::string, std::string> _queryParams;
     HttpVersion _httpVersion;
     std::map<std::string, std::string> _headers;
@@ -21,7 +22,6 @@ class HttpRequest {
     std::string _mimeType;
     CgiType _cgiType;
     bool _isCgi;
-    bool _isValid;
     int _status;
     std::string _response;
     const ServerDirective& _config;
@@ -31,13 +31,15 @@ class HttpRequest {
     // contentLength;
 
     bool parseRequestLine();
-    void parseHeaders(const std::string& headersBlock);
+    void parseHeaders();
     void parseBody();
     void detectCgiAndMime();
-    void parseUri();
+    void parseLocation();
     void parseResponse();
     void buildErrorResponse(int errorStatus);
     void buildOKResponse(std::string fileContent, std::string contentType);
+    void parseIndex();
+    void parseRoot();
 
    public:
     HttpRequest(const ServerDirective& config, const std::string& request);
@@ -48,7 +50,7 @@ class HttpRequest {
 
     // getters
     HttpMethod getMethod() const;
-    std::string getRawUri() const;
+    std::string getRawRequest() const;
     std::string getCleanUri() const;
     std::string getPath() const;
     std::map<std::string, std::string> getQueryParams() const;
@@ -58,11 +60,7 @@ class HttpRequest {
     std::string getMimeType() const;
     CgiType getCgiType() const;
     bool getIsCgi() const;
-    bool getIsValid() const;
     std::string getResponse() const;
-
-    // setters (not sure if we need)
-    void setIsValid(bool value);
 
 	//void	HttpRequest::handlePOSTRequest();TODO
 };

@@ -1,14 +1,15 @@
 #include "../../includes/directives/LocationDirective.hpp"
 
-const char *validLocationProps[] = {"root", "index", "autoindex", "allow_methods", NULL};
+const char *validLocationProps[] = {"root", "index", "autoindex", "allow_methods", "error_page", NULL};
 
 LocationDirective::LocationDirective() : Directive("server") {
     // std::cout << "LocationDirective default constructor ========================================"
     // << std::endl;
-    this->_value["index"] = new Index();
     this->_value["root"] = new Root();
     this->_value["path"] = new Path();
+    this->_value["index"] = new Index();
     this->_value["autoindex"] = new Autoindex();
+    this->_value["error_page"] = new ErrorPage();
     this->_value["allow_methods"] = new AllowMethods();
 }
 
@@ -29,6 +30,15 @@ LocationDirective::~LocationDirective() {
         // std::cout << "deleting " << validLocationProps[i] << std::endl;
         delete this->_value[validLocationProps[i]];
     }
+}
+
+LocationDirective &LocationDirective::operator=(const LocationDirective &other) {
+    if (this != &other) {
+        this->_value["path"] = other._value.at("path")->clone();
+        for (size_t i = 0; validLocationProps[i]; i++)
+            this->_value[validLocationProps[i]] = other._value.at(validLocationProps[i])->clone();
+    }
+    return *this;
 }
 
 void LocationDirective::parse(std::string &config) {
@@ -72,3 +82,5 @@ Root *LocationDirective::getRoot() const { return dynamic_cast<Root *>(this->_va
 Path *LocationDirective::getPath() const { return dynamic_cast<Path *>(this->_value.at("path")); }
 
 Index *LocationDirective::getIndex() const { return dynamic_cast<Index *>(this->_value.at("index")); }
+
+ErrorPage *LocationDirective::getErrorPage() const { return dynamic_cast<ErrorPage *>(this->_value.at("error_page")); }

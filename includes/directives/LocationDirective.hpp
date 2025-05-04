@@ -7,6 +7,7 @@
 #include "AllowMethods.hpp"
 #include "Autoindex.hpp"
 #include "Directive.hpp"
+#include "ErrorPage.hpp"
 #include "Index.hpp"
 #include "Path.hpp"
 #include "Root.hpp"
@@ -15,6 +16,7 @@ class LocationDirective : public Directive {
    public:
     LocationDirective();
     LocationDirective(const LocationDirective &other);
+    LocationDirective &operator=(const LocationDirective &other);
     ~LocationDirective();
 
     void parse(std::string &config);
@@ -23,6 +25,7 @@ class LocationDirective : public Directive {
 
     Autoindex *getAutoindex() const;
     AllowMethods *getAllowMethods() const;
+    ErrorPage *getErrorPage() const;
     Root *getRoot() const;
     Path *getPath() const;
     Index *getIndex() const;

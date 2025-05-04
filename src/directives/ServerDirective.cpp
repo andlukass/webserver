@@ -2,13 +2,14 @@
 
 const char *validServerProps[] = {"listen",   "server_name", "client_max_body_size",
                                   "index",    "root",        "error_page",
-                                  "location", NULL};
+                                  "location", "allow_methods", NULL};
 
 ServerDirective::ServerDirective() : Directive("server") {
     // std::cout << "ServerDirective default constructor ========================================"
     // << std::endl;
     this->_value["listen"] = new Listen();
     this->_value["server_name"] = new MultiDirective("server_name");
+    this->_value["allow_methods"] = new AllowMethods();
     this->_value["client_max_body_size"] = new ClientMaxBodySize();
     this->_value["index"] = new Index();
     this->_value["root"] = new Root();
@@ -82,8 +83,10 @@ size_t ServerDirective::getLocationsCount() const {
     return dynamic_cast<Locations *>(this->_value.at("location"))->getValue().size();
 }
 
-const LocationDirective &ServerDirective::getLocation(size_t index) const {
-    if (index >= dynamic_cast<Locations *>(this->_value.at("location"))->getValue().size())
-        throw Exception("Locations index out of range");
-    return dynamic_cast<Locations *>(this->_value.at("location"))->getValue()[index];
+AllowMethods *ServerDirective::getAllowMethods() const {
+    return dynamic_cast<AllowMethods *>(this->_value.at("allow_methods"));
+}
+
+const LocationDirective &ServerDirective::getLocation(std::string path) const {
+    return dynamic_cast<Locations *>(this->_value.at("location"))->getValue().at(path);
 }

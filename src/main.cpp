@@ -50,15 +50,3 @@ int main(int argc, char *argv[]) {
         return (std::cout << e.what() << "\n", 1);
     }
 }
-
-// getServer returns a ServerDirective, we can use the getters like that:
-//  ServerDirective serverDirective = serverConfig.getServer(0);
-//  serverDirective.getListen()->getIp(); // string
-//  serverDirective.getListen()->getPortInt(); // int
-//  serverDirective.getServerName()->getValue(); // string vector
-//  etc..
-//  serverDirective.getLocationsCount(); // size_t
-//  serverDirective.getLocation(0).getPath()->getValue(); // string
-//  serverDirective.getLocation(0).getPath()->getIsExact(); // bool
-//  serverDirective.getLocation(0).getAllowMethods()->getValue(); // string vector
-//  etc...

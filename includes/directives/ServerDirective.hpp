@@ -28,7 +28,8 @@ class ServerDirective : public Directive {
     ErrorPage *getErrorPage() const;
     Root *getRoot() const;
     size_t getLocationsCount() const;
-    const LocationDirective &getLocation(size_t index) const;
+    const LocationDirective &getLocation(std::string path) const;
+    AllowMethods *getAllowMethods() const;
     Index *getIndex() const;
     MultiDirective *getServerName() const;
 

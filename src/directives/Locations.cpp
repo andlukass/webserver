@@ -10,24 +10,24 @@ Locations::~Locations() {
 }
 
 Locations::Locations(const Locations &other) : Directive(other._name) {
-    // std::cout << "Location copy constructor ===============================index: " << std::endl;
-    for (size_t i = 0; i < other._value.size(); i++) {
-        this->_value.push_back(other._value[i]);
+    this->_value = other._value;
+    for (std::map<std::string, LocationDirective>::const_iterator it = other._value.begin(); it != other._value.end(); it++) {
+        this->_value[it->first] = *(it->second.clone());
     }
 }
 
 void Locations::parse(std::string &config) {
     LocationDirective location;
     location.parse(config);
-    this->_value.push_back(location);
+    this->_value[location.getPath()->getValue()] = location;
 }
 
 void Locations::print() const {
-    for (int i = 0; i < this->_value.size(); i++) {
-        this->_value[i].print();
+    for (std::map<std::string, LocationDirective>::const_iterator it = this->_value.begin(); it != this->_value.end(); it++) {
+        it->second.print();
     }
 }
 
-const std::vector<LocationDirective> &Locations::getValue() const { return this->_value; }
+const std::map<std::string, LocationDirective> &Locations::getValue() const { return this->_value; }
 
 Locations *Locations::clone() const { return new Locations(*this); }

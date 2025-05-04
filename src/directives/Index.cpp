@@ -3,6 +3,7 @@
 Index::Index() : Directive("index") { this->_value = ""; }
 
 void Index::validate() {
+    std::cout << "TESTE DO INDEX" << this->_value << std::endl;
     std::vector<std::string> arguments = Utils::split(this->_value, "\n \t");
     if (!arguments.size() || arguments.size() > 1)
         throw Exception("Invalid arguments at " + this->_name + " directive");

@@ -89,7 +89,7 @@ void ServerManager::run() {
                 HttpRequest request(client->getConfig(), client->getBuffer());
                 if (request.getResponse().empty()) continue;
                 client->send(request.getResponse());
-                std::cout << "CONECTION WITH CLIENT CLOSED: " << client->getFd() << std::endl;
+                std::cout << "CONNECTION WITH CLIENT CLOSED: " << client->getFd() << std::endl;
                 client->close();
                 delete client;
                 _clientsMap.erase(fd);

@@ -25,6 +25,8 @@ class Utils {
 
     static std::vector<std::string> split(const std::string &str, const std::string &delimiters);
 
+    static std::string cleanSlashes(const std::string &path);
+
     template <typename T>
     static bool vectorContains(std::vector<T> &vec, const T &a) {
         for (int i = 0; i < vec.size(); ++i) {

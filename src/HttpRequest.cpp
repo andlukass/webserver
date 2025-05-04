@@ -42,11 +42,19 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
         response << "Connection: close\r\n\r\n";
         response << fileContent;
     }
+    if (errorStatus == METHOD_NOT_ALLOWED) {
+        fileContent = "<html><body><h1>" + statusToString(errorStatus) + "</h1></body></html>";
+        response << "Content-Type: text/html\r\n";
+        response << "Content-Length: " << fileContent.size() << "\r\n";
+        response << "Connection: close\r\n\r\n";
+        response << fileContent;
+    }
     this->_response = response.str();
     this->_status = errorStatus;
 }
 
 void HttpRequest::buildOKResponse(std::string fileContent, std::string contentType) {
+    // std::cout << "TESTE DO LOCATION" << this->_config.getLocation("/root").getPath()->getValue() << std::endl;
     std::stringstream response;
     response << "HTTP/1.1 200 OK\r\n";
     response << "Content-Type: " << contentType << "\r\n";
@@ -73,12 +81,11 @@ std::string methodToString(HttpMethod method) {
 }
 
 HttpRequest::HttpRequest(const ServerDirective& config, const std::string& request)
-    : _rawUri(request),
+    : _rawRequest(request),
       _method(METHOD_UNKNOWN),
       _httpVersion(HTTP_VERSION_UNKNOWN),
       _cgiType(CGI_NONE),
       _isCgi(false),
-      _isValid(true),
       _config(config) {
             this->initFromRaw();
             // std::cout << "THIS IS THE REQUEST " << request.getRawUri() << std::endl;
@@ -107,33 +114,36 @@ HttpVersion parseHttpVersion(const std::string httpVersionString) {
 }
 
 bool HttpRequest::parseRequestLine() {
-    size_t firstLineEnd = _rawUri.find("\r\n");
-    if (firstLineEnd == std::string::npos) return (_isValid = false);
+    size_t firstLineEnd = _rawRequest.find("\r\n");
+    if (firstLineEnd == std::string::npos) return false;
+    size_t headersEnd = _rawRequest.find("\r\n\r\n");
+    if (headersEnd == std::string::npos) return false;
+    size_t headersStart = firstLineEnd + 2;
 
-    std::string startLine = _rawUri.substr(0, firstLineEnd);
+
+    std::string startLine = _rawRequest.substr(0, firstLineEnd);
 
     std::istringstream iss(startLine);
     std::string methodStr, uriStr, versionStr;
     iss >> methodStr >> uriStr >> versionStr;
 
     if (methodStr.empty() || uriStr.empty() || versionStr.empty()) {
-        _isValid = false;
         return false;
     }
 
     _method = parseMethod(methodStr);
-    _cleanUri = uriStr;
+    _cleanUri = Utils::cleanSlashes(uriStr);
     _httpVersion = parseHttpVersion(versionStr);
+    _rawHeaders = _rawRequest.substr(headersStart, headersEnd);
 
     if (_method == METHOD_UNKNOWN || _httpVersion == HTTP_VERSION_UNKNOWN) {
-        _isValid = false;
         return false;
     }
     return true;
 }
 
-void HttpRequest::parseHeaders(const std::string& headersBlock) {
-    std::istringstream stream(headersBlock);
+void HttpRequest::parseHeaders() {
+    std::istringstream stream(_rawHeaders);
     std::string line;
 
     while (std::getline(stream, line)) {
@@ -162,23 +172,57 @@ void HttpRequest::parseHeaders(const std::string& headersBlock) {
 }
 
 void HttpRequest::parseBody() {
-    size_t bodyStart = _rawUri.find("\r\n\r\n");
+    size_t bodyStart = _rawRequest.find("\r\n\r\n");
     // checking if body is present. we don't validate if it's supposed to be at the moment
     if (bodyStart != std::string::npos) {
         // +4 here to skip empty line in between headers and body
         bodyStart += 4;
-        if (bodyStart < _rawUri.size()) _body = _rawUri.substr(bodyStart);
+        if (bodyStart < _rawRequest.size()) _body = _rawRequest.substr(bodyStart);
     }
 }
 
-// TODO: THIS SHOULD BUILD THE URI FROM THE CONFIG (ROOT, INDEX, etc)
-void HttpRequest::parseUri() {
-    std::string serverIndex = _config.getIndex()->getValue();
-   if (_cleanUri.empty() || _cleanUri == "/") {
-        _cleanUri = serverIndex.empty() ? "/index.html" : serverIndex;
+void HttpRequest::parseIndex() {
+    char lastChar = _cleanUri.back();
+    bool hasFile = lastChar != '/';
+
+    std::string serverIndex =  _locationPath.empty() ? "" : _config.getLocation(_locationPath).getIndex()->getValue();
+    if (serverIndex.empty()) {
+        serverIndex = _config.getIndex()->getValue();
     }
-    if (_cleanUri.at(0) == '/') {
-        _cleanUri = _cleanUri.substr(1);
+    if (serverIndex.empty()) {
+        serverIndex = "/index.html";
+    }
+    _cleanUri = hasFile ? _cleanUri : _cleanUri + serverIndex;
+}
+
+void HttpRequest::parseRoot() {
+    std::string serverRoot = _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRoot()->getValue();
+    if (serverRoot.empty()) {
+        serverRoot = _config.getRoot()->getValue();
+    }
+    if (serverRoot.empty()) {
+        serverRoot = "./";
+    }
+    _cleanUri = serverRoot + _cleanUri;
+}
+
+void HttpRequest::parseLocation() {
+    char lastChar = _cleanUri.back();
+    bool hasFile = lastChar != '/';
+    std::string locationPath = _cleanUri;
+
+    if (hasFile) {
+        size_t lastSlash = _cleanUri.find_last_of('/');
+        if (lastSlash != std::string::npos) {
+            locationPath = _cleanUri.substr(0, lastSlash + 1);
+        }
+    }
+
+    try {
+        _config.getLocation(locationPath);
+        _locationPath = locationPath;
+    } catch (const std::exception &e) {
+        _locationPath = "";
     }
 }
 
@@ -216,30 +260,30 @@ void HttpRequest::detectCgiAndMime() {
 }
 
 void HttpRequest::parseResponse() {
-    const std::vector<std::string>& allowedMethods =
-        _config.getLocation(0).getAllowMethods()->getValue();
+    const std::vector<std::string>& allowedMethods = 
+        _config.getAllowMethods()->getValue();
     std::string strMethod = methodToString(_method);
+
+
     if (std::find(allowedMethods.begin(), allowedMethods.end(), strMethod) == allowedMethods.end()) {
         std::cerr << "Method not allowed: " << strMethod << std::endl;
         this->buildErrorResponse(METHOD_NOT_ALLOWED);
         return;
     }
 
-    std::string fileName = _cleanUri;
-    // TODO: root can be in the location block or in the server block
-    std::string filePath = _config.getRoot()->getValue() + fileName;
-    std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
+    std::cout << "TESTE DO _cleanUri" << _cleanUri << std::endl;
+    std::ifstream file(_cleanUri.c_str(), std::ios::in | std::ios::binary);
     if (!file) {
         // TODO [CGI] - now it returns error, because we can't open HTML with that. we can fix later
-        std::cerr << "Error: Could not open file: " << filePath << std::endl;
+        std::cerr << "Error: Could not open file: " << _cleanUri << std::endl;
         this->buildErrorResponse(NOT_FOUND);
         return;
     }
 
     if (_isCgi) {
-        std::cout << "[CGI] Detected Python Script " << fileName << std::endl;
+        std::cout << "[CGI] Detected Python Script " << _cleanUri << std::endl;
 
-        CgiHandler cgi(filePath);
+        CgiHandler cgi(_cleanUri);
         std::string cgiResult = cgi.execute();
         // I wrap CGI response in HTML style now
         this->buildOKResponse(cgiResult, "text/html");
@@ -249,10 +293,7 @@ void HttpRequest::parseResponse() {
         return;
     }
 
-    // std::cout << "Sent file: " << filePath << std::endl; for some reason it always shows the
-    // error path, but it's working
-
-    std::string fileContent = Utils::readFile(filePath);
+    std::string fileContent = Utils::readFile(_cleanUri);
     std::string contentType = _mimeType;  // we need these two to send the content
 
     this->buildOKResponse(fileContent, contentType);
@@ -263,30 +304,17 @@ void HttpRequest::initFromRaw() {
         this->buildErrorResponse(BAD_REQUEST);
         return;
     }
-    parseUri();
-    size_t firstLineEnd = _rawUri.find("\r\n");
-    if (firstLineEnd == std::string::npos) {
-        this->buildErrorResponse(BAD_REQUEST);
-        _isValid = false;
-        return;
-    }
-    size_t headersStart = firstLineEnd + 2;
-
-    size_t headersEnd = _rawUri.find("\r\n\r\n");
-    if (headersEnd == std::string::npos) {
-        this->buildErrorResponse(BAD_REQUEST);
-        _isValid = false;
-        return;
-    }
-
-    parseHeaders(_rawUri.substr(headersStart, headersEnd));
+    parseLocation();
+    parseIndex();
+    parseRoot();
+    parseHeaders();
     parseBody();
     detectCgiAndMime();
     parseResponse();
 }
 
 HttpMethod HttpRequest::getMethod() const { return _method; };
-std::string HttpRequest::getRawUri() const { return _rawUri; };
+std::string HttpRequest::getRawRequest() const { return _rawRequest; };
 std::string HttpRequest::getCleanUri() const { return _cleanUri; };
 // std::string HttpRequest::getPath() const { return _path; };
 std::map<std::string, std::string> HttpRequest::getQueryParams() const { return _queryParams; };
@@ -296,5 +324,4 @@ std::string HttpRequest::getBody() const { return _body; };
 std::string HttpRequest::getMimeType() const { return _mimeType; };
 CgiType HttpRequest::getCgiType() const { return _cgiType; };
 bool HttpRequest::getIsCgi() const { return _isCgi; };
-bool HttpRequest::getIsValid() const { return _isValid; };
 std::string HttpRequest::getResponse() const { return _response; };

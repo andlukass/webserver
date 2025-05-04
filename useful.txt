@@ -13,3 +13,10 @@ Yulia:
 3. ClientMaxBodySize - I think we need to convert it to long or size_t or something? based on letter that we get (m, g, k, b)
 4. I think bytes should be allowed in ClientMaxBodySize
 5. 
+
+Lucas notes:
+if no root provided, we can choose, im going to let "./" (its going to be "./" from where the program has been executed).
+if no "/" at the begining of root, the root provided "merges" with our default one ("./")
+if no "/" at the end of root, we automatically add a "/".
+if root provided in location, it completely replaces the server one
+decided to in path, dont accept "="

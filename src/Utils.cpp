@@ -73,3 +73,26 @@ std::vector<std::string> Utils::split(const std::string &str, const std::string 
 
     return result;
 }
+
+std::string Utils::cleanSlashes(const std::string &path) {
+    std::string normalized;
+    bool lastWasSlash = false;
+    
+    for (size_t i = 0; i < path.length(); i++) {
+        if (path[i] == '/') {
+            if (!lastWasSlash) {
+                normalized += '/';
+                lastWasSlash = true;
+            }
+        } else {
+            normalized += path[i];
+            lastWasSlash = false;
+        }
+    }
+    
+    if (normalized.empty() || normalized[0] != '/') {
+        normalized = '/' + normalized;
+    }
+    
+    return normalized;
+}
