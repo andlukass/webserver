@@ -10,9 +10,9 @@ class Autoindex : public Directive {
     Autoindex();
     void print() const;
     void parse(std::string &config);
-    bool getValue() const;
+    std::string getValue() const;
     Autoindex *clone() const;
 
    private:
-    bool _value;
+    std::string _value;
 };

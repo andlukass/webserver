@@ -12,7 +12,7 @@
 #include "MultiDirective.hpp"
 #include "Root.hpp"
 #include "Index.hpp"
-
+#include "Autoindex.hpp"
 class ServerDirective : public Directive {
    public:
     ServerDirective();
@@ -32,6 +32,7 @@ class ServerDirective : public Directive {
     AllowMethods *getAllowMethods() const;
     Index *getIndex() const;
     MultiDirective *getServerName() const;
+    Autoindex *getAutoindex() const;
 
    private:
     DirectiveMap _value;

@@ -64,6 +64,18 @@ void HttpRequest::buildOKResponse(std::string fileContent, std::string contentTy
     this->_response = response.str();
 }
 
+// TODO: build autoindex response
+void HttpRequest::buildAutoindexResponse() {
+    std::string fileContent = "<html><body><h1>This should be an AutoIndex - Not handled yet</h1></body></html>";
+    std::stringstream response;
+    response << "HTTP/1.1 200 OK\r\n";
+    response << "Content-Type: text/html\r\n";
+    response << "Content-Length: " << fileContent.size() << "\r\n";
+    response << "Connection: close\r\n\r\n";
+    response << fileContent;
+    this->_response = response.str();
+}
+
 // TODO: our config parser could use enum HttpMethod
 // for now this is just translating to text
 std::string methodToString(HttpMethod method) {
@@ -212,6 +224,19 @@ void HttpRequest::parseAllowMethods() {
     _allowMethods = _config.getAllowMethods()->getValue();
 }
 
+void HttpRequest::parseAutoindex() {
+    std::string tempAutoindex = "";
+    if (!_locationPath.empty()) {
+        tempAutoindex = _config.getLocation(_locationPath).getAutoindex()->getValue();
+        if (!tempAutoindex.empty()) {
+            _autoindex = tempAutoindex == "on";
+            return;
+        }
+    }
+    tempAutoindex = _config.getAutoindex()->getValue();
+    _autoindex = tempAutoindex == "on";
+}
+
 void HttpRequest::parseLocation() {
     char lastChar = _cleanUri.back();
     bool hasFile = lastChar != '/';
@@ -279,6 +304,7 @@ void HttpRequest::parseResponse() {
 
     std::string filePath = _root + _cleanUri + _index;
     std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
+    std::string fileContent = Utils::readFile(filePath);
     if (!file) {
         // TODO [CGI] - now it returns error, because we can't open HTML with that. we can fix later
         std::cerr << "Error: Could not open file: " << filePath << std::endl;
@@ -296,7 +322,11 @@ void HttpRequest::parseResponse() {
         return;
     }
 
-    std::string fileContent = Utils::readFile(filePath);
+    if (Utils::isDirectory(filePath)) {
+        if (_autoindex) this->buildAutoindexResponse();
+        else this->buildErrorResponse(NOT_FOUND);
+        return;
+    }
     this->buildOKResponse(fileContent, _mimeType);
 }
 
@@ -306,6 +336,7 @@ void HttpRequest::initFromRaw() {
         return;
     }
     parseLocation();
+    parseAutoindex();
     parseIndex();
     parseRoot();
     parseHeaders();

@@ -2,7 +2,7 @@
 
 const char *validServerProps[] = {"listen",   "server_name", "client_max_body_size",
                                   "index",    "root",        "error_page",
-                                  "location", "allow_methods", NULL};
+                                  "location", "allow_methods", "autoindex", NULL};
 
 ServerDirective::ServerDirective() : Directive("server") {
     // std::cout << "ServerDirective default constructor ========================================"
@@ -15,6 +15,7 @@ ServerDirective::ServerDirective() : Directive("server") {
     this->_value["root"] = new Root();
     this->_value["error_page"] = new ErrorPage();
     this->_value["location"] = new Locations();
+    this->_value["autoindex"] = new Autoindex();
 }
 
 ServerDirective::ServerDirective(const ServerDirective &other) : Directive(other._name) {
@@ -89,4 +90,8 @@ AllowMethods *ServerDirective::getAllowMethods() const {
 
 const LocationDirective &ServerDirective::getLocation(std::string path) const {
     return dynamic_cast<Locations *>(this->_value.at("location"))->getValue().at(path);
+}
+
+Autoindex *ServerDirective::getAutoindex() const {
+    return dynamic_cast<Autoindex *>(this->_value.at("autoindex"));
 }

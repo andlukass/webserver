@@ -27,6 +27,7 @@ class HttpRequest {
 
     std::string _locationPath;
     std::string _errorPagePath;
+    bool _autoindex;
     std::vector<std::string> _allowMethods;
     std::string _index;
     std::string _root;
@@ -43,12 +44,13 @@ class HttpRequest {
     void parseResponse();
     void buildErrorResponse(int errorStatus);
     void parseErrorPagePath(int errorStatus);
+    void buildAutoindexResponse();
     void buildOKResponse(std::string fileContent, std::string contentType);
     void parseAllowMethods();
+    void parseAutoindex();
     void parseIndex();
     void parseRoot();
     void initFromRaw();
-
    public:
     HttpRequest(const ServerDirective& config, const std::string& request);
     ~HttpRequest();

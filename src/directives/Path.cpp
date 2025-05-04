@@ -9,7 +9,7 @@ void Path::parse(std::string &config) {
     std::vector<std::string> slashs = Utils::split(this->_value, "/");
     if (slashs.size() > 1) throw Exception("Path directive must be a single path");
     this->_value = Utils::cleanSlashes(this->_value);
-    if (this->_value.back() == '/') this->_value.pop_back();
+    if (this->_value.back() != '/') this->_value.push_back('/');
     if (this->_value.size() > 50) throw Exception("Path directive path is too long");
 }
 
