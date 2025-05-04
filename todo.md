@@ -1,20 +1,5 @@
 # Future Steps for HTTP Server Development
 
-## 4. **Generate HTTP base on Location Response**
-- Match the request path to the corresponding `location` in the config.
-- Example: if the path is `/upload`, find the corresponding location block.
-- Handle GET requests:
-    - Here we should check first the config in the location block, then go to the server block. (index, root, etc.) - ONLY PART NOT DONE
-    - Read the file from the disk (e.g., `/index.html`).
-    - Generate a response with the file contents and appropriate headers (like `Content-Type`).
-- Handle POST requests:
-    - Receive data (e.g., form submissions) and generate a response.
-    - Handle `client_max_body_size` to reject requests that exceed the limit. - ONLY PART NOT DONE
-    - Handle `error_page` in error case. - ONLY PART NOT DONE
-- Handle error pages (e.g., 404 Not Found):
-    - If the file is not found, return a custom error page based on the config.
-    - Verify allowed methods for that location (e.g., GET/POST).
-
 ## 7. **Handle POST Requests & File Uploads**
 - Handle file uploads:
     - Parse the multipart data.
@@ -35,6 +20,12 @@
 ## 12. **Handle properly errors in the parser**
 - When the parsers throws an error, we should properly send the user a message in the cli and make sure that there is no memory leaks.
 
+## 13. **Handle client_max_body_size**
+- It should really just send a 413 when the body size is bigger than the specified.
+
+## 14. **Handle directory listing**
+- If autoindex is "on" and the request is for a directory, we should send as response a HTML page containing the list of files of that directory.
+
 ## 1. **Receive HTTP Requests (Get Data)** - DONE
 - Implement a `recv()` method to read HTTP request data.
   - Read the incoming HTTP request line (e.g., `GET /index.html HTTP/1.1`).
@@ -45,6 +36,20 @@
 - Extract path (e.g., `/index.html`).
 - Extract headers (key-value pairs like `Host`, `Content-Type`, etc.).
 - Handle POST body (if applicable).
+
+## 4. **Generate HTTP base on Location Response** - DONE
+- Match the request path to the corresponding `location` in the config.
+- Example: if the path is `/upload`, find the corresponding location block.
+- Handle GET requests:
+    - Here we should check first the config in the location block, then go to the server block. (index, root, etc.).
+    - Read the file from the disk (e.g., `/index.html`).
+    - Generate a response with the file contents and appropriate headers (like `Content-Type`).
+- Handle POST requests:
+    - Receive data (e.g., form submissions) and generate a response.
+    - Handle `error_page` in error case.
+- Handle error pages (e.g., 404 Not Found):
+    - If the file is not found, return a custom error page based on the config.
+    - Verify allowed methods for that location (e.g., GET/POST).
 
 ## 5. **Send HTTP Response** - DONE
 - Send the response headers (status, content type, etc.).
