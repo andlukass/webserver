@@ -26,6 +26,9 @@
 ## 14. **Handle directory listing**
 - If autoindex is "on" and the request is for a directory, we should send as response a HTML page containing the list of files of that directory.
 
+## 15. **Define an HTTP redirect**
+- Idk exactly, those are the exact words of the subject.
+
 ## 1. **Receive HTTP Requests (Get Data)** - DONE
 - Implement a `recv()` method to read HTTP request data.
   - Read the incoming HTTP request line (e.g., `GET /index.html HTTP/1.1`).
