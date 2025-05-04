@@ -12,6 +12,8 @@ class HttpRequest {
    private:
     HttpMethod _method;
     std::string _rawRequest;
+    std::string _root;
+    std::string _index;
     std::string _cleanUri;
     std::string _rawHeaders;
     std::string _locationPath;

@@ -192,7 +192,7 @@ void HttpRequest::parseIndex() {
     if (serverIndex.empty()) {
         serverIndex = "/index.html";
     }
-    _cleanUri = hasFile ? _cleanUri : _cleanUri + serverIndex;
+    _index = hasFile ? "" : serverIndex;
 }
 
 void HttpRequest::parseRoot() {
@@ -203,7 +203,7 @@ void HttpRequest::parseRoot() {
     if (serverRoot.empty()) {
         serverRoot = "./";
     }
-    _cleanUri = serverRoot + _cleanUri;
+    _root = serverRoot;
 }
 
 void HttpRequest::parseLocation() {
@@ -271,19 +271,20 @@ void HttpRequest::parseResponse() {
         return;
     }
 
-    std::cout << "TESTE DO _cleanUri" << _cleanUri << std::endl;
-    std::ifstream file(_cleanUri.c_str(), std::ios::in | std::ios::binary);
+    std::string filePath = _root + _cleanUri + _index;
+    std::cout << "TESTE DO _cleanUri" << filePath << std::endl;
+    std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
     if (!file) {
         // TODO [CGI] - now it returns error, because we can't open HTML with that. we can fix later
-        std::cerr << "Error: Could not open file: " << _cleanUri << std::endl;
+        std::cerr << "Error: Could not open file: " << filePath << std::endl;
         this->buildErrorResponse(NOT_FOUND);
         return;
     }
 
     if (_isCgi) {
-        std::cout << "[CGI] Detected Python Script " << _cleanUri << std::endl;
+        std::cout << "[CGI] Detected Python Script " << filePath << std::endl;
 
-        CgiHandler cgi(_cleanUri);
+        CgiHandler cgi(filePath);
         std::string cgiResult = cgi.execute();
         // I wrap CGI response in HTML style now
         this->buildOKResponse(cgiResult, "text/html");
@@ -293,7 +294,7 @@ void HttpRequest::parseResponse() {
         return;
     }
 
-    std::string fileContent = Utils::readFile(_cleanUri);
+    std::string fileContent = Utils::readFile(filePath);
     std::string contentType = _mimeType;  // we need these two to send the content
 
     this->buildOKResponse(fileContent, contentType);
