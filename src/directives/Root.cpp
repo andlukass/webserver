@@ -8,7 +8,8 @@ void Root::parse(std::string &config) {
     std::string fullValue = this->getFullValue(config, ';');
     std::vector<std::string> arguments = Utils::split(fullValue, "\n \t");
     if (arguments.size() != 1) throw Exception("Invalid arguments at root directive");
-    this->_value = arguments[0] + "/";
+    if (arguments[0].size() > 200) throw Exception("Root directive path is too long");
+    this->_value = Utils::cleanSlashes("/" + arguments[0] + "/");
 }
 
 void Root::print() const { std::cout << this->_name << ": " << this->_value << std::endl; }

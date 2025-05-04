@@ -1,6 +1,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <sstream>
 #include "./directives/ServerDirective.hpp"
 #include "../includes/cgi/CgiHandler.hpp"
 
@@ -12,11 +13,8 @@ class HttpRequest {
    private:
     HttpMethod _method;
     std::string _rawRequest;
-    std::string _root;
-    std::string _index;
     std::string _cleanUri;
     std::string _rawHeaders;
-    std::string _locationPath;
     std::map<std::string, std::string> _queryParams;
     HttpVersion _httpVersion;
     std::map<std::string, std::string> _headers;
@@ -24,9 +22,14 @@ class HttpRequest {
     std::string _mimeType;
     CgiType _cgiType;
     bool _isCgi;
-    int _status;
     std::string _response;
     const ServerDirective& _config;
+
+    std::string _locationPath;
+    std::string _errorPagePath;
+    std::vector<std::string> _allowMethods;
+    std::string _index;
+    std::string _root;
 
     // cookies;
     // contentType;
@@ -39,16 +42,16 @@ class HttpRequest {
     void parseLocation();
     void parseResponse();
     void buildErrorResponse(int errorStatus);
+    void parseErrorPagePath(int errorStatus);
     void buildOKResponse(std::string fileContent, std::string contentType);
+    void parseAllowMethods();
     void parseIndex();
     void parseRoot();
+    void initFromRaw();
 
    public:
     HttpRequest(const ServerDirective& config, const std::string& request);
     ~HttpRequest();
-
-    // initialize all other values (_rawUri is initialized from a start)
-    void initFromRaw();
 
     // getters
     HttpMethod getMethod() const;

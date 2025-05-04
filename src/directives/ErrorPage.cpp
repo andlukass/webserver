@@ -27,6 +27,6 @@ void ErrorPage::print() const {
     }
 }
 
-std::map<int, std::string> ErrorPage::getValue() const { return this->_value; }
+const std::map<int, std::string>& ErrorPage::getValue() const { return this->_value; }
 
 ErrorPage *ErrorPage::clone() const { return new ErrorPage(*this); }

@@ -1,11 +1,10 @@
 #include "../includes/HttpRequest.hpp"
 
-#include <sstream>
-
 enum ErrorStatus {
     NOT_FOUND = 404,
     METHOD_NOT_ALLOWED = 405,
     BAD_REQUEST = 400,
+    PAYLOAD_TOO_LARGE = 413,
 };
 
 std::string statusToString(int errorStatus) {
@@ -16,45 +15,46 @@ std::string statusToString(int errorStatus) {
             return "405 Method Not Allowed";
         case BAD_REQUEST:
             return "400 Bad Request";
+        case PAYLOAD_TOO_LARGE:
+            return "413 Payload Too Large";
         default:
-            return "";
+            return "NOT HANDLED ERROR";
     }
 }
 
 void HttpRequest::buildErrorResponse(int errorStatus) {
-    std::cout << "Building error response" << std::endl;
     std::stringstream response;
-    std::string fileContent = Utils::readFile("./src/webcontent/errorpage");
+    parseErrorPagePath(errorStatus);
+    std::string fileContent = Utils::readFile(this->_errorPagePath);
     response << "HTTP/1.1 " << errorStatus << " " << statusToString(errorStatus) << "\r\n";
-    if (errorStatus == NOT_FOUND) {
-        if (fileContent.empty()) {
-            fileContent = "<html><body><h1>"+ statusToString(errorStatus) + "</h1></body></html>";
-        }
-        response << "Content-Type: text/html\r\n";
-        response << "Content-Length: " << fileContent.size() << "\r\n";
-        response << "Connection: close\r\n\r\n";
-        response << fileContent;
+    if (fileContent.empty()) {
+        fileContent = "<html><body><h1>"+ statusToString(errorStatus) + "</h1></body></html>";
     }
-    if (errorStatus == BAD_REQUEST) {
-        fileContent = "<html><body><h1>" + statusToString(errorStatus) + "</h1></body></html>";
-        response << "Content-Type: text/html\r\n";
-        response << "Content-Length: " << fileContent.size() << "\r\n";
-        response << "Connection: close\r\n\r\n";
-        response << fileContent;
-    }
-    if (errorStatus == METHOD_NOT_ALLOWED) {
-        fileContent = "<html><body><h1>" + statusToString(errorStatus) + "</h1></body></html>";
-        response << "Content-Type: text/html\r\n";
-        response << "Content-Length: " << fileContent.size() << "\r\n";
-        response << "Connection: close\r\n\r\n";
-        response << fileContent;
-    }
+    response << "Content-Type: text/html\r\n";
+    response << "Content-Length: " << fileContent.size() << "\r\n";
+    response << "Connection: close\r\n\r\n";
+    response << fileContent;
     this->_response = response.str();
-    this->_status = errorStatus;
+}
+
+void HttpRequest::parseErrorPagePath(int errorStatus) {
+    std::map<int, std::string> errorPage;
+    if (!_locationPath.empty()) {
+        errorPage = _config.getLocation(_locationPath).getErrorPage()->getValue();
+        if (errorPage.find(errorStatus) != errorPage.end()) {
+            _errorPagePath = errorPage.at(errorStatus);
+            return;
+        }
+    }
+    errorPage = _config.getErrorPage()->getValue();
+    if (errorPage.find(errorStatus) != errorPage.end()) {
+        _errorPagePath = errorPage.at(errorStatus);
+        return;
+    }
+    _errorPagePath = "";
 }
 
 void HttpRequest::buildOKResponse(std::string fileContent, std::string contentType) {
-    // std::cout << "TESTE DO LOCATION" << this->_config.getLocation("/root").getPath()->getValue() << std::endl;
     std::stringstream response;
     response << "HTTP/1.1 200 OK\r\n";
     response << "Content-Type: " << contentType << "\r\n";
@@ -62,7 +62,6 @@ void HttpRequest::buildOKResponse(std::string fileContent, std::string contentTy
     response << "Connection: close\r\n\r\n";
     response << fileContent;
     this->_response = response.str();
-    this->_status = 200;
 }
 
 // TODO: our config parser could use enum HttpMethod
@@ -88,7 +87,6 @@ HttpRequest::HttpRequest(const ServerDirective& config, const std::string& reque
       _isCgi(false),
       _config(config) {
             this->initFromRaw();
-            // std::cout << "THIS IS THE REQUEST " << request.getRawUri() << std::endl;
       }
 
 HttpRequest::~HttpRequest() {}
@@ -206,21 +204,33 @@ void HttpRequest::parseRoot() {
     _root = serverRoot;
 }
 
+void HttpRequest::parseAllowMethods() {
+    if (!_locationPath.empty()) {
+        _allowMethods = _config.getLocation(_locationPath).getAllowMethods()->getValue();
+        if (!_allowMethods.empty()) return;
+    }
+    _allowMethods = _config.getAllowMethods()->getValue();
+}
+
 void HttpRequest::parseLocation() {
     char lastChar = _cleanUri.back();
     bool hasFile = lastChar != '/';
     std::string locationPath = _cleanUri;
 
     if (hasFile) {
-        size_t lastSlash = _cleanUri.find_last_of('/');
-        if (lastSlash != std::string::npos) {
-            locationPath = _cleanUri.substr(0, lastSlash + 1);
+        if (locationPath.front() == '/') locationPath.erase(0, 1);
+        size_t firstSlash = locationPath.find_first_of('/');
+        if (firstSlash != std::string::npos) {
+            locationPath.erase(firstSlash + 1, locationPath.size() - firstSlash - 1);
         }
+        if (locationPath.back() == '/') locationPath.pop_back();
+        locationPath.insert(0, "/");
     }
 
     try {
         _config.getLocation(locationPath);
         _locationPath = locationPath;
+        _cleanUri.erase(0, locationPath.size());
     } catch (const std::exception &e) {
         _locationPath = "";
     }
@@ -260,19 +270,14 @@ void HttpRequest::detectCgiAndMime() {
 }
 
 void HttpRequest::parseResponse() {
-    const std::vector<std::string>& allowedMethods = 
-        _config.getAllowMethods()->getValue();
     std::string strMethod = methodToString(_method);
 
-
-    if (std::find(allowedMethods.begin(), allowedMethods.end(), strMethod) == allowedMethods.end()) {
-        std::cerr << "Method not allowed: " << strMethod << std::endl;
+    if (std::find(_allowMethods.begin(), _allowMethods.end(), strMethod) == _allowMethods.end()) {
         this->buildErrorResponse(METHOD_NOT_ALLOWED);
         return;
     }
 
     std::string filePath = _root + _cleanUri + _index;
-    std::cout << "TESTE DO _cleanUri" << filePath << std::endl;
     std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
     if (!file) {
         // TODO [CGI] - now it returns error, because we can't open HTML with that. we can fix later
@@ -288,16 +293,11 @@ void HttpRequest::parseResponse() {
         std::string cgiResult = cgi.execute();
         // I wrap CGI response in HTML style now
         this->buildOKResponse(cgiResult, "text/html");
-        // std::cout << "[CGI] Returned output\n" << cgiResult << std::endl;
-        // send(clientFd, cgiResult.c_str(), cgiResult.size(), 0);
-        // this->close();
         return;
     }
 
     std::string fileContent = Utils::readFile(filePath);
-    std::string contentType = _mimeType;  // we need these two to send the content
-
-    this->buildOKResponse(fileContent, contentType);
+    this->buildOKResponse(fileContent, _mimeType);
 }
 
 void HttpRequest::initFromRaw() {
@@ -311,13 +311,13 @@ void HttpRequest::initFromRaw() {
     parseHeaders();
     parseBody();
     detectCgiAndMime();
+    parseAllowMethods();
     parseResponse();
 }
 
 HttpMethod HttpRequest::getMethod() const { return _method; };
 std::string HttpRequest::getRawRequest() const { return _rawRequest; };
 std::string HttpRequest::getCleanUri() const { return _cleanUri; };
-// std::string HttpRequest::getPath() const { return _path; };
 std::map<std::string, std::string> HttpRequest::getQueryParams() const { return _queryParams; };
 HttpVersion HttpRequest::getHttpVersion() const { return _httpVersion; };
 std::map<std::string, std::string> HttpRequest::getHeaders() const { return _headers; };

@@ -11,10 +11,8 @@ class Path : public Directive {
     void print() const;
     void parse(std::string &config);
     std::string getValue() const;
-    bool getIsExact() const;
     Path *clone() const;
 
    private:
     std::string _value;
-    bool _isExact;
 };

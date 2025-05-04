@@ -2,25 +2,21 @@
 
 Path::Path() : Directive("path") {
     this->_value = "";
-    this->_isExact = false;
 }
 
 void Path::parse(std::string &config) {
     this->_value = getNextWord(config);
-    if (this->_value == "=") {
-        this->_isExact = true;
-        this->_value = getNextWord(config);
-    }
+    std::vector<std::string> slashs = Utils::split(this->_value, "/");
+    if (slashs.size() > 1) throw Exception("Path directive must be a single path");
     this->_value = Utils::cleanSlashes(this->_value);
+    if (this->_value.back() == '/') this->_value.pop_back();
+    if (this->_value.size() > 50) throw Exception("Path directive path is too long");
 }
 
 void Path::print() const {
-    std::string exact = this->_isExact ? "= " : "";
-    std::cout << this->_name << ": " << exact << this->_value << std::endl;
+    std::cout << this->_name << ": " << this->_value << std::endl;
 }
 
 std::string Path::getValue() const { return this->_value; }
-
-bool Path::getIsExact() const { return this->_isExact; }
 
 Path *Path::clone() const { return new Path(*this); }

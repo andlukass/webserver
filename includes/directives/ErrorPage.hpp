@@ -10,7 +10,7 @@ class ErrorPage : public Directive {
     ErrorPage();
     void print() const;
     void parse(std::string &config);
-    std::map<int, std::string> getValue() const;
+    const std::map<int, std::string> &getValue() const;
     ErrorPage *clone() const;
 
    private:

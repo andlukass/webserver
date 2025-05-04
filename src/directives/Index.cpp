@@ -13,9 +13,11 @@ void Index::parse(std::string &config) {
     std::string fullValue = this->getFullValue(config, ';');
     this->_value = fullValue;
     this->validate();
-    if (this->_value.at(0) != '/') {
+    if (this->_value.front() != '/') {
         this->_value = "/" + this->_value;
     }
+    if (this->_value.size() > 50) throw Exception("Index directive path is too long");
+    this->_value = Utils::cleanSlashes(this->_value);
 }
 
 void Index::print() const {
