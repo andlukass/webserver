@@ -192,7 +192,10 @@ void HttpRequest::parseBody() {
 }
 
 void HttpRequest::parseIndex() {
-    char lastChar = _cleanUri.back();
+    
+	//char lastChar = _cleanUri.back();
+	//CHANGED
+	char lastChar = _cleanUri[_cleanUri.size() - 1];
     bool hasFile = lastChar != '/';
 
     std::string serverIndex =  _locationPath.empty() ? "" : _config.getLocation(_locationPath).getIndex()->getValue();
@@ -238,17 +241,23 @@ void HttpRequest::parseAutoindex() {
 }
 
 void HttpRequest::parseLocation() {
-    char lastChar = _cleanUri.back();
+    //char lastChar = _cleanUri.back();
+	//CHANGED
+	char lastChar = _cleanUri[_cleanUri.size() - 1];
     bool hasFile = lastChar != '/';
     std::string locationPath = _cleanUri;
 
     if (hasFile) {
-        if (locationPath.front() == '/') locationPath.erase(0, 1);
+        //if (locationPath.front() == '/') locationPath.erase(0, 1);
+		//CHANGED
+		if (locationPath[0] == '/') locationPath.erase(0, 1);
         size_t firstSlash = locationPath.find_first_of('/');
         if (firstSlash != std::string::npos) {
             locationPath.erase(firstSlash + 1, locationPath.size() - firstSlash - 1);
         }
-        if (locationPath.back() == '/') locationPath.pop_back();
+		//if (locationPath.back() == '/') locationPath.pop_back();
+		//CHANGED
+		if (locationPath[locationPath.size() - 1] == '/') locationPath.erase(locationPath.size() - 1);
         locationPath.insert(0, "/");
     }
 

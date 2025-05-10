@@ -13,7 +13,9 @@ void Index::parse(std::string &config) {
     std::string fullValue = this->getFullValue(config, ';');
     this->_value = fullValue;
     this->validate();
-    if (this->_value.front() != '/') {
+    //if (this->_value.front() != '/')
+	//CHANGED
+	if (this->_value[0] != '/') {
         this->_value = "/" + this->_value;
     }
     if (this->_value.size() > 50) throw Exception("Index directive path is too long");
