@@ -5,6 +5,7 @@ enum ErrorStatus {
     METHOD_NOT_ALLOWED = 405,
     BAD_REQUEST = 400,
     PAYLOAD_TOO_LARGE = 413,
+	NO_CONTENT = 204
 };
 
 std::string statusToString(int errorStatus) {
@@ -17,6 +18,8 @@ std::string statusToString(int errorStatus) {
             return "400 Bad Request";
         case PAYLOAD_TOO_LARGE:
             return "413 Payload Too Large";
+		case NO_CONTENT:
+			return "204 No Content";
         default:
             return "NOT HANDLED ERROR";
     }
@@ -27,8 +30,13 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
     parseErrorPagePath(errorStatus);
     std::string fileContent = Utils::readFile(this->_errorPagePath);
     response << "HTTP/1.1 " << errorStatus << " " << statusToString(errorStatus) << "\r\n";
-    if (fileContent.empty()) {
-        fileContent = "<html><body><h1>"+ statusToString(errorStatus) + "</h1></body></html>";
+    if (fileContent.empty() || errorStatus == NO_CONTENT) {
+       fileContent = "<html>\n"
+                  "<head><title>" + statusToString(errorStatus) + "</title></head>\n"
+                  "<body>\n"
+                  "<center><h1>" + statusToString(errorStatus) + "</h1></center>\n"
+                  "</body>\n"
+                  "</html>\n";
     }
     response << "Content-Type: text/html\r\n";
     response << "Content-Length: " << fileContent.size() << "\r\n";
@@ -305,12 +313,26 @@ void HttpRequest::parseResponse() {
     std::string filePath = _root + _cleanUri + _index;
     std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
     std::string fileContent = Utils::readFile(filePath);
-    if (!file) {
+    if (!file && _method != METHOD_DELETE) {
         // TODO [CGI] - now it returns error, because we can't open HTML with that. we can fix later
         std::cerr << "Error: Could not open file: " << filePath << std::endl;
         this->buildErrorResponse(NOT_FOUND);
         return;
     }
+
+	//IT HAS TO BE BEFORE CGI because the path removed
+	if(_method == METHOD_DELETE) {
+		if(!file) {
+			this->buildErrorResponse(NOT_FOUND);
+			return;
+		}
+		if(std::remove(filePath.c_str()) == 0) {
+			this->buildErrorResponse(NO_CONTENT);
+			return;
+		}
+		else
+			this->buildErrorResponse(6);
+	}
 
     if (_isCgi) {
         std::cout << "[CGI] Detected Python Script " << filePath << std::endl;

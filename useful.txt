@@ -1,11 +1,23 @@
 Tina: You can test our the website response, if you open another terminal and type: curl -i http://localhost:8002/
 you should see this if it's okay, or 404,etc... if it's not okay OR you can check browser->devTools->Network, you reload there the page and it'll show you the status number
-***TODO SUGGESTION: Error could not open: *DON'T LEAVE HERE A PATH* 
 
 HTTP/1.1 200 OK
 Content-Type: text/html
 Content-Length: 1288
 Connection: close
+
+
+COMPARISON nginx with our webserver stept:
+1 which nginx - test if installes
+2 copy default one to test a site
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/test_site
+sudo nano /etc/nginx/sites-available/test_site
+3 enable
+sudo ln -s /etc/nginx/sites-available/test_site /etc/nginx/sites-enabled/
+
+
+
+
 
 Yulia:
 0. What parameters are mandatory in config?
