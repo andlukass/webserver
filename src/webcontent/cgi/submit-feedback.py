@@ -1,35 +1,65 @@
 #!/usr/bin/env python3
 import cgi
-import os
 import html
 
-print("Content-Type: text/html\r\n\r\n")
+print("Content-Type: text/html\r\n\r\n") #I'm not sure if it's needed
 
 form = cgi.FieldStorage()
 
-name = form.getvalue("name", "Anonymous")
 message = form.getvalue("message", "")
-file_item = form["attachment"] if "attachment" in form else None
 
 # Save uploaded file if it exists
 upload_info = ""
-if file_item and file_item.filename:
-    filename = os.path.basename(file_item.filename)
-    filepath = f"/tmp/{filename}"
-    with open(filepath, "wb") as f:
-        f.write(file_item.file.read())
-    upload_info = f"<p>File <strong>{html.escape(filename)}</strong> uploaded successfully.</p>"
-else:
-    upload_info = "<p>No file uploaded.</p>"
+
 
 print(f"""
-<html>
-<head><title>Feedback Received</title></head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback Submitted</title>
+  <style>
+    body {{
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #ffffff;
+      color: #000000;
+    }}
+    main {{
+      padding: 10rem;
+      text-align: center;
+    }}
+    h1 {{
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }}
+    p {{
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }}
+    a.button {{
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background-color: #000000;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }}
+    a.button:hover {{
+      background-color: #333333;
+    }}
+  </style>
+</head>
 <body>
-    <h1>Thank You, {html.escape(name)}!</h1>
-    <p>Your message:</p>
+  <main>
+    <h1>Thank You!</h1>
+    <p>Your message has been submitted:</p>
     <blockquote>{html.escape(message)}</blockquote>
     {upload_info}
+    <a href="/feedback" class="button">Return to Feedback</a>
+  </main>
 </body>
 </html>
 """)
