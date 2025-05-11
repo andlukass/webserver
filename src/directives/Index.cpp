@@ -29,3 +29,4 @@ void Index::print() const {
 std::string Index::getValue() const { return this->_value; }
 
 Index *Index::clone() const { return new Index(*this); }
+

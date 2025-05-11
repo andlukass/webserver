@@ -15,7 +15,8 @@ sudo nano /etc/nginx/sites-available/test_site
 3 enable
 sudo ln -s /etc/nginx/sites-available/test_site /etc/nginx/sites-enabled/
 
-
+*MAKE SURE .py executable*
+chmod +x submit-feedback.py
 
 
 

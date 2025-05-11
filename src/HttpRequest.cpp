@@ -345,18 +345,27 @@ void HttpRequest::parseResponse() {
 		else
 			this->buildErrorResponse(NOT_FOUND_DELETE);
 	}
-	// if(_method == METHOD_DELETE) {
-	// 	if(!file) {
-	// 		this->buildErrorResponse(NOT_FOUND);
-	// 		return;
-	// 	}
-	// 	if(std::remove(filePath.c_str()) == 0) {
-	// 		this->buildErrorResponse(NO_CONTENT);
-	// 		return;
-	// 	}
-	// 	else
-	// 		this->buildErrorResponse(6);
-	// }
+
+	if(_method == METHOD_POST) {
+		if(_body.empty()) {
+			buildErrorResponse(BAD_REQUEST);
+			return;
+		}
+		
+		std::ostringstream postFile;
+		postFile << time(NULL);
+		std::string filePath = _config.getRoot()->getValue() + postFile.str() +".txt";
+		std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
+		if(!outFile) {
+			buildErrorResponse(BAD_REQUEST);
+			return;
+		}
+		outFile << _body;
+		outFile.close();
+		
+		std::string successHtml = "<html><body><h1>Upload successful</h1><p>Saved to: " + filePath + "</p></body></html>";
+		buildOKResponse(successHtml, "text/html");
+	}
 
     if (_isCgi) {
         std::cout << "[CGI] Detected Python Script " << filePath << std::endl;

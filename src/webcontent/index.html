@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>404 - Page Not Found</title>
+  <title>Homepage</title>
   <style>
     * {
       margin: 0;
@@ -33,7 +33,7 @@
     .menu {
       display: flex;
       gap: 3rem;
-      padding: 1rem 2rem;
+	  padding: 1rem 2rem;
     }
 
     .menu a {
@@ -54,29 +54,17 @@
     }
 
     h1 {
-      font-size: 4rem;
+	  font-weight: 1;
+      font-size: 2rem;
+	  margin-top: 3rem;
       margin-bottom: 1rem;
     }
 
     p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
+      font-size: 1rem;
+      color: inherit; /* match the main color, i.e., white on image */
     }
 
-    a.button {
-      display: inline-block;
-      padding: 0.8rem 1.5rem;
-      background-color: #000000;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
-    }
-
-    a.button:hover {
-      background-color: #333333;
-    }
   </style>
 </head>
 <body>
@@ -87,14 +75,13 @@
       <a href="/projects">Projects</a>
       <a href="/our-team">Our Team</a>
       <a href="/feedback">Feedback</a>
-	  <a href="/account">Account</a>
+	<a href="/account">Account</a>
     </div>
   </nav>
 
   <main>
-    <h1>404</h1>
-    <p>Oops! The page you're looking for doesn't exist.</p>
-    <a href="/" class="button">Go Back Home</a>
+	<img src="/images/home-main.jpg" alt="home main image" style="width: 300px; height: auto;" />
+    <h1>Welcome to Our Webserver Project</h1>
   </main>
 </body>
 </html>

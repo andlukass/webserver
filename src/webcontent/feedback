@@ -60,6 +60,11 @@
       margin-bottom: 1rem;
     }
 
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
     form {
       display: flex;
       flex-direction: column;
@@ -100,18 +105,18 @@
       <a href="/projects">Projects</a>
       <a href="/our-team">Our Team</a>
       <a href="/feedback">Feedback</a>
+	  <a href="/account">Account</a>
     </div>
   </nav>
 
   <main>
     <h1>Leave Us a Message</h1>
-    <p>We’d love to hear from you! Share your thoughts and attach a file if you'd like.</p>
+    <p>Share your thoughts and we send the message to a CGI script.</p>
 
     <!-- Message POST Form with File Upload -->
-    <form method="POST" action="/submit-feedback" enctype="multipart/form-data">
-      <input type="text" name="name" placeholder="Your Name" required />
+    <!--<form method="POST" action="/submit-feedback" enctype="multipart/form-data">-->
+		<form method="POST" action="/cgi/submit-feedback.py" enctype="multipart/form-data">
       <textarea name="message" rows="5" placeholder="Your message..." required></textarea>
-      <input type="file" name="attachment" />
       <button type="submit">Send Message</button>
     </form>
   </main>
