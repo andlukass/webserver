@@ -1,5 +1,6 @@
 ***TODO SUGGESTION: Error could not open: *DON'T LEAVE HERE A PATH* 
-***random request bad request, buda UNKNOWN should be 405 Not Allowed... should we implement ? 
+***random request bad request, but UNKNOWN should be 405 Not Allowed... should we implement ? 
+***POST is not working if we send something in "" without it's okay: curl -X POST localhost "" should we implement?
 
 # Future Steps for HTTP Server Development
 
