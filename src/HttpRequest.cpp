@@ -33,7 +33,7 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
     parseErrorPagePath(errorStatus);
     std::string fileContent = Utils::readFile(this->_errorPagePath);
     response << "HTTP/1.1 " << errorStatus << " " << statusToString(errorStatus) << "\r\n";
-    if (fileContent.empty() || errorStatus == NOT_FOUND_DELETE) {
+    if (fileContent.empty() || errorStatus == NOT_FOUND_DELETE || errorStatus == NO_CONTENT) {
        fileContent = "<html>\n"
                   "<head><title>" + statusToString(errorStatus) + "</title></head>\n"
                   "<body>\n"
@@ -349,14 +349,14 @@ void HttpRequest::parseResponse() {
 		std::string filePath = _config.getRoot()->getValue() + postFile.str() +".txt";
 		std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
 		if(!outFile) {
-			buildErrorResponse(BAD_REQUEST);
+			buildErrorResponse(NO_CONTENT);
 			return ;
 		}
 		outFile << _body;
 		outFile.close();
 		
 		std::string successHtml = "<html>\n<body><h1>Upload successful</h1>\n<p>Saved to: " + filePath + "</p>\n</body>\n</html>\n";
-		buildOKResponse(successHtml, "text/html");
+		this->_response = successHtml;
 		return ;
 	}
 
