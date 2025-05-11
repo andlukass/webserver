@@ -4,9 +4,13 @@ import html
 
 print("Content-Type: text/html\r\n\r\n") #I'm not sure if it's needed
 
-form = cgi.FieldStorage()
-
-message = form.getvalue("message", "")
+try:
+    form = cgi.FieldStorage()
+    message = form.getvalue("message", "")
+except Exception as e:
+    print("Content-Type: text/html\r\n\r\n")
+    print(f"<h1>CGI Script Error</h1><p>{html.escape(str(e))}</p>")
+    exit(1)
 
 # Save uploaded file if it exists
 upload_info = ""

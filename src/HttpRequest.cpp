@@ -335,6 +335,7 @@ void HttpRequest::parseResponse() {
 		}
 		else
 			this->buildErrorResponse(NOT_FOUND_DELETE);
+		return;
 	}
 
 	if(_method == METHOD_POST) {
@@ -349,13 +350,14 @@ void HttpRequest::parseResponse() {
 		std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
 		if(!outFile) {
 			buildErrorResponse(BAD_REQUEST);
-			return;
+			return ;
 		}
 		outFile << _body;
 		outFile.close();
 		
-		std::string successHtml = "<html><body><h1>Upload successful</h1><p>Saved to: " + filePath + "</p></body></html>";
+		std::string successHtml = "<html>\n<body><h1>Upload successful</h1>\n<p>Saved to: " + filePath + "</p>\n</body>\n</html>\n";
 		buildOKResponse(successHtml, "text/html");
+		return ;
 	}
 
     if (_isCgi) {
