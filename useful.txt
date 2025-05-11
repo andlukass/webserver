@@ -6,6 +6,19 @@ Content-Type: text/html
 Content-Length: 1288
 Connection: close
 
+
+COMPARISON nginx with our webserver stept:
+1 which nginx - test if installes
+2 copy default one to test a site
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/test_site
+sudo nano /etc/nginx/sites-available/test_site
+3 enable
+sudo ln -s /etc/nginx/sites-available/test_site /etc/nginx/sites-enabled/
+
+
+
+
+
 Yulia:
 0. What parameters are mandatory in config?
 1. (addition to previous) now if there is no location we put default. maybe we can just fail it? 
