@@ -357,13 +357,13 @@ void HttpRequest::parseResponse() {
 		std::string filePath = _config.getRoot()->getValue() + postFile.str() +".txt";
 		std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
 		if(!outFile) {
-			buildErrorResponse(BAD_REQUEST);
+			buildErrorResponse(NOT_FOUND_DELETE);
 			return;
 		}
 		outFile << _body;
 		outFile.close();
 		
-		std::string successHtml = "<html><body><h1>Upload successful</h1><p>Saved to: " + filePath + "</p></body></html>";
+		std::string successHtml = "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath + "</p>\n</body>\n</html>\n";
 		buildOKResponse(successHtml, "text/html");
 	}
 
