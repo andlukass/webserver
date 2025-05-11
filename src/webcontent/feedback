@@ -108,7 +108,8 @@
     <p>We’d love to hear from you! Share your thoughts and attach a file if you'd like.</p>
 
     <!-- Message POST Form with File Upload -->
-    <form method="POST" action="/submit-feedback" enctype="multipart/form-data">
+    <!--<form method="POST" action="/submit-feedback" enctype="multipart/form-data">-->
+		<form method="POST" action="/cgi/submit-feedback.py" enctype="multipart/form-data">
       <input type="text" name="name" placeholder="Your Name" required />
       <textarea name="message" rows="5" placeholder="Your message..." required></textarea>
       <input type="file" name="attachment" />

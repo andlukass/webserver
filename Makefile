@@ -1,4 +1,4 @@
-#CFLAGS = -std=c++98 #-Wall -Werror -Wextra
+CFLAGS = -std=c++98 #-Wall -Werror -Wextra
 CC = g++
 		
 SRCS =  ./src/main.cpp                         \
