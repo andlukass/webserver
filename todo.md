@@ -1,5 +1,7 @@
+***CHECK LOGS
 ***TODO SUGGESTION: Error could not open: *DON'T LEAVE HERE A PATH* 
 ***random request bad request, buda UNKNOWN should be 405 Not Allowed... should we implement ? 
+
 
 # Future Steps for HTTP Server Development
 

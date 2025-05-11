@@ -68,7 +68,7 @@
     }
 
     input, textarea {
-	font-family: inherit;
+      font-family: inherit;
       padding: 0.8rem;
       font-size: 1rem;
       border: 1px solid #ccc;
@@ -76,7 +76,7 @@
     }
 
     button {
-	  font-family: inherit;
+      font-family: inherit;
       padding: 0.8rem 1.5rem;
       background-color: #000000;
       color: white;
@@ -90,28 +90,6 @@
     button:hover {
       background-color: #333333;
     }
-
-    .delete-section {
-      margin-top: 3rem;
-    }
-
-    .delete-section form {
-      display: inline;
-    }
-
-    .delete-section p {
-	font-family: inherit;
-      margin-bottom: 1rem;
-    }
-
-	.delete-section button {
-      background-color: #5e2b97;
-    }
-
-    .delete-section button:hover {
-      background-color: #4a2178;
-    }
-
   </style>
 </head>
 <body>
@@ -126,24 +104,16 @@
   </nav>
 
   <main>
-    <h1>Leave Your Feedback</h1>
-    <p>We'd love to hear your thoughts on our 42Webserv project! 🖤</p>
+    <h1>Leave Us a Message</h1>
+    <p>We’d love to hear from you! Share your thoughts and attach a file if you'd like.</p>
 
-    <!-- Feedback POST Form -->
-    <form method="POST" action="/submit-feedback">
+    <!-- Message POST Form with File Upload -->
+    <form method="POST" action="/submit-feedback" enctype="multipart/form-data">
       <input type="text" name="name" placeholder="Your Name" required />
-      <textarea name="message" rows="5" placeholder="Your feedback..." required></textarea>
-      <button type="submit">Send Feedback</button>
+      <textarea name="message" rows="5" placeholder="Your message..." required></textarea>
+      <input type="file" name="attachment" />
+      <button type="submit">Send Message</button>
     </form>
-
-    <!-- Simulated DELETE Section -->
-    <div class="delete-section">
-      <p>Want to delete your feedback?</p>
-      <form method="POST" action="/delete-feedback" onsubmit="return confirm('Are you sure you want to delete your feedback?');">
-        <input type="hidden" name="_method" value="DELETE" />
-        <button type="submit">Delete Feedback</button>
-      </form>
-    </div>
   </main>
 </body>
 </html>
