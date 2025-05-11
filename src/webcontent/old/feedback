@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>404 - Page Not Found</title>
+  <title>Feedback</title>
   <style>
     * {
       margin: 0;
@@ -49,32 +49,45 @@
     }
 
     main {
-      padding: 10rem;
+      padding: 5rem 2rem;
+      max-width: 600px;
+      margin: 0 auto;
       text-align: center;
     }
 
     h1 {
-      font-size: 4rem;
+      font-size: 3rem;
       margin-bottom: 1rem;
     }
 
-    p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 2rem;
     }
 
-    a.button {
-      display: inline-block;
+    input, textarea {
+      font-family: inherit;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      font-family: inherit;
       padding: 0.8rem 1.5rem;
       background-color: #000000;
       color: white;
-      text-decoration: none;
+      border: none;
       border-radius: 5px;
       font-weight: bold;
+      cursor: pointer;
       transition: background-color 0.3s ease;
     }
 
-    a.button:hover {
+    button:hover {
       background-color: #333333;
     }
   </style>
@@ -92,9 +105,17 @@
   </nav>
 
   <main>
-    <h1>404</h1>
-    <p>Oops! The page you're looking for doesn't exist.</p>
-    <a href="/" class="button">Go Back Home</a>
+    <h1>Leave Us a Message</h1>
+    <p>We’d love to hear from you! Share your thoughts and attach a file if you'd like.</p>
+
+    <!-- Message POST Form with File Upload -->
+    <!--<form method="POST" action="/submit-feedback" enctype="multipart/form-data">-->
+		<form method="POST" action="/cgi/submit-feedback.py" enctype="multipart/form-data">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <textarea name="message" rows="5" placeholder="Your message..." required></textarea>
+      <input type="file" name="attachment" />
+      <button type="submit">Send Message</button>
+    </form>
   </main>
 </body>
 </html>

@@ -342,7 +342,10 @@ void HttpRequest::parseResponse() {
 			buildErrorResponse(BAD_REQUEST);
 			return;
 		}
-		std::string filePath = _config.getRoot()->getValue() + std::to_string(time(NULL)) +".txt";
+		
+		std::ostringstream postFile;
+		postFile << time(NULL);
+		std::string filePath = _config.getRoot()->getValue() + postFile.str() +".txt";
 		std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
 		if(!outFile) {
 			buildErrorResponse(BAD_REQUEST);
