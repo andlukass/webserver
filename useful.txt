@@ -25,6 +25,11 @@ Creates path?	❌ No				  			 	❌ No
 Requires body?	✅ Usually (like a file or form) 	❌ No 
 
 
+*test for evaluation*
+curl -X POST localhost:8005/feedback "okay"
+curl -X POST -d "message=okay" localhost:8005/feedback
+
+
 *MAKE SURE .py executable*
 chmod +x submit-feedback.py
 
