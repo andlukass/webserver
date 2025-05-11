@@ -2,6 +2,7 @@
 
 enum ErrorStatus {
     NOT_FOUND = 404,
+	NOT_FOUND_DELETE = 600,
     METHOD_NOT_ALLOWED = 405,
     BAD_REQUEST = 400,
     PAYLOAD_TOO_LARGE = 413,
@@ -11,6 +12,8 @@ enum ErrorStatus {
 std::string statusToString(int errorStatus) {
     switch (errorStatus) {
         case NOT_FOUND:
+            return "404 Not Found";
+		case NOT_FOUND_DELETE:
             return "404 Not Found";
         case METHOD_NOT_ALLOWED:
             return "405 Method Not Allowed";
@@ -30,7 +33,7 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
     parseErrorPagePath(errorStatus);
     std::string fileContent = Utils::readFile(this->_errorPagePath);
     response << "HTTP/1.1 " << errorStatus << " " << statusToString(errorStatus) << "\r\n";
-    if (fileContent.empty() || errorStatus == NO_CONTENT) {
+    if (fileContent.empty() || errorStatus == NOT_FOUND_DELETE) {
        fileContent = "<html>\n"
                   "<head><title>" + statusToString(errorStatus) + "</title></head>\n"
                   "<body>\n"
@@ -323,7 +326,7 @@ void HttpRequest::parseResponse() {
 	//IT HAS TO BE BEFORE CGI because the path removed
 	if(_method == METHOD_DELETE) {
 		if(!file) {
-			this->buildErrorResponse(NOT_FOUND);
+			this->buildErrorResponse(NOT_FOUND_DELETE);
 			return;
 		}
 		if(std::remove(filePath.c_str()) == 0) {
@@ -331,8 +334,20 @@ void HttpRequest::parseResponse() {
 			return;
 		}
 		else
-			this->buildErrorResponse(6);
+			this->buildErrorResponse(NOT_FOUND_DELETE);
 	}
+	// if(_method == METHOD_DELETE) {
+	// 	if(!file) {
+	// 		this->buildErrorResponse(NOT_FOUND);
+	// 		return;
+	// 	}
+	// 	if(std::remove(filePath.c_str()) == 0) {
+	// 		this->buildErrorResponse(NO_CONTENT);
+	// 		return;
+	// 	}
+	// 	else
+	// 		this->buildErrorResponse(6);
+	// }
 
     if (_isCgi) {
         std::cout << "[CGI] Detected Python Script " << filePath << std::endl;
