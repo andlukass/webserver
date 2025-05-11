@@ -15,9 +15,18 @@ sudo nano /etc/nginx/sites-available/test_site
 3 enable
 sudo ln -s /etc/nginx/sites-available/test_site /etc/nginx/sites-enabled/
 
+
+🧠 Key Differences:
+Feature			POST								  DELETE
+Purpose			Add/upload data						  Delete a resource
+Requires path?	Yes, path must exist				  Yes, file/resource must exist
+Affects what?	Creates files/content			   	  Removes files/content
+Creates path?	❌ No				  			 	❌ No
+Requires body?	✅ Usually (like a file or form) 	❌ No 
+
+
 *MAKE SURE .py executable*
 chmod +x submit-feedback.py
-
 
 
 Yulia:
