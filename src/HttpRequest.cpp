@@ -346,6 +346,28 @@ void HttpRequest::parseResponse() {
 			this->buildErrorResponse(NOT_FOUND_DELETE);
 	}
 
+	if (_isCgi) {
+        std::cout << "[CGI] Detected Python Script " << filePath << std::endl;
+
+        CgiHandler cgi(filePath);
+        std::string cgiResult = cgi.execute();
+        // I wrap CGI response in HTML style now
+        this->buildOKResponse(cgiResult, "text/html");
+        if(_method == METHOD_POST) {
+			std::ostringstream postFile;
+			postFile << time(NULL);
+			std::string filePath = _config.getRoot()->getValue() + postFile.str() +".txt";
+			std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
+			if(!outFile) {
+				buildErrorResponse(NOT_FOUND_DELETE);
+				return;
+			}
+			outFile << _body;
+			outFile.close();
+		}
+		return;
+    }
+
 	if(_method == METHOD_POST) {
 		if(_body.empty()) {
 			buildErrorResponse(BAD_REQUEST);
@@ -365,17 +387,8 @@ void HttpRequest::parseResponse() {
 		
 		std::string successHtml = "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath + "</p>\n</body>\n</html>\n";
 		buildOKResponse(successHtml, "text/html");
+		return ;
 	}
-
-    if (_isCgi) {
-        std::cout << "[CGI] Detected Python Script " << filePath << std::endl;
-
-        CgiHandler cgi(filePath);
-        std::string cgiResult = cgi.execute();
-        // I wrap CGI response in HTML style now
-        this->buildOKResponse(cgiResult, "text/html");
-        return;
-    }
 
     if (Utils::isDirectory(filePath)) {
         if (_autoindex) this->buildAutoindexResponse();
