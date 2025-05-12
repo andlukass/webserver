@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
 import cgi
 import html
+import time
 
-print("Content-Type: text/html\r\n\r\n") #I'm not sure if it's needed
+print("Content-Type: text/html\r\n\r\n")
 
 form = cgi.FieldStorage()
+message = form.getvalue("message", "").strip()
 
-message = form.getvalue("message", "")
+# Save the message into a .txt file
+timestamp = str(int(time.time()))
+filename = f"/tmp/{timestamp}.txt"  # Or another writable directory
 
-# Save uploaded file if it exists
-upload_info = ""
+try:
+    with open(filename, "w") as f:
+        f.write(message)
+    save_status = f"Message saved to: {filename}"
+except Exception as e:
+    save_status = f"Error saving message: {html.escape(str(e))}"
 
-
+# HTML Response
 print(f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -21,34 +29,35 @@ print(f"""
   <title>Feedback Submitted</title>
   <style>
     body {{
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-family: system-ui, sans-serif;
       background-color: #ffffff;
       color: #000000;
     }}
     main {{
-      padding: 10rem;
+      padding: 5rem;
       text-align: center;
     }}
     h1 {{
-      font-size: 3rem;
+      font-size: 2.5rem;
       margin-bottom: 1rem;
     }}
-    p {{
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
+    blockquote {{
+      font-style: italic;
+      color: #444;
+      margin: 1rem 0;
+    }}
+    .info {{
+      margin-top: 1rem;
+      color: #555;
     }}
     a.button {{
+      margin-top: 2rem;
       display: inline-block;
       padding: 0.8rem 1.5rem;
-      background-color: #000000;
+      background-color: #000;
       color: white;
       text-decoration: none;
       border-radius: 5px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
-    }}
-    a.button:hover {{
-      background-color: #333333;
     }}
   </style>
 </head>
@@ -57,7 +66,7 @@ print(f"""
     <h1>Thank You!</h1>
     <p>Your message has been submitted:</p>
     <blockquote>{html.escape(message)}</blockquote>
-    {upload_info}
+    <div class="info">{html.escape(save_status)}</div>
     <a href="/feedback" class="button">Return to Feedback</a>
   </main>
 </body>

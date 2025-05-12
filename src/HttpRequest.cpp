@@ -353,18 +353,18 @@ void HttpRequest::parseResponse() {
         std::string cgiResult = cgi.execute();
         // I wrap CGI response in HTML style now
         this->buildOKResponse(cgiResult, "text/html");
-        if(_method == METHOD_POST) {
-			std::ostringstream postFile;
-			postFile << time(NULL);
-			std::string filePath = _config.getRoot()->getValue() + postFile.str() +".txt";
-			std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
-			if(!outFile) {
-				buildErrorResponse(NOT_FOUND_DELETE);
-				return;
-			}
-			outFile << _body;
-			outFile.close();
-		}
+        // if(_method == METHOD_POST) {
+		// 	std::ostringstream postFile;
+		// 	postFile << time(NULL);
+		// 	std::string filePath = _config.getRoot()->getValue() + postFile.str() +".txt";
+		// 	std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
+		// 	if(!outFile) {
+		// 		buildErrorResponse(NOT_FOUND_DELETE);
+		// 		return;
+		// 	}
+		// 	outFile << _body;
+		// 	outFile.close();
+		// }
 		return;
     }
 
