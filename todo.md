@@ -1,5 +1,6 @@
 ***CHECK LOGS
 ***TODO SUGGESTION: Error could not open: *DON'T LEAVE HERE A PATH* 
+***check what to do if filePath exists but its an empty file 
 ***random request bad request, but UNKNOWN should be 405 Not Allowed... should we implement ? 
 ***POST is not working if we send something in "" without it's okay: curl -X POST localhost "" should we implement?
 
@@ -22,21 +23,21 @@
     - Handle edge cases (e.g., invalid headers, large requests).
     - Make the code more modular for easier maintenance and future features.
     - Improve error handling and logging for easier debugging and monitoring.
- 
-## 12. **Handle properly errors in the parser**
-- When the parsers throws an error, we should properly send the user a message in the cli and make sure that there is no memory leaks.
 
 ## 13. **Handle client_max_body_size**
 - It should really just send a 413 when the body size is bigger than the specified.
-
-## 14. **Handle directory listing**
-- "Already handled". Just need to build the html page to it (there is a TODO on HttpRequest.cpp). It should list all the files in the directory, like a "ls", each item should be clickable to redirect to the path of it (its only use the a href of html).
 
 ## 15. **Define an HTTP redirect**
 - Idk exactly, those are the exact words of the subject.
 
 ## 16. **Handle server_name**
 - Idk exactly, we need to see how it works.
+
+## 12. **Handle properly errors in the parser** -- DONE
+- When the parsers throws an error, we should properly send the user a message in the cli and make sure that there is no memory leaks.
+
+## 14. **Handle directory listing** - DONE
+- "Already handled". Just need to build the html page to it (there is a TODO on HttpRequest.cpp). It should list all the files in the directory, like a "ls", each item should be clickable to redirect to the path of it (its only use the a href of html).
 
 ## 1. **Receive HTTP Requests (Get Data)** - DONE
 - Implement a `recv()` method to read HTTP request data.

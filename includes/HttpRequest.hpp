@@ -2,6 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
+#include <dirent.h>
 #include "./directives/ServerDirective.hpp"
 #include "../includes/cgi/CgiHandler.hpp"
 
@@ -44,7 +45,7 @@ class HttpRequest {
     void parseResponse();
     void buildErrorResponse(int errorStatus);
     void parseErrorPagePath(int errorStatus);
-    void buildAutoindexResponse();
+    void buildAutoindexResponse(std::string filePath);
     void buildOKResponse(std::string fileContent, std::string contentType);
     void parseAllowMethods();
     void parseAutoindex();

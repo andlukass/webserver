@@ -100,8 +100,31 @@ std::string Utils::cleanSlashes(const std::string &path) {
 bool Utils::isDirectory(const std::string& path) {
     struct stat info;
     if (stat(path.c_str(), &info) != 0) {
-        // Erro ao acessar o path (por exemplo, não existe)
         return false;
     }
     return (info.st_mode & S_IFMT) == S_IFDIR;
+}
+
+bool Utils::isFile(const std::string& path) {
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0) {
+        return false;
+    }
+    return (info.st_mode & S_IFMT) == S_IFREG;
+}
+
+std::string Utils::removeLastPathLevel(const std::string& path) {
+    if (path.empty()) return "/";
+
+    std::string cleanPath = path;
+
+    if (cleanPath.size() > 1 && cleanPath[cleanPath.size() - 1] == '/')
+        cleanPath.erase(cleanPath.size() - 1);
+
+    std::string::size_type lastSlash = cleanPath.rfind('/');
+
+    if (lastSlash == std::string::npos || lastSlash == 0)
+        return "/";
+
+    return cleanPath.substr(0, lastSlash + 1);
 }
