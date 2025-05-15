@@ -75,9 +75,66 @@ void HttpRequest::buildOKResponse(std::string fileContent, std::string contentTy
     this->_response = response.str();
 }
 
-// TODO: build autoindex response
-void HttpRequest::buildAutoindexResponse() {
-    std::string fileContent = "<html><body><h1>This should be an AutoIndex - Not handled yet</h1></body></html>";
+void HttpRequest::buildAutoindexResponse(std::string filePath) {
+    std::string pathToIndex = this->_locationPath + this->_cleanUri;
+    std::stringstream htmlContent;
+    htmlContent << "<html>" << std::endl;
+    htmlContent << "<head>" << std::endl;
+    htmlContent << "<title>Index of " << pathToIndex << "</title>" << std::endl;
+    htmlContent << "<style>" << std::endl;
+    htmlContent << "body { font-family: Arial, sans-serif; margin: 20px; }" << std::endl;
+    htmlContent << "h1 { color: #333; }" << std::endl;
+    htmlContent << "ul { list-style-type: none; padding: 0; }" << std::endl;
+    htmlContent << "li { margin: 5px 0; }" << std::endl;
+    htmlContent << "a { text-decoration: none; color: #0066cc; }" << std::endl;
+    htmlContent << "a:hover { text-decoration: underline; }" << std::endl;
+    htmlContent << "</style>" << std::endl;
+    htmlContent << "</head>" << std::endl;
+    htmlContent << "<body>" << std::endl;
+    htmlContent << "<h1>Index of " << pathToIndex << "</h1>" << std::endl;
+    htmlContent << "<ul>" << std::endl;
+    
+    if (pathToIndex != "/") {
+        std::string parentDir = Utils::removeLastPathLevel(pathToIndex);
+        htmlContent << "<li><a href=\"" << Utils::cleanSlashes(parentDir) << "\">../</a></li>" << std::endl;
+    }
+    
+    DIR* dir;
+    struct dirent* entry;
+    
+    dir = opendir(filePath.c_str());
+    if (dir != NULL) {
+        while ((entry = readdir(dir)) != NULL) {
+            std::string name = entry->d_name;
+            
+            if (name == "." || name == "..") {
+                continue;
+            }
+            
+            std::string fullPath = filePath;
+            if (fullPath[fullPath.size() - 1] != '/')
+                fullPath += '/';
+            fullPath += name;
+            
+            bool isDir = Utils::isDirectory(fullPath);
+            std::string href = _locationPath + _cleanUri + "/" + name;
+            if (isDir) {
+                href += "/";
+                htmlContent << "<li><a href=\"" << Utils::cleanSlashes(href) << "\">" << name << "/</a></li>" << std::endl;
+            } else {
+                htmlContent << "<li><a href=\"" << Utils::cleanSlashes(href) << "\">" << name << "</a></li>" << std::endl;
+            }
+        }
+        closedir(dir);
+    } else {
+        htmlContent << "<li>Erro ao abrir o diretório</li>" << std::endl;
+    }
+    
+    htmlContent << "</ul>" << std::endl;
+    htmlContent << "</body>" << std::endl;
+    htmlContent << "</html>" << std::endl;
+    
+    std::string fileContent = htmlContent.str();
     std::stringstream response;
     response << "HTTP/1.1 200 OK\r\n";
     response << "Content-Type: text/html\r\n";
@@ -203,31 +260,36 @@ void HttpRequest::parseBody() {
 }
 
 void HttpRequest::parseIndex() {
-    
-	//char lastChar = _cleanUri.back();
-	//CHANGED
 	char lastChar = _cleanUri[_cleanUri.size() - 1];
-    bool hasFile = lastChar != '/';
+    bool hasFile = lastChar != '/' && lastChar != '\0';
 
-    std::string serverIndex =  _locationPath.empty() ? "" : _config.getLocation(_locationPath).getIndex()->getValue();
-    if (serverIndex.empty()) {
-        serverIndex = _config.getIndex()->getValue();
+    std::string tempIndex =  _locationPath.empty() ? "" : _config.getLocation(_locationPath).getIndex()->getValue();
+    if (tempIndex.empty()) {
+        tempIndex = _config.getIndex()->getValue();
     }
-    if (serverIndex.empty()) {
-        serverIndex = "/index.html";
+    if (tempIndex.empty() && !this->_autoindex) {
+        tempIndex = "/index.html";
     }
-    _index = hasFile ? "" : serverIndex;
+
+    // verify if the index file exists, so we use the autoindex case doesnt exist
+    if (!tempIndex.empty()) {
+        std::string filePath = _root + _cleanUri +tempIndex;
+        if (!Utils::isFile(filePath)) {
+            tempIndex = "";
+        }
+    }
+    this->_index = hasFile ? "" : tempIndex;
 }
 
 void HttpRequest::parseRoot() {
-    std::string serverRoot = _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRoot()->getValue();
-    if (serverRoot.empty()) {
-        serverRoot = _config.getRoot()->getValue();
+    std::string tempRoot = _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRoot()->getValue();
+    if (tempRoot.empty()) {
+        tempRoot = _config.getRoot()->getValue();
     }
-    if (serverRoot.empty()) {
-        serverRoot = "./";
+    if (tempRoot.empty()) {
+        tempRoot = "./";
     }
-    _root = serverRoot;
+    _root = tempRoot;
 }
 
 void HttpRequest::parseAllowMethods() {
@@ -252,30 +314,17 @@ void HttpRequest::parseAutoindex() {
 }
 
 void HttpRequest::parseLocation() {
-    //char lastChar = _cleanUri.back();
-	//CHANGED
-	char lastChar = _cleanUri[_cleanUri.size() - 1];
-    bool hasFile = lastChar != '/';
-    std::string locationPath = _cleanUri;
-
-    if (hasFile) {
-        //if (locationPath.front() == '/') locationPath.erase(0, 1);
-		//CHANGED
-		if (locationPath[0] == '/') locationPath.erase(0, 1);
-        size_t firstSlash = locationPath.find_first_of('/');
-        if (firstSlash != std::string::npos) {
-            locationPath.erase(firstSlash + 1, locationPath.size() - firstSlash - 1);
-        }
-		//if (locationPath.back() == '/') locationPath.pop_back();
-		//CHANGED
-		if (locationPath[locationPath.size() - 1] == '/') locationPath.erase(locationPath.size() - 1);
-        locationPath.insert(0, "/");
+    size_t firstSlash = _cleanUri.find_first_of('/');
+    size_t secondSlash = _cleanUri.find_first_of('/', firstSlash + 1);
+    if (secondSlash == std::string::npos) {
+        _locationPath = "";
+        return;
     }
-
+    std::string tempLocationPath = _cleanUri.substr(0, secondSlash + 1);
     try {
-        _config.getLocation(locationPath);
-        _locationPath = locationPath;
-        _cleanUri.erase(0, locationPath.size());
+        _config.getLocation(tempLocationPath);
+        _locationPath = tempLocationPath;
+        this->_cleanUri.erase(0, tempLocationPath.size()); // remove location to make the "alias behavior"
     } catch (const std::exception &e) {
         _locationPath = "";
     }
@@ -304,6 +353,8 @@ void HttpRequest::detectCgiAndMime() {
             _mimeType = "image/jpeg";
         else if (ext == ".png")
             _mimeType = "image/png";
+        else if (ext == ".gif")
+            _mimeType = "image/gif";
         else
             _mimeType = "text/html";
 
@@ -323,18 +374,21 @@ void HttpRequest::parseResponse() {
     }
 
     std::string filePath = _root + _cleanUri + _index;
-    std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
     std::string fileContent = Utils::readFile(filePath);
-    if (!file && _method != METHOD_DELETE) {
+    if (fileContent.empty() && _method != METHOD_DELETE) {
         // TODO [CGI] - now it returns error, because we can't open HTML with that. we can fix later
-        std::cerr << "Error: Could not open file: " << filePath << std::endl;
-        this->buildErrorResponse(NOT_FOUND);
+        if (Utils::isDirectory(filePath) && this->_autoindex) {
+            this->buildAutoindexResponse(filePath);
+        } else {
+            std::cerr << "Error: Could not open file: " << Utils::cleanSlashes(filePath) << std::endl;
+            this->buildErrorResponse(NOT_FOUND);
+        }
         return;
     }
 
 	//IT HAS TO BE BEFORE CGI because the path removed
 	if(_method == METHOD_DELETE) {
-		if(!file) {
+		if(fileContent.empty()) {
 			this->buildErrorResponse(NOT_FOUND_DELETE);
 			return;
 		}
@@ -377,11 +431,6 @@ void HttpRequest::parseResponse() {
         return;
     }
 
-    if (Utils::isDirectory(filePath)) {
-        if (_autoindex) this->buildAutoindexResponse();
-        else this->buildErrorResponse(NOT_FOUND);
-        return;
-    }
     this->buildOKResponse(fileContent, _mimeType);
 }
 

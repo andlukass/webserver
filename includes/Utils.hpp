@@ -30,6 +30,10 @@ class Utils {
 
     static bool isDirectory(const std::string& path);
 
+    static bool isFile(const std::string& path);
+
+    static std::string removeLastPathLevel(const std::string& path);
+
     template <typename T>
     static bool vectorContains(std::vector<T> &vec, const T &a) {
         for (int i = 0; i < vec.size(); ++i) {
