@@ -5,10 +5,20 @@ Client::Client(int fd, const ServerDirective& serverConfig) : _fd(fd), _serverCo
 Client::~Client() {}
 
 ssize_t Client::receive() {
-    ssize_t receivedDataLength = recv(this->_fd, this->_buffer, sizeof(this->_buffer) - 1, 0);
-    this->_buffer[receivedDataLength] = '\0';
-    std::cout << "\n====Received data (" << receivedDataLength << "): \n" << this->_buffer <<  "======================\n" << std::endl;
-    return receivedDataLength;
+    char tempBuffer[2000000];
+    ssize_t totalReceived = 0;
+    this->_buffer.clear();
+    while (true) {
+        ssize_t receivedDataLength = recv(this->_fd, tempBuffer, sizeof(tempBuffer) - 1, MSG_DONTWAIT);
+        if (receivedDataLength <= 0)
+            break;
+        tempBuffer[receivedDataLength] = '\0';
+        this->_buffer.append(tempBuffer, receivedDataLength);
+        totalReceived += receivedDataLength;
+        if (receivedDataLength < (ssize_t)(sizeof(tempBuffer) - 1))
+            break;
+    }
+    return this->_buffer.size();
 }
 
 ssize_t Client::send(const std::string& response) {
@@ -21,6 +31,6 @@ void Client::close() {
     ::close(this->_fd);
 }
 
-std::string Client::getBuffer() const { return std::string(this->_buffer); }
+std::string Client::getBuffer() const { return this->_buffer; }
 const ServerDirective& Client::getConfig() const { return this->_serverConfig; }
 int Client::getFd() const { return this->_fd; }
