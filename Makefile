@@ -13,15 +13,15 @@ SRCS =  ./src/main.cpp                         \
 		./src/directives/Listen.cpp            \
 		./src/directives/Root.cpp              \
 		./src/directives/Path.cpp              \
-		./src/directives/Index.cpp             \
 		./src/directives/Locations.cpp         \
 		./src/directives/LocationDirective.cpp \
 		./src/directives/MultiDirective.cpp    \
-		./src/Server.cpp \
-		./src/ServerManager.cpp \
-		./src/cgi/CgiHandler.cpp \
-		./src/HttpRequest.cpp \
-		./src/Client.cpp
+		./src/directives/FilePathDirective.cpp \
+		./src/Server.cpp                       \
+		./src/ServerManager.cpp                \
+		./src/cgi/CgiHandler.cpp               \
+		./src/HttpRequest.cpp                  \
+		./src/Client.cpp                       \
 
 NAME = webserver
 

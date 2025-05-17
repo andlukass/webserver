@@ -67,6 +67,14 @@ void HttpRequest::parseErrorPagePath(int errorStatus) {
 
 void HttpRequest::buildOKResponse(std::string fileContent, std::string contentType) {
     std::stringstream response;
+    if (!_redirect.empty()) {
+        response << "HTTP/1.1 302 Found\r\n";
+        response << "Location: " << _redirect << "\r\n";
+        response << "Connection: close\r\n\r\n";
+        this->_response = response.str();
+        std::cout << "response: " << this->_response << std::endl;
+        return;
+    }
     response << "HTTP/1.1 200 OK\r\n";
     response << "Content-Type: " << contentType << "\r\n";
     response << "Content-Length: " << fileContent.size() << "\r\n";
@@ -261,22 +269,19 @@ void HttpRequest::parseBody() {
 
 void HttpRequest::parseIndex() {
 	char lastChar = _cleanUri[_cleanUri.size() - 1];
-    bool hasFile = lastChar != '/' && lastChar != '\0';
+    bool hasFile = !_cleanUri.empty() && lastChar != '/';
 
     std::string tempIndex =  _locationPath.empty() ? "" : _config.getLocation(_locationPath).getIndex()->getValue();
     if (tempIndex.empty()) {
         tempIndex = _config.getIndex()->getValue();
     }
-    if (tempIndex.empty() && !this->_autoindex) {
-        tempIndex = "/index.html";
+    if (tempIndex.empty()) {
+        tempIndex = DEFAULT_INDEX;
     }
 
-    // verify if the index file exists, so we use the autoindex case doesnt exist
-    if (!tempIndex.empty()) {
-        std::string filePath = _root + _cleanUri +tempIndex;
-        if (!Utils::isFile(filePath)) {
-            tempIndex = "";
-        }
+    std::string filePath = _root + _cleanUri + tempIndex;
+    if (!Utils::isFile(filePath)) {
+        tempIndex = "";
     }
     this->_index = hasFile ? "" : tempIndex;
 }
@@ -287,7 +292,7 @@ void HttpRequest::parseRoot() {
         tempRoot = _config.getRoot()->getValue();
     }
     if (tempRoot.empty()) {
-        tempRoot = "./";
+        tempRoot = DEFAULT_ROOT;
     }
     _root = tempRoot;
 }
@@ -331,9 +336,10 @@ void HttpRequest::parseLocation() {
 }
 
 void HttpRequest::detectCgiAndMime() {
-    size_t dotPos = _cleanUri.rfind('.');
+    std::string filePath = _root + _cleanUri + _index;
+    size_t dotPos = filePath.rfind('.');
     if (dotPos != std::string::npos) {
-        std::string ext = _cleanUri.substr(dotPos);
+        std::string ext = filePath.substr(dotPos);
 
         if (ext == ".py") {
             _isCgi = true;
@@ -363,6 +369,16 @@ void HttpRequest::detectCgiAndMime() {
         _cgiType = CGI_NONE;
         _mimeType = "text/html";
     }
+}
+
+void HttpRequest::parseRedirect() {
+    std::string tempRedirect = _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRedirect()->getValue();
+    // if (tempRedirect.empty()) {
+    //     tempRedirect = _config.getRedirect()->getValue();
+    // }
+    std::cout << "tempRedirect: " << tempRedirect << std::endl;
+    std::cout << "locationPath: " << _locationPath << std::endl;
+    _redirect = tempRedirect;
 }
 
 void HttpRequest::parseResponse() {
@@ -452,9 +468,14 @@ void HttpRequest::initFromRaw() {
         return;
     }
     parseLocation();
+    parseRedirect();
+    if (!_redirect.empty()) {
+        this->buildOKResponse("", "text/html");
+        return;
+    }
     parseAutoindex();
-    parseIndex();
     parseRoot();
+    parseIndex();
     parseHeaders();
     parseBody();
     detectCgiAndMime();

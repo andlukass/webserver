@@ -1,16 +1,17 @@
 #include "../../includes/directives/LocationDirective.hpp"
 
-const char *validLocationProps[] = {"root", "index", "autoindex", "allow_methods", "error_page", NULL};
+const char *validLocationProps[] = {"root", "index", "autoindex", "allow_methods", "error_page", "redirect", NULL};
 
 LocationDirective::LocationDirective() : Directive("server") {
     // std::cout << "LocationDirective default constructor ========================================"
     // << std::endl;
     this->_value["root"] = new Root();
     this->_value["path"] = new Path();
-    this->_value["index"] = new Index();
+    this->_value["index"] = new FilePathDirective("index");
     this->_value["autoindex"] = new Autoindex();
     this->_value["error_page"] = new ErrorPage();
     this->_value["allow_methods"] = new AllowMethods();
+    this->_value["redirect"] = new FilePathDirective("redirect");
 }
 
 LocationDirective::LocationDirective(const LocationDirective &other) : Directive(other._name) {
@@ -81,6 +82,8 @@ Root *LocationDirective::getRoot() const { return dynamic_cast<Root *>(this->_va
 
 Path *LocationDirective::getPath() const { return dynamic_cast<Path *>(this->_value.at("path")); }
 
-Index *LocationDirective::getIndex() const { return dynamic_cast<Index *>(this->_value.at("index")); }
+FilePathDirective *LocationDirective::getIndex() const { return dynamic_cast<FilePathDirective *>(this->_value.at("index")); }
+
+FilePathDirective *LocationDirective::getRedirect() const { return dynamic_cast<FilePathDirective *>(this->_value.at("redirect")); }
 
 ErrorPage *LocationDirective::getErrorPage() const { return dynamic_cast<ErrorPage *>(this->_value.at("error_page")); }

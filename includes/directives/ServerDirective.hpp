@@ -13,6 +13,7 @@
 #include "Root.hpp"
 #include "Index.hpp"
 #include "Autoindex.hpp"
+#include "FilePathDirective.hpp"
 class ServerDirective : public Directive {
    public:
     ServerDirective();
@@ -30,9 +31,10 @@ class ServerDirective : public Directive {
     size_t getLocationsCount() const;
     const LocationDirective &getLocation(std::string path) const;
     AllowMethods *getAllowMethods() const;
-    Index *getIndex() const;
+    FilePathDirective *getIndex() const;
     MultiDirective *getServerName() const;
     Autoindex *getAutoindex() const;
+    FilePathDirective *getRedirect() const;
 
    private:
     DirectiveMap _value;

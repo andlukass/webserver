@@ -6,6 +6,9 @@
 #include "./directives/ServerDirective.hpp"
 #include "../includes/cgi/CgiHandler.hpp"
 
+#define DEFAULT_ROOT "./"
+#define DEFAULT_INDEX "/index.html"
+
 enum HttpMethod { METHOD_UNKNOWN, METHOD_GET, METHOD_POST, METHOD_DELETE };
 enum CgiType { CGI_NONE, CGI_PYTHON };
 enum HttpVersion { HTTP_VERSION_UNKNOWN, HTTP_1_0, HTTP_1_1 };
@@ -21,6 +24,7 @@ class HttpRequest {
     std::map<std::string, std::string> _headers;
     std::string _body;
     std::string _mimeType;
+    std::string _redirect;
     CgiType _cgiType;
     bool _isCgi;
     std::string _response;
@@ -39,6 +43,7 @@ class HttpRequest {
 
     bool parseRequestLine();
     void parseHeaders();
+    void parseRedirect();
     void parseBody();
     void detectCgiAndMime();
     void parseLocation();

@@ -11,6 +11,7 @@
 #include "Index.hpp"
 #include "Path.hpp"
 #include "Root.hpp"
+#include "FilePathDirective.hpp"
 
 class LocationDirective : public Directive {
    public:
@@ -28,7 +29,8 @@ class LocationDirective : public Directive {
     ErrorPage *getErrorPage() const;
     Root *getRoot() const;
     Path *getPath() const;
-    Index *getIndex() const;
+    FilePathDirective *getRedirect() const;
+    FilePathDirective *getIndex() const;
 
    private:
     DirectiveMap _value;

@@ -128,3 +128,15 @@ std::string Utils::removeLastPathLevel(const std::string& path) {
 
     return cleanPath.substr(0, lastSlash + 1);
 }
+
+bool Utils::hasProtocol(const std::string &url) {
+    std::vector<std::string> parts = Utils::split(url, "://");
+    if (parts.size() < 2)
+        return false;
+    size_t protoLen = parts[0].length();
+    if (protoLen == 0)
+        return false;
+    if (url.substr(protoLen, 3) == "://")
+        return true;
+    return false;
+}

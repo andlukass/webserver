@@ -1,7 +1,7 @@
 #include "../../includes/directives/ServerDirective.hpp"
 
 const char *validServerProps[] = {"listen",   "server_name", "client_max_body_size",
-                                  "index",    "root",        "error_page",
+                                  "index",    "root", "error_page", "redirect",
                                   "location", "allow_methods", "autoindex", NULL};
 
 ServerDirective::ServerDirective() : Directive("server") {
@@ -11,11 +11,12 @@ ServerDirective::ServerDirective() : Directive("server") {
     this->_value["server_name"] = new MultiDirective("server_name");
     this->_value["allow_methods"] = new AllowMethods();
     this->_value["client_max_body_size"] = new ClientMaxBodySize();
-    this->_value["index"] = new Index();
+    this->_value["index"] = new FilePathDirective("index");
     this->_value["root"] = new Root();
     this->_value["error_page"] = new ErrorPage();
     this->_value["location"] = new Locations();
     this->_value["autoindex"] = new Autoindex();
+    this->_value["redirect"] = new FilePathDirective("redirect");
 }
 
 ServerDirective::ServerDirective(const ServerDirective &other) : Directive(other._name) {
@@ -74,7 +75,9 @@ ClientMaxBodySize *ServerDirective::getClientMaxBodySize() const {
 
 Root *ServerDirective::getRoot() const { return dynamic_cast<Root *>(this->_value.at("root")); }
 
-Index *ServerDirective::getIndex() const { return dynamic_cast<Index *>(this->_value.at("index")); }
+FilePathDirective *ServerDirective::getIndex() const { return dynamic_cast<FilePathDirective *>(this->_value.at("index")); }
+
+FilePathDirective *ServerDirective::getRedirect() const { return dynamic_cast<FilePathDirective *>(this->_value.at("redirect")); }
 
 MultiDirective *ServerDirective::getServerName() const {
     return dynamic_cast<MultiDirective *>(this->_value.at("server_name"));
