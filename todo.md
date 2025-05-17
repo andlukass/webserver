@@ -4,7 +4,6 @@
 ***random request bad request, but UNKNOWN should be 405 Not Allowed... should we implement ? 
 ***POST is not working if we send something in "" without it's okay: curl -X POST localhost "" should we implement?
 
-
 # Future Steps for HTTP Server Development
 
 ## 7. **Handle POST Requests & File Uploads**
@@ -27,11 +26,11 @@
 ## 13. **Handle client_max_body_size**
 - It should really just send a 413 when the body size is bigger than the specified.
 
-## 15. **Define an HTTP redirect**
-- Idk exactly, those are the exact words of the subject.
-
 ## 16. **Handle server_name**
 - Idk exactly, we need to see how it works.
+
+## 15. **Define an HTTP redirect** -- DONE
+- Define a redirect path to send as response instead of the normal response.
 
 ## 12. **Handle properly errors in the parser** -- DONE
 - When the parsers throws an error, we should properly send the user a message in the cli and make sure that there is no memory leaks.
