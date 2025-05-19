@@ -37,12 +37,12 @@ int main(int argc, char *argv[]) {
         ServerConfig serverConfig(argv[1]);
         if (flag == TEST) return (serverConfig.print(), 0);
 
-        if (flag == CGI_MODE) {
-            CgiHandler cgi("./cgi/test.py");
-            std::string response = cgi.execute();
-            std::cout << "CGI output:\n" << response << std::endl;
-            return 0;
-        }
+        // if (flag == CGI_MODE) {
+        //     CgiHandler cgi("./cgi/test.py");
+        //     std::string response = cgi.execute();
+        //     std::cout << "CGI output:\n" << response << std::endl;
+        //     return 0;
+        // }
 
         ServerManager allServers(serverConfig);
         allServers.run();

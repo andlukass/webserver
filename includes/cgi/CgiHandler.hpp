@@ -9,7 +9,7 @@ class CgiHandler {
     CgiHandler(const std::string& scriptPath);
     ~CgiHandler();
 
-    std::string execute();
+    std::string execute(const std::string& body, const std::string& method);
 
    private:
     std::string _scriptPath;

@@ -1,25 +1,25 @@
 #include "../../includes/cgi/CgiHandler.hpp"
 
 #include <fcntl.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <iostream>
 #include <cstdlib>
-#include <stdio.h>
-
+#include <iostream>
 
 CgiHandler::CgiHandler(const std::string& scriptPath) : _scriptPath(scriptPath) {}
 
 CgiHandler::~CgiHandler() {}
 
-std::string CgiHandler::execute() {
-    int fd[2];
+std::string CgiHandler::execute(const std::string& body, const std::string& method) {
+    int stdoutPipe[2];
+    int stdinPipe[2];
 
-    if (pipe(fd) == -1) {
+    if (pipe(stdoutPipe) == -1 || pipe(stdinPipe) == -1) {
         perror("pipe");
-        return "Error creating pipe";
+        return "Error creating pipes";
     }
 
     pid_t pid = fork();
@@ -29,35 +29,47 @@ std::string CgiHandler::execute() {
         return "Error forking process";
     }
 
-    // TODO: remember to add validations for not existing file
-    // TODO: pass env variables
-    // TODO: check for fd leaks before delivering
     if (pid == 0) {
         // CHILD
-        close(fd[0]);                // close read end
-        dup2(fd[1], STDOUT_FILENO);  // stdout → to pipe
-        close(fd[1]);                // close not needed fd
+        dup2(stdinPipe[0], STDIN_FILENO);
+        dup2(stdoutPipe[1], STDOUT_FILENO);
+
+        close(stdinPipe[1]);
+        close(stdoutPipe[0]);
+
+        std::string contentLength = std::to_string(body.size());
+
+        std::string methodEnv = "REQUEST_METHOD=" + method;
+        std::string lengthEnv = "CONTENT_LENGTH=" + contentLength;
+
+        char* const env[] = {(char*)methodEnv.c_str(), (char*)lengthEnv.c_str(),
+                             (char*)"CONTENT_TYPE=application/x-www-form-urlencoded", NULL};
 
         char* const args[] = {(char*)"python3", (char*)_scriptPath.c_str(), NULL};
-        char* const env[] = {NULL};  // no variables at the moment
 
         execve("/usr/bin/python3", args, env);
-        perror("execve");  // this is case where execve did not take over
+        perror("execve");
         exit(1);
     } else {
         // PARENT
-        close(fd[1]);  // close write end
+        close(stdinPipe[0]);
+        close(stdoutPipe[1]);
+
+        // request body
+        write(stdinPipe[1], body.c_str(), body.size());
+        close(stdinPipe[1]);
+
+        // reading response
         char buffer[1024];
         std::string result;
         ssize_t bytesRead;
-
-        while ((bytesRead = read(fd[0], buffer, sizeof(buffer) - 1)) > 0) {
+        while ((bytesRead = read(stdoutPipe[0], buffer, sizeof(buffer) - 1)) > 0) {
             buffer[bytesRead] = '\0';
             result += buffer;
         }
 
-        close(fd[0]);
-        waitpid(pid, NULL, 0);  // wait for child to finish
+        close(stdoutPipe[0]);
+        waitpid(pid, NULL, 0);
 
         return result;
     }
