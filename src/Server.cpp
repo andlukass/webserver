@@ -1,7 +1,8 @@
 #include "../includes/Server.hpp"
+
 #include "../includes/Client.hpp"
+
 Server::Server(const ServerDirective& config) : _config(config) {
-    // TODO: closer to the end of the project we can define, if _port and _ip should be const
     std::cout << "Creating server with IP: " << config.getListen()->getIp()
               << " and port: " << config.getListen()->getPort() << std::endl;
 
@@ -54,7 +55,8 @@ void Server::start() {
     struct addrinfo* res;
     // getaddrinfo converts IP and port string into a usable sockaddr structure
     // c_str returns pointer to first element of the internal string buffer
-    int addrInfoError = getaddrinfo(_config.getListen()->getIp().c_str(), _config.getListen()->getPort().c_str(), &hints, &res);
+    int addrInfoError = getaddrinfo(_config.getListen()->getIp().c_str(),
+                                    _config.getListen()->getPort().c_str(), &hints, &res);
     if (addrInfoError) {
         // gai_strerror gets error message from getaddrinfo
         std::cerr << "Error: getaddrinfo failed: " << gai_strerror(addrInfoError) << std::endl;
