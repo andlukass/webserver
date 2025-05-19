@@ -115,7 +115,7 @@
 
     <!-- Message POST Form with File Upload -->
     <!--<form method="POST" action="/submit-feedback" enctype="multipart/form-data">-->
-		<form method="POST" action="/cgi/submit-feedback.py" enctype="multipart/form-data">
+		<form method="POST" action="/cgi/submit-feedback.py">
       <textarea name="message" rows="5" placeholder="Your message..." required></textarea>
       <button type="submit">Send Message</button>
     </form>

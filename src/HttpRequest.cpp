@@ -2,18 +2,18 @@
 
 enum ErrorStatus {
     NOT_FOUND = 404,
-	NOT_FOUND_DELETE = 600,
+    NOT_FOUND_DELETE = 600,
     METHOD_NOT_ALLOWED = 405,
     BAD_REQUEST = 400,
     PAYLOAD_TOO_LARGE = 413,
-	NO_CONTENT = 204
+    NO_CONTENT = 204
 };
 
 std::string statusToString(int errorStatus) {
     switch (errorStatus) {
         case NOT_FOUND:
             return "404 Not Found";
-		case NOT_FOUND_DELETE:
+        case NOT_FOUND_DELETE:
             return "404 Not Found";
         case METHOD_NOT_ALLOWED:
             return "405 Method Not Allowed";
@@ -21,8 +21,8 @@ std::string statusToString(int errorStatus) {
             return "400 Bad Request";
         case PAYLOAD_TOO_LARGE:
             return "413 Payload Too Large";
-		case NO_CONTENT:
-			return "204 No Content";
+        case NO_CONTENT:
+            return "204 No Content";
         default:
             return "NOT HANDLED ERROR";
     }
@@ -34,12 +34,17 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
     std::string fileContent = Utils::readFile(this->_errorPagePath);
     response << "HTTP/1.1 " << errorStatus << " " << statusToString(errorStatus) << "\r\n";
     if (fileContent.empty() || errorStatus == NOT_FOUND_DELETE) {
-       fileContent = "<html>\n"
-                  "<head><title>" + statusToString(errorStatus) + "</title></head>\n"
-                  "<body>\n"
-                  "<center><h1>" + statusToString(errorStatus) + "</h1></center>\n"
-                  "</body>\n"
-                  "</html>\n";
+        fileContent =
+            "<html>\n"
+            "<head><title>" +
+            statusToString(errorStatus) +
+            "</title></head>\n"
+            "<body>\n"
+            "<center><h1>" +
+            statusToString(errorStatus) +
+            "</h1></center>\n"
+            "</body>\n"
+            "</html>\n";
     }
     response << "Content-Type: text/html\r\n";
     response << "Content-Length: " << fileContent.size() << "\r\n";
@@ -101,47 +106,49 @@ void HttpRequest::buildAutoindexResponse(std::string filePath) {
     htmlContent << "<body>" << std::endl;
     htmlContent << "<h1>Index of " << pathToIndex << "</h1>" << std::endl;
     htmlContent << "<ul>" << std::endl;
-    
+
     if (pathToIndex != "/") {
         std::string parentDir = Utils::removeLastPathLevel(pathToIndex);
-        htmlContent << "<li><a href=\"" << Utils::cleanSlashes(parentDir) << "\">../</a></li>" << std::endl;
+        htmlContent << "<li><a href=\"" << Utils::cleanSlashes(parentDir) << "\">../</a></li>"
+                    << std::endl;
     }
-    
+
     DIR* dir;
     struct dirent* entry;
-    
+
     dir = opendir(filePath.c_str());
     if (dir != NULL) {
         while ((entry = readdir(dir)) != NULL) {
             std::string name = entry->d_name;
-            
+
             if (name == "." || name == "..") {
                 continue;
             }
-            
+
             std::string fullPath = filePath;
-            if (fullPath[fullPath.size() - 1] != '/')
-                fullPath += '/';
+            if (fullPath[fullPath.size() - 1] != '/') fullPath += '/';
             fullPath += name;
-            
+
             bool isDir = Utils::isDirectory(fullPath);
             std::string href = _locationPath + _cleanUri + "/" + name;
             if (isDir) {
                 href += "/";
-                htmlContent << "<li><a href=\"" << Utils::cleanSlashes(href) << "\">" << name << "/</a></li>" << std::endl;
+                htmlContent << "<li><a href=\"" << Utils::cleanSlashes(href) << "\">" << name
+                            << "/</a></li>" << std::endl;
             } else {
-                htmlContent << "<li><a href=\"" << Utils::cleanSlashes(href) << "\">" << name << "</a></li>" << std::endl;
+                htmlContent << "<li><a href=\"" << Utils::cleanSlashes(href) << "\">" << name
+                            << "</a></li>" << std::endl;
             }
         }
         closedir(dir);
     } else {
         htmlContent << "<li>Erro ao abrir o diretório</li>" << std::endl;
     }
-    
+
     htmlContent << "</ul>" << std::endl;
     htmlContent << "</body>" << std::endl;
     htmlContent << "</html>" << std::endl;
-    
+
     std::string fileContent = htmlContent.str();
     std::stringstream response;
     response << "HTTP/1.1 200 OK\r\n";
@@ -174,8 +181,8 @@ HttpRequest::HttpRequest(const ServerDirective& config, const std::string& reque
       _cgiType(CGI_NONE),
       _isCgi(false),
       _config(config) {
-            this->initFromRaw();
-      }
+    this->initFromRaw();
+}
 
 HttpRequest::~HttpRequest() {}
 
@@ -205,7 +212,6 @@ bool HttpRequest::parseRequestLine() {
     size_t headersEnd = _rawRequest.find("\r\n\r\n");
     if (headersEnd == std::string::npos) return false;
     size_t headersStart = firstLineEnd + 2;
-
 
     std::string startLine = _rawRequest.substr(0, firstLineEnd);
 
@@ -268,10 +274,11 @@ void HttpRequest::parseBody() {
 }
 
 void HttpRequest::parseIndex() {
-	char lastChar = _cleanUri[_cleanUri.size() - 1];
+    char lastChar = _cleanUri[_cleanUri.size() - 1];
     bool hasFile = !_cleanUri.empty() && lastChar != '/';
 
-    std::string tempIndex =  _locationPath.empty() ? "" : _config.getLocation(_locationPath).getIndex()->getValue();
+    std::string tempIndex =
+        _locationPath.empty() ? "" : _config.getLocation(_locationPath).getIndex()->getValue();
     if (tempIndex.empty()) {
         tempIndex = _config.getIndex()->getValue();
     }
@@ -287,7 +294,8 @@ void HttpRequest::parseIndex() {
 }
 
 void HttpRequest::parseRoot() {
-    std::string tempRoot = _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRoot()->getValue();
+    std::string tempRoot =
+        _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRoot()->getValue();
     if (tempRoot.empty()) {
         tempRoot = _config.getRoot()->getValue();
     }
@@ -329,8 +337,9 @@ void HttpRequest::parseLocation() {
     try {
         _config.getLocation(tempLocationPath);
         _locationPath = tempLocationPath;
-        this->_cleanUri.erase(0, tempLocationPath.size()); // remove location to make the "alias behavior"
-    } catch (const std::exception &e) {
+        this->_cleanUri.erase(
+            0, tempLocationPath.size());  // remove location to make the "alias behavior"
+    } catch (const std::exception& e) {
         _locationPath = "";
     }
 }
@@ -372,7 +381,8 @@ void HttpRequest::detectCgiAndMime() {
 }
 
 void HttpRequest::parseRedirect() {
-    std::string tempRedirect = _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRedirect()->getValue();
+    std::string tempRedirect =
+        _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRedirect()->getValue();
     // if (tempRedirect.empty()) {
     //     tempRedirect = _config.getRedirect()->getValue();
     // }
@@ -396,69 +406,72 @@ void HttpRequest::parseResponse() {
         if (Utils::isDirectory(filePath) && this->_autoindex) {
             this->buildAutoindexResponse(filePath);
         } else {
-            std::cerr << "Error: Could not open file: " << Utils::cleanSlashes(filePath) << std::endl;
+            std::cerr << "Error: Could not open file: " << Utils::cleanSlashes(filePath)
+                      << std::endl;
             this->buildErrorResponse(NOT_FOUND);
         }
         return;
     }
 
-	//IT HAS TO BE BEFORE CGI because the path removed
-	if(_method == METHOD_DELETE) {
-		if(fileContent.empty()) {
-			this->buildErrorResponse(NOT_FOUND_DELETE);
-			return;
-		}
-		if(std::remove(filePath.c_str()) == 0) {
-			this->buildErrorResponse(NO_CONTENT);
-			return;
-		}
-		else
-			this->buildErrorResponse(NOT_FOUND_DELETE);
-	}
+    // IT HAS TO BE BEFORE CGI because the path removed
+    if (_method == METHOD_DELETE) {
+        if (fileContent.empty()) {
+            this->buildErrorResponse(NOT_FOUND_DELETE);
+            return;
+        }
+        if (std::remove(filePath.c_str()) == 0) {
+            this->buildErrorResponse(NO_CONTENT);
+            return;
+        } else
+            this->buildErrorResponse(NOT_FOUND_DELETE);
+    }
 
-	if (_isCgi) {
+    if (_isCgi) {
         std::cout << "[CGI] Detected Python Script " << filePath << std::endl;
 
         CgiHandler cgi(filePath);
-        std::string cgiResult = cgi.execute();
+        std::cout << "[DEBUG] CGI Body: " << _body << std::endl;
+        std::string cgiResult = cgi.execute(_body, _method == METHOD_POST ? "POST" : "GET");
         // I wrap CGI response in HTML style now
         this->buildOKResponse(cgiResult, "text/html");
-        if(_method == METHOD_POST) {
-			std::ostringstream postFile;
-			postFile << time(NULL);
-			std::string filePath = _config.getRoot()->getValue() + postFile.str() +".txt";
-			std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
-			if(!outFile) {
-				buildErrorResponse(NOT_FOUND_DELETE);
-				return;
-			}
-			outFile << _body;
-			outFile.close();
-		}
-		return;
+        if (_method == METHOD_POST) {
+            std::ostringstream postFile;
+            postFile << time(NULL);
+            std::string filePath = _config.getRoot()->getValue() + postFile.str() + ".txt";
+            std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
+            if (!outFile) {
+                buildErrorResponse(NOT_FOUND_DELETE);
+                return;
+            }
+            outFile << _body;
+            outFile.close();
+        }
+        return;
     }
 
-	if(_method == METHOD_POST) {
-		if(_body.empty()) {
-			buildErrorResponse(BAD_REQUEST);
-			return;
-		}
-		
-		std::ostringstream postFile;
-		postFile << time(NULL);
-		std::string filePath = _config.getRoot()->getValue() + postFile.str() +".txt";
-		std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
-		if(!outFile) {
-			buildErrorResponse(NOT_FOUND_DELETE);
-			return;
-		}
-		outFile << _body;
-		outFile.close();
-		
-		std::string successHtml = "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath + "</p>\n</body>\n</html>\n";
-		buildOKResponse(successHtml, "text/html");
-		return ;
-	}
+    if (_method == METHOD_POST) {
+        if (_body.empty()) {
+            buildErrorResponse(BAD_REQUEST);
+            return;
+        }
+
+        std::ostringstream postFile;
+        postFile << time(NULL);
+        std::string filePath = _config.getRoot()->getValue() + postFile.str() + ".txt";
+        std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
+        if (!outFile) {
+            buildErrorResponse(NOT_FOUND_DELETE);
+            return;
+        }
+        outFile << _body;
+        outFile.close();
+
+        std::string successHtml =
+            "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath +
+            "</p>\n</body>\n</html>\n";
+        buildOKResponse(successHtml, "text/html");
+        return;
+    }
     this->buildOKResponse(fileContent, _mimeType);
 }
 

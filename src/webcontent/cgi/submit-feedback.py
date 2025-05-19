@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-import cgi
+
 import html
+import sys
+import urllib.parse
 
-print("Content-Type: text/html\r\n\r\n") #I'm not sure if it's needed
+data = sys.stdin.read()
+params = urllib.parse.parse_qs(data)
 
-form = cgi.FieldStorage()
-
-message = form.getvalue("message", "")
+message = params.get("message", [""])[0]
 
 # Save uploaded file if it exists
 upload_info = ""
 
+print("Content-Type: text/html\r\n\r\n")
 
 print(f"""
 <!DOCTYPE html>
