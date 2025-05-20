@@ -24,6 +24,7 @@ class HttpRequest {
     std::map<std::string, std::string> _queryParams;
     HttpVersion _httpVersion;
     std::map<std::string, std::string> _headers;
+    bool _isChunked;
     std::string _body;
     std::string _mimeType;
     std::string _redirect;
@@ -60,6 +61,8 @@ class HttpRequest {
     void parseRoot();
     void initFromRaw();
 
+    std::string unchunkBody(const std::string& rawBody);
+
    public:
     HttpRequest(const ServerDirective& config, const std::string& request);
     ~HttpRequest();
@@ -73,6 +76,7 @@ class HttpRequest {
     HttpVersion getHttpVersion() const;
     std::map<std::string, std::string> getHeaders() const;
     std::string getBody() const;
+    bool getIsChunked() const;
     std::string getMimeType() const;
     CgiType getCgiType() const;
     bool getIsCgi() const;

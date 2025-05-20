@@ -7,7 +7,7 @@ enum ErrorStatus {
     BAD_REQUEST = 400,
     PAYLOAD_TOO_LARGE = 413,
     NO_CONTENT = 204,
-    INTERNAL_SERVER_ERROR = 500
+    INTERNAL_SERVER_ERROR = 500,
 };
 
 std::string statusToString(int errorStatus) {
@@ -183,7 +183,8 @@ HttpRequest::HttpRequest(const ServerDirective& config, const std::string& reque
       _httpVersion(HTTP_VERSION_UNKNOWN),
       _cgiType(CGI_NONE),
       _isCgi(false),
-      _config(config) {
+      _config(config),
+      _isChunked(false) {
     this->initFromRaw();
 }
 
@@ -237,6 +238,12 @@ bool HttpRequest::parseRequestLine() {
     return true;
 }
 
+std::string toLower(const std::string& input) {
+    std::string result = input;
+    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    return result;
+}
+
 void HttpRequest::parseHeaders() {
     std::istringstream stream(_rawHeaders);
     std::string line;
@@ -263,16 +270,29 @@ void HttpRequest::parseHeaders() {
             value = "";
 
         _headers[key] = value;
+        if (key == "Transfer-Encoding" && toLower(value) == "chunked") {
+            this->_isChunked = true;
+        }
     }
 }
 
+std::string HttpRequest::unchunkBody(const std::string& rawBody) {}
+
 void HttpRequest::parseBody() {
     size_t bodyStart = _rawRequest.find("\r\n\r\n");
+
     // checking if body is present. we don't validate if it's supposed to be at the moment
-    if (bodyStart != std::string::npos) {
-        // +4 here to skip empty line in between headers and body
-        bodyStart += 4;
-        if (bodyStart < _rawRequest.size()) _body = _rawRequest.substr(bodyStart);
+    if (bodyStart == std::string::npos) return;
+
+    // +4 here to skip empty line in between headers and body
+    bodyStart += 4;
+    if (bodyStart >= _rawRequest.size()) return;
+    std::string rawBody = _rawRequest.substr(bodyStart);
+
+    if (_isChunked) {
+        _body = unchunkBody(rawBody);  // we’ll write this function next
+    } else {
+        _body = rawBody;
     }
 }
 
