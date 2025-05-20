@@ -1,17 +1,19 @@
-#include <map>
-#include <string>
-#include <algorithm>
-#include <sstream>
+#ifndef HTTP_REQUEST_HPP
+#define HTTP_REQUEST_HPP
+
 #include <dirent.h>
-#include "./directives/ServerDirective.hpp"
-#include "../includes/cgi/CgiHandler.hpp"
+
+#include <algorithm>
+#include <map>
+#include <sstream>
+#include <string>
+
+#include "Constants.hpp"
+#include "cgi/CgiHandler.hpp"
+#include "directives/ServerDirective.hpp"
 
 #define DEFAULT_ROOT "./"
 #define DEFAULT_INDEX "/index.html"
-
-enum HttpMethod { METHOD_UNKNOWN, METHOD_GET, METHOD_POST, METHOD_DELETE };
-enum CgiType { CGI_NONE, CGI_PYTHON };
-enum HttpVersion { HTTP_VERSION_UNKNOWN, HTTP_1_0, HTTP_1_1 };
 
 class HttpRequest {
    private:
@@ -57,6 +59,7 @@ class HttpRequest {
     void parseIndex();
     void parseRoot();
     void initFromRaw();
+
    public:
     HttpRequest(const ServerDirective& config, const std::string& request);
     ~HttpRequest();
@@ -75,5 +78,7 @@ class HttpRequest {
     bool getIsCgi() const;
     std::string getResponse() const;
 
-	//void	HttpRequest::handlePOSTRequest();TODO
+    // void	HttpRequest::handlePOSTRequest();TODO
 };
+
+#endif

@@ -15,11 +15,12 @@ CgiHandler::CgiHandler(const std::string& scriptPath) : _scriptPath(scriptPath) 
 CgiHandler::~CgiHandler() {}
 
 std::string cgiFail(const std::string& msg) {
-    std::cerr << "[CGI ERROR]" << msg << std::endl;
+    std::cerr << "[CGI ERROR] " << msg << std::endl;
     return CGI_ERROR_RESPONSE;
 }
 
-std::string CgiHandler::execute(const std::string& body, const std::string& method) {
+std::string CgiHandler::execute(const std::string& body, const std::string& method,
+                                const int cgi_type) {
     int stdoutPipe[2];
     int stdinPipe[2];
 
@@ -51,9 +52,19 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         char* const env[] = {(char*)methodEnv.c_str(), (char*)lengthEnv.c_str(),
                              (char*)"CONTENT_TYPE=application/x-www-form-urlencoded", NULL};
 
-        char* const args[] = {(char*)"python3", (char*)_scriptPath.c_str(), NULL};
+        char* const args[] = {(char*)_scriptPath.c_str(), NULL};
 
-        execve("/usr/bin/python3", args, env);
+        if (cgi_type == CGI_PYTHON) {
+            char* const pyArgs[] = {(char*)"python3", (char*)_scriptPath.c_str(), NULL};
+            execve("/usr/bin/python3", pyArgs, env);
+        } else if (cgi_type == CGI_BASH) {
+            char* const shArgs[] = {(char*)"bash", (char*)_scriptPath.c_str(), NULL};
+            execve("/bin/bash", shArgs, env);
+        } else {
+            std::cerr << "[CGI ERROR] Unsupported CGI type" << std::endl;
+            exit(1);  // exit child
+        }
+
         perror("execve");
         exit(1);
     } else {
