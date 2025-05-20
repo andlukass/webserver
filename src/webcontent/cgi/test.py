@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-print("<html><body>Hello from Python CGI and Yulia</body></html>")
-
 # import os
 
 # print("Content-Type: text/plain\n")

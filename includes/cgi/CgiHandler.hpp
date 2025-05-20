@@ -4,6 +4,9 @@
 #include <map>
 #include <string>
 
+#define CGI_TIMEOUT_SECONDS 5
+#define CGI_ERROR_RESPONSE "500"
+
 class CgiHandler {
    public:
     CgiHandler(const std::string& scriptPath);

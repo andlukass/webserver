@@ -1,6 +1,7 @@
 #include "../../includes/cgi/CgiHandler.hpp"
 
 #include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -13,20 +14,25 @@ CgiHandler::CgiHandler(const std::string& scriptPath) : _scriptPath(scriptPath) 
 
 CgiHandler::~CgiHandler() {}
 
+std::string cgiFail(const std::string& msg) {
+    std::cerr << "[CGI ERROR]" << msg << std::endl;
+    return CGI_ERROR_RESPONSE;
+}
+
 std::string CgiHandler::execute(const std::string& body, const std::string& method) {
     int stdoutPipe[2];
     int stdinPipe[2];
 
     if (pipe(stdoutPipe) == -1 || pipe(stdinPipe) == -1) {
         perror("pipe");
-        return "Error creating pipes";
+        cgiFail("Error creating pipes");
     }
 
     pid_t pid = fork();
 
     if (pid < 0) {
         perror("fork");
-        return "Error forking process";
+        cgiFail("Error forking process");
     }
 
     if (pid == 0) {
@@ -59,6 +65,33 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         write(stdinPipe[1], body.c_str(), body.size());
         close(stdinPipe[1]);
 
+        int status;
+        int elapsed = 0;
+        pid_t waitResult;
+
+        while ((waitResult = waitpid(pid, &status, WNOHANG)) == 0 &&
+               elapsed < CGI_TIMEOUT_SECONDS) {
+            sleep(1);
+            // debugging timeout - if needed
+            // std::cout << "Elapsed: " << elapsed << std::endl;
+            elapsed++;
+        }
+
+        if (waitResult == 0) {
+            kill(pid, SIGKILL);
+            waitpid(pid, &status, 0);
+            return cgiFail("CGI timeout - killed");
+        }
+
+        if (waitResult == -1) {
+            return cgiFail("waitpid failed");
+        }
+
+        // This is the case when child exited with 1 (execve failed)
+        if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+            return cgiFail("CGI process exited abnormally or with error");
+        }
+
         // reading response
         char buffer[1024];
         std::string result;
@@ -69,7 +102,6 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         }
 
         close(stdoutPipe[0]);
-        waitpid(pid, NULL, 0);
 
         return result;
     }
