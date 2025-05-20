@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-print("Yilia")
+while True:
+    pass
 
 # import os
 

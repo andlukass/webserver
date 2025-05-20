@@ -6,7 +6,8 @@ enum ErrorStatus {
     METHOD_NOT_ALLOWED = 405,
     BAD_REQUEST = 400,
     PAYLOAD_TOO_LARGE = 413,
-    NO_CONTENT = 204
+    NO_CONTENT = 204,
+    INTERNAL_SERVER_ERROR = 500
 };
 
 std::string statusToString(int errorStatus) {
@@ -23,6 +24,8 @@ std::string statusToString(int errorStatus) {
             return "413 Payload Too Large";
         case NO_CONTENT:
             return "204 No Content";
+        case INTERNAL_SERVER_ERROR:
+            return "500 Internal Server Error";
         default:
             return "NOT HANDLED ERROR";
     }
@@ -432,6 +435,13 @@ void HttpRequest::parseResponse() {
         CgiHandler cgi(filePath);
         std::cout << "[DEBUG] CGI Body: " << _body << std::endl;
         std::string cgiResult = cgi.execute(_body, _method == METHOD_POST ? "POST" : "GET");
+
+        if (cgiResult == CGI_ERROR_RESPONSE) {
+            std::cerr << "[CGI] Error occurred, sending 500 Internal Server Error\n";
+            buildErrorResponse(INTERNAL_SERVER_ERROR);
+            return;
+        }
+
         // I wrap CGI response in HTML style now
         this->buildOKResponse(cgiResult, "text/html");
         if (_method == METHOD_POST) {
