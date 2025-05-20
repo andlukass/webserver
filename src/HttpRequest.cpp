@@ -356,6 +356,10 @@ void HttpRequest::detectCgiAndMime() {
         if (ext == ".py") {
             _isCgi = true;
             _cgiType = CGI_PYTHON;
+        }
+        if (ext == ".sh") {
+            _isCgi = true;
+            _cgiType = CGI_BASH;
         } else {
             _isCgi = false;
             _cgiType = CGI_NONE;
@@ -430,11 +434,12 @@ void HttpRequest::parseResponse() {
     }
 
     if (_isCgi) {
-        std::cout << "[CGI] Detected Python Script " << filePath << std::endl;
+        std::cout << "[CGI] Detected CGI Script " << filePath << std::endl;
 
         CgiHandler cgi(filePath);
         // std::cout << "[DEBUG] CGI Body: " << _body << std::endl;
-        std::string cgiResult = cgi.execute(_body, _method == METHOD_POST ? "POST" : "GET");
+        std::string cgiResult =
+            cgi.execute(_body, _method == METHOD_POST ? "POST" : "GET", _cgiType);
 
         if (cgiResult == CGI_ERROR_RESPONSE) {
             std::cerr << "[CGI] Error occurred, sending 500 Internal Server Error\n";

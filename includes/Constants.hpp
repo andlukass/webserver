@@ -1,0 +1,8 @@
+#ifndef CONSTANTS_HPP
+#define CONSTANTS_HPP
+
+enum HttpMethod { METHOD_UNKNOWN, METHOD_GET, METHOD_POST, METHOD_DELETE };
+enum CgiType { CGI_NONE, CGI_PYTHON, CGI_BASH };
+enum HttpVersion { HTTP_VERSION_UNKNOWN, HTTP_1_0, HTTP_1_1 };
+
+#endif
