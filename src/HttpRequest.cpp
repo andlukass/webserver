@@ -433,11 +433,17 @@ void HttpRequest::parseResponse() {
         std::cout << "[CGI] Detected Python Script " << filePath << std::endl;
 
         CgiHandler cgi(filePath);
-        std::cout << "[DEBUG] CGI Body: " << _body << std::endl;
+        // std::cout << "[DEBUG] CGI Body: " << _body << std::endl;
         std::string cgiResult = cgi.execute(_body, _method == METHOD_POST ? "POST" : "GET");
 
         if (cgiResult == CGI_ERROR_RESPONSE) {
             std::cerr << "[CGI] Error occurred, sending 500 Internal Server Error\n";
+            buildErrorResponse(INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        if (cgiResult.empty()) {
+            std::cerr << "[CGI ERROR] CGI returned empty response\n";
             buildErrorResponse(INTERNAL_SERVER_ERROR);
             return;
         }

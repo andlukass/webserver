@@ -65,17 +65,6 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         write(stdinPipe[1], body.c_str(), body.size());
         close(stdinPipe[1]);
 
-        // reading response
-        char buffer[1024];
-        std::string result;
-        ssize_t bytesRead;
-        while ((bytesRead = read(stdoutPipe[0], buffer, sizeof(buffer) - 1)) > 0) {
-            buffer[bytesRead] = '\0';
-            result += buffer;
-        }
-
-        close(stdoutPipe[0]);
-
         int status;
         int elapsed = 0;
         pid_t waitResult;
@@ -83,6 +72,8 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         while ((waitResult = waitpid(pid, &status, WNOHANG)) == 0 &&
                elapsed < CGI_TIMEOUT_SECONDS) {
             sleep(1);
+            // debugging timeout - if needed
+            // std::cout << "Elapsed: " << elapsed << std::endl;
             elapsed++;
         }
 
@@ -100,6 +91,17 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
             return cgiFail("CGI process exited abnormally or with error");
         }
+
+        // reading response
+        char buffer[1024];
+        std::string result;
+        ssize_t bytesRead;
+        while ((bytesRead = read(stdoutPipe[0], buffer, sizeof(buffer) - 1)) > 0) {
+            buffer[bytesRead] = '\0';
+            result += buffer;
+        }
+
+        close(stdoutPipe[0]);
 
         return result;
     }

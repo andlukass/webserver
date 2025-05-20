@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-print("hello")
 # import os
 
 # print("Content-Type: text/plain\n")
