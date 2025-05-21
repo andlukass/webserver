@@ -40,6 +40,9 @@ class HttpRequest {
     std::string _index;
     std::string _root;
 
+    bool _isValid;
+    int _errorCode;
+
     // cookies;
     // contentType;
     // contentLength;
@@ -61,7 +64,7 @@ class HttpRequest {
     void parseRoot();
     void initFromRaw();
 
-    std::string unchunkBody(const std::string& rawBody);
+    // std::string unchunkBody(const std::string& rawBody);
 
    public:
     HttpRequest(const ServerDirective& config, const std::string& request);
@@ -76,11 +79,13 @@ class HttpRequest {
     HttpVersion getHttpVersion() const;
     std::map<std::string, std::string> getHeaders() const;
     std::string getBody() const;
-    bool getIsChunked() const;
+    // bool getIsChunked() const;
     std::string getMimeType() const;
     CgiType getCgiType() const;
     bool getIsCgi() const;
     std::string getResponse() const;
+    bool getIsValid() const;
+    bool getErrorCode() const;
 
     // void	HttpRequest::handlePOSTRequest();TODO
 };

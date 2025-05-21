@@ -276,7 +276,36 @@ void HttpRequest::parseHeaders() {
     }
 }
 
-std::string HttpRequest::unchunkBody(const std::string& rawBody) {}
+std::string unchunkBody(const std::string& rawBody) {
+    std::istringstream stream(rawBody);
+    std::string result;
+    std::string line;
+
+    while (std::getline(stream, line)) {
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+
+        std::istringstream hexStream(line);
+        size_t chunkSize;
+        hexStream >> std::hex >> chunkSize;
+
+        if (hexStream.fail()) {
+            std::cerr << "[Unchunk] Failed to parse chunk size\n";
+            break;
+        }
+
+        if (chunkSize == 0) break;
+
+        char* buffer = new char[chunkSize];
+        stream.read(buffer, chunkSize);
+        result.append(buffer, chunkSize);
+        delete[] buffer;
+
+        stream.get();  // \r
+        stream.get();  // \n
+    }
+
+    return result;
+}
 
 void HttpRequest::parseBody() {
     size_t bodyStart = _rawRequest.find("\r\n\r\n");
@@ -290,7 +319,7 @@ void HttpRequest::parseBody() {
     std::string rawBody = _rawRequest.substr(bodyStart);
 
     if (_isChunked) {
-        _body = unchunkBody(rawBody);  // we’ll write this function next
+        _body = unchunkBody(rawBody);
     } else {
         _body = rawBody;
     }
@@ -360,8 +389,7 @@ void HttpRequest::parseLocation() {
     try {
         _config.getLocation(tempLocationPath);
         _locationPath = tempLocationPath;
-        this->_cleanUri.erase(
-            0, tempLocationPath.size());  // remove location to make the "alias behavior"
+        this->_cleanUri.erase(0, tempLocationPath.size());
     } catch (const std::exception& e) {
         _locationPath = "";
     }

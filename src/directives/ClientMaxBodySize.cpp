@@ -28,12 +28,53 @@ void ClientMaxBodySize::parse(std::string &config) {
     this->_value = fullValue;
     if (!validate(this->_value))
         throw Exception("Invalid prop: \"" + this->_value + "\" in client_max_body_size");
+
+    this->_byteLimit = toBytes(this->_value);
+}
+
+size_t ClientMaxBodySize::toBytes(const std::string &input) {
+    std::string str = input;
+    Utils::trimStart(str);
+
+    // searching for first position of not number
+    size_t endNumbers = str.find_first_not_of("0123456789");
+    if (endNumbers == std::string::npos) endNumbers = str.size();
+
+    std::string numberPart = str.substr(0, endNumbers);
+    std::string suffix = str.substr(endNumbers);
+
+    // number processing
+    std::istringstream ss(numberPart);
+    long long num;
+    if (!(ss >> num) || num < 0) return DEFAULT_BODY_SIZE_BYTES;
+
+    if (!suffix.empty()) {
+        char unit = std::tolower(static_cast<unsigned char>(suffix[0]));
+
+        switch (unit) {
+            case 'k':
+                num *= 1024;
+                break;
+            case 'm':
+                num *= 1024 * 1024;
+                break;
+            case 'g':
+                num *= 1024 * 1024 * 1024;
+                break;
+            default:
+                return DEFAULT_BODY_SIZE_BYTES;
+        }
+    }
+
+    if (num > 2147483647) return DEFAULT_BODY_SIZE_BYTES;
+
+    return static_cast<size_t>(num);
 }
 
 void ClientMaxBodySize::print() const {
-    std::cout << this->_name << ": " << this->_value << std::endl;
+    std::cout << this->_name << ": " << this->_byteLimit << std::endl;
 }
 
-std::string ClientMaxBodySize::getValue() const { return this->_value; }
+size_t ClientMaxBodySize::getValue() const { return this->_byteLimit; }
 
 ClientMaxBodySize *ClientMaxBodySize::clone() const { return new ClientMaxBodySize(*this); }
