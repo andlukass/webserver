@@ -451,6 +451,45 @@ void HttpRequest::parseRedirect() {
     _redirect = tempRedirect;
 }
 
+bool HttpRequest::parseMultipartBody() {
+    std::string contentType = _headers["Content-Type"];
+    size_t boundaryPos = contentType.find("boundary=");
+    if (boundaryPos == std::string::npos) {
+        return false;
+    }
+    std::string boundary = "--" + contentType.substr(boundaryPos + 9);  // Skip "boundary="
+
+    size_t pos = _body.find(boundary);
+    while (pos != std::string::npos) {
+        size_t next = _body.find(boundary, pos + boundary.length());
+        std::string part = _body.substr(pos + boundary.length() + 2, next - pos - boundary.length() - 4); // Skip \r\n
+
+        // Parse headers from the part
+        size_t headerEnd = part.find("\r\n\r\n");
+        if (headerEnd == std::string::npos) break;
+
+        std::string headers = part.substr(0, headerEnd);
+        std::string content = part.substr(headerEnd + 4); // skip header end
+
+        if (headers.find("filename=") != std::string::npos) {
+            // Extract filename
+            size_t fnStart = headers.find("filename=\"") + 10;
+            size_t fnEnd = headers.find("\"", fnStart);
+            std::string filename = headers.substr(fnStart, fnEnd - fnStart);
+
+            // Save file
+            std::string filePath = _config.getRoot()->getValue() + filename;
+            std::ofstream file(filePath.c_str(), std::ios::binary);
+            file.write(content.c_str(), content.size());
+            file.close();
+        }
+
+        pos = next;
+    }
+
+    return true;
+}
+
 void HttpRequest::parseResponse() {
     std::string strMethod = methodToString(_method);
 
@@ -524,27 +563,43 @@ void HttpRequest::parseResponse() {
     }
 
     if (_method == METHOD_POST) {
-        if (_body.empty()) {
+		if (_headers["Content-Type"].find("multipart/form-data") != std::string::npos) {
+        if (!parseMultipartBody()) {
             buildErrorResponse(BAD_REQUEST);
             return;
         }
-
-        std::ostringstream postFile;
-        postFile << time(NULL);
-        std::string filePath = _config.getRoot()->getValue() + postFile.str() + ".txt";
-        std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
-        if (!outFile) {
-            buildErrorResponse(NOT_FOUND_DELETE);
-            return;
-        }
-        outFile << _body;
-        outFile.close();
-
-        std::string successHtml =
-            "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath +
-            "</p>\n</body>\n</html>\n";
-        buildOKResponse(successHtml, "text/html");
+		    // Redirect to the upload success page
+    _redirect = "/upload-success";  // URL of your success page
+    buildOKResponse("", "text/html");  // Send the redirect
+    return;
+        // std::string successHtml =
+        //     "<html><body><h1>Upload successful</h1></body></html>";
+        // buildOKResponse(successHtml, "text/html");
         return;
+    } else {
+        // fallback or handle raw POST body
+    }
+        // if (_body.empty()) {
+        //     buildErrorResponse(BAD_REQUEST);
+        //     return;
+        // }
+
+        // std::ostringstream postFile;
+        // postFile << time(NULL);
+        // std::string filePath = _config.getRoot()->getValue() + postFile.str() + ".txt";
+        // std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
+        // if (!outFile) {
+        //     buildErrorResponse(NOT_FOUND_DELETE);
+        //     return;
+        // }
+        // outFile << _body;
+        // outFile.close();
+
+        // std::string successHtml =
+        //     "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath +
+        //     "</p>\n</body>\n</html>\n";
+        // buildOKResponse(successHtml, "text/html");
+        // return;
     }
     this->buildOKResponse(fileContent, _mimeType);
 }

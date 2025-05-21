@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Feedback</title>
+  <title>Upload Successful</title>
   <style>
     * {
       margin: 0;
@@ -49,34 +49,36 @@
     }
 
     main {
-      padding: 5rem 2rem;
-      max-width: 600px;
-      margin: 0 auto;
+      padding: 10rem;
       text-align: center;
     }
 
     h1 {
-      font-size: 3rem;
+      font-weight: 1;
+      font-size: 2rem;
+      margin-top: 3rem;
       margin-bottom: 1rem;
     }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-
-    input, textarea {
-      font-family: inherit;
-      padding: 0.8rem;
+    p {
       font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
     }
 
-    button {
-      font-family: inherit;
+    .success-box {
+      font-size: 1rem;
+      color: #006633;
+      background-color: #e6fff2;
+      border: 2px solid #00cc66;
+      border-radius: 10px;
+      padding: 1rem 2rem;
+      display: inline-block;
+      margin-top: 2rem;
+      margin-bottom: 3rem;
+      font-weight: 500;
+    }
+
+    .btn {
+      font-size: 1rem;
       padding: 0.8rem 1.5rem;
       background-color: #000000;
       color: white;
@@ -84,10 +86,11 @@
       border-radius: 5px;
       font-weight: bold;
       cursor: pointer;
+      text-decoration: none;
       transition: background-color 0.3s ease;
     }
 
-    button:hover {
+    .btn:hover {
       background-color: #333333;
     }
   </style>
@@ -100,22 +103,14 @@
       <a href="/projects">Projects</a>
       <a href="/our-team">Our Team</a>
       <a href="/feedback">Feedback</a>
-	  <a href="/account">Account</a>
+      <a href="/upload">Upload</a>
     </div>
   </nav>
 
   <main>
-    <h1>Leave Us a Message</h1>
-    <p>We’d love to hear from you! Share your thoughts and attach a file if you'd like.</p>
-
-    <!-- Message POST Form with File Upload -->
-    <!--<form method="POST" action="/submit-feedback" enctype="multipart/form-data">-->
-		<form method="POST" action="/cgi/submit-feedback.py" enctype="multipart/form-data">
-      <input type="text" name="name" placeholder="Your Name" required />
-      <textarea name="message" rows="5" placeholder="Your message..." required></textarea>
-      <input type="file" name="attachment" />
-      <button type="submit">Send Message</button>
-    </form>
+    <h1>Upload Successful</h1>
+    <p>Your file was uploaded without any issues.</p>
+    <a href="/upload" class="btn">Return to Upload Page</a>
   </main>
 </body>
 </html>

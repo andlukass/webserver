@@ -87,6 +87,7 @@ class HttpRequest {
     bool getIsValid() const;
     bool getErrorCode() const;
 
+	bool parseMultipartBody();
     // void	HttpRequest::handlePOSTRequest();TODO
 };
 
