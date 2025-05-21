@@ -26,13 +26,19 @@ Requires body?	✅ Usually (like a file or form) 	❌ No
 
 
 *test for evaluation*
-curl -X POST localhost:8005/feedback "okay"
-curl -X POST -d "message=okay" localhost:8005/feedback
+curl -X POST localhost:8005/feedback "okay" *WRONG input*
+curl -X POST -d "message=okay" localhost:8005/feedback *GOOD input*
 
 
 *MAKE SURE .py executable*
 chmod +x submit-feedback.py
 
+
+File Type	Purpose
+.txt	Simple, human-readable upload/download test.
+.html	To serve static pages and verify content-type.
+.png / .jpg	To ensure your server correctly handles binary files (e.g. image uploads/downloads).
+****.json or .xml	Bonus: show handling structured data.
 
 Yulia:
 0. What parameters are mandatory in config?
