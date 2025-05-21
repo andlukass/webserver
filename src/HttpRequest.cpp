@@ -7,7 +7,7 @@ enum ErrorStatus {
     BAD_REQUEST = 400,
     PAYLOAD_TOO_LARGE = 413,
     NO_CONTENT = 204,
-    INTERNAL_SERVER_ERROR = 500
+    INTERNAL_SERVER_ERROR = 500,
 };
 
 std::string statusToString(int errorStatus) {
@@ -183,7 +183,9 @@ HttpRequest::HttpRequest(const ServerDirective& config, const std::string& reque
       _httpVersion(HTTP_VERSION_UNKNOWN),
       _cgiType(CGI_NONE),
       _isCgi(false),
-      _config(config) {
+      _config(config),
+      _isChunked(false),
+      _isValid(true) {
     this->initFromRaw();
 }
 
@@ -237,6 +239,12 @@ bool HttpRequest::parseRequestLine() {
     return true;
 }
 
+std::string toLower(const std::string& input) {
+    std::string result = input;
+    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    return result;
+}
+
 void HttpRequest::parseHeaders() {
     std::istringstream stream(_rawHeaders);
     std::string line;
@@ -263,16 +271,62 @@ void HttpRequest::parseHeaders() {
             value = "";
 
         _headers[key] = value;
+        if (key == "Transfer-Encoding" && toLower(value) == "chunked") {
+            this->_isChunked = true;
+        }
     }
+}
+
+std::string unchunkBody(const std::string& rawBody) {
+    std::istringstream stream(rawBody);
+    std::string result;
+    std::string line;
+
+    while (std::getline(stream, line)) {
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+
+        std::istringstream hexStream(line);
+        size_t chunkSize;
+        hexStream >> std::hex >> chunkSize;
+
+        if (hexStream.fail()) {
+            std::cerr << "[Unchunk] Failed to parse chunk size\n";
+            break;
+        }
+
+        if (chunkSize == 0) break;
+
+        char* buffer = new char[chunkSize];
+        stream.read(buffer, chunkSize);
+        result.append(buffer, chunkSize);
+        delete[] buffer;
+
+        stream.get();  // \r
+        stream.get();  // \n
+    }
+
+    return result;
 }
 
 void HttpRequest::parseBody() {
     size_t bodyStart = _rawRequest.find("\r\n\r\n");
+
     // checking if body is present. we don't validate if it's supposed to be at the moment
-    if (bodyStart != std::string::npos) {
-        // +4 here to skip empty line in between headers and body
-        bodyStart += 4;
-        if (bodyStart < _rawRequest.size()) _body = _rawRequest.substr(bodyStart);
+    if (bodyStart == std::string::npos) return;
+
+    // +4 here to skip empty line in between headers and body
+    bodyStart += 4;
+    if (bodyStart >= _rawRequest.size()) return;
+    std::string rawBody = _rawRequest.substr(bodyStart);
+
+    if (_isChunked) {
+        _body = unchunkBody(rawBody);
+    } else {
+        _body = rawBody;
+    }
+    if (_body.size() > _config.getClientMaxBodySize()->getValueBytes()) {
+        _isValid = false;
+        _errorCode = PAYLOAD_TOO_LARGE;
     }
 }
 
@@ -340,8 +394,7 @@ void HttpRequest::parseLocation() {
     try {
         _config.getLocation(tempLocationPath);
         _locationPath = tempLocationPath;
-        this->_cleanUri.erase(
-            0, tempLocationPath.size());  // remove location to make the "alias behavior"
+        this->_cleanUri.erase(0, tempLocationPath.size());
     } catch (const std::exception& e) {
         _locationPath = "";
     }
@@ -512,6 +565,11 @@ void HttpRequest::initFromRaw() {
     parseIndex();
     parseHeaders();
     parseBody();
+    // checking max_body_size
+    if (!_isValid) {
+        buildErrorResponse(_errorCode);
+        return;
+    }
     detectCgiAndMime();
     parseAllowMethods();
     parseResponse();

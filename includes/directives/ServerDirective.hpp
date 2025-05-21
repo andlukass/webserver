@@ -4,16 +4,16 @@
 #include <map>
 #include <string>
 
+#include "Autoindex.hpp"
 #include "ClientMaxBodySize.hpp"
 #include "Directive.hpp"
 #include "ErrorPage.hpp"
+#include "FilePathDirective.hpp"
+#include "Index.hpp"
 #include "Listen.hpp"
 #include "Locations.hpp"
 #include "MultiDirective.hpp"
 #include "Root.hpp"
-#include "Index.hpp"
-#include "Autoindex.hpp"
-#include "FilePathDirective.hpp"
 class ServerDirective : public Directive {
    public:
     ServerDirective();
@@ -26,6 +26,7 @@ class ServerDirective : public Directive {
 
     Listen *getListen() const;
     ClientMaxBodySize *getClientMaxBodySize() const;
+    size_t getClientMaxBodySizeBytes() const;
     ErrorPage *getErrorPage() const;
     Root *getRoot() const;
     size_t getLocationsCount() const;

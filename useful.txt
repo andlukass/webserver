@@ -58,3 +58,20 @@ You need to test with files containing errors to see if the error handling works
 for TINA:
 1. Upload some file to the server and get it back.
 2. 
+
+CHUNKS: how to test:
+for example
+
+curl -X POST http://localhost:8080/feedback \
+  -H "Transfer-Encoding: chunked" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data-binary "message=chunked+test" \
+  --trace-ascii debug.log
+
+  or with bigger message :)
+
+  url -X POST http://localhost:8080/feedback \
+  -H "Transfer-Encoding: chunked" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data-binary "message=chunkedtebkjgbjgbsjfgbjkdbgjdkbgjajhfdfbvjzvbdvbhjdfbgkjsdhbsjdhbgvjhdfbghjdsbgahjdfbkasfjaksfbajksfbhdvbgfdjhfgjkfbst" \ 
+  --trace-ascii debug.log

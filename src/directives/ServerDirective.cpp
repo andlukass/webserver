@@ -1,8 +1,8 @@
 #include "../../includes/directives/ServerDirective.hpp"
 
-const char *validServerProps[] = {"listen",   "server_name", "client_max_body_size",
-                                  "index",    "root", "error_page", "redirect",
-                                  "location", "allow_methods", "autoindex", NULL};
+const char *validServerProps[] = {
+    "listen",   "server_name", "client_max_body_size", "index",     "root", "error_page",
+    "redirect", "location",    "allow_methods",        "autoindex", NULL};
 
 ServerDirective::ServerDirective() : Directive("server") {
     // std::cout << "ServerDirective default constructor ========================================"
@@ -75,9 +75,13 @@ ClientMaxBodySize *ServerDirective::getClientMaxBodySize() const {
 
 Root *ServerDirective::getRoot() const { return dynamic_cast<Root *>(this->_value.at("root")); }
 
-FilePathDirective *ServerDirective::getIndex() const { return dynamic_cast<FilePathDirective *>(this->_value.at("index")); }
+FilePathDirective *ServerDirective::getIndex() const {
+    return dynamic_cast<FilePathDirective *>(this->_value.at("index"));
+}
 
-FilePathDirective *ServerDirective::getRedirect() const { return dynamic_cast<FilePathDirective *>(this->_value.at("redirect")); }
+FilePathDirective *ServerDirective::getRedirect() const {
+    return dynamic_cast<FilePathDirective *>(this->_value.at("redirect"));
+}
 
 MultiDirective *ServerDirective::getServerName() const {
     return dynamic_cast<MultiDirective *>(this->_value.at("server_name"));
