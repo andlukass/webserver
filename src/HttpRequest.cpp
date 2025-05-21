@@ -569,16 +569,17 @@ void HttpRequest::parseResponse() {
             return;
         }
 		    // Redirect to the upload success page
-    _redirect = "/upload-success";  // URL of your success page
-    buildOKResponse("", "text/html");  // Send the redirect
-    return;
+		_redirect = "/upload-success";  // URL of your success page
+		buildOKResponse("", "text/html");  // Send the redirect
+		return;
         // std::string successHtml =
         //     "<html><body><h1>Upload successful</h1></body></html>";
         // buildOKResponse(successHtml, "text/html");
-        return;
+        //return;
     } else {
-        // fallback or handle raw POST body
+        // handle Errors
     }
+	//OLD METHO-POST part
         // if (_body.empty()) {
         //     buildErrorResponse(BAD_REQUEST);
         //     return;

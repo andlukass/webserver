@@ -1,0 +1,11 @@
+== Info: Could not resolve host: POST
+== Info: Closing connection
+== Info: Host localhost:8080 was resolved.
+== Info: IPv6: ::1
+== Info: IPv4: 127.0.0.1
+== Info:   Trying [::1]:8080...
+== Info: connect to ::1 port 8080 from ::1 port 34094 failed: Connection refused
+== Info:   Trying 127.0.0.1:8080...
+== Info: connect to 127.0.0.1 port 8080 from 127.0.0.1 port 34852 failed: Connection refused
+== Info: Failed to connect to localhost port 8080 after 0 ms: Couldn't connect to server
+== Info: Closing connection
