@@ -75,6 +75,8 @@ void ClientMaxBodySize::print() const {
     std::cout << this->_name << ": " << this->_byteLimit << std::endl;
 }
 
-size_t ClientMaxBodySize::getValue() const { return this->_byteLimit; }
+std::string ClientMaxBodySize::getValue() const { return this->_value; }
+
+size_t ClientMaxBodySize::getValueBytes() const { return this->_byteLimit; }
 
 ClientMaxBodySize *ClientMaxBodySize::clone() const { return new ClientMaxBodySize(*this); }

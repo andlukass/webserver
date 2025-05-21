@@ -184,7 +184,8 @@ HttpRequest::HttpRequest(const ServerDirective& config, const std::string& reque
       _cgiType(CGI_NONE),
       _isCgi(false),
       _config(config),
-      _isChunked(false) {
+      _isChunked(false),
+      _isValid(true) {
     this->initFromRaw();
 }
 
@@ -322,6 +323,10 @@ void HttpRequest::parseBody() {
         _body = unchunkBody(rawBody);
     } else {
         _body = rawBody;
+    }
+    if (_body.size() > _config.getClientMaxBodySize()->getValueBytes()) {
+        _isValid = false;
+        _errorCode = PAYLOAD_TOO_LARGE;
     }
 }
 
@@ -560,6 +565,11 @@ void HttpRequest::initFromRaw() {
     parseIndex();
     parseHeaders();
     parseBody();
+    // checking max_body_size
+    if (!_isValid) {
+        buildErrorResponse(_errorCode);
+        return;
+    }
     detectCgiAndMime();
     parseAllowMethods();
     parseResponse();

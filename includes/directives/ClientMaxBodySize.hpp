@@ -10,7 +10,8 @@
 class ClientMaxBodySize : public Directive {
    public:
     ClientMaxBodySize();
-    size_t getValue() const;
+    std::string getValue() const;
+    size_t getValueBytes() const;
     void parse(std::string &config);
     void print() const;
     ClientMaxBodySize *clone() const;
@@ -19,5 +20,5 @@ class ClientMaxBodySize : public Directive {
     std::string _value;
     size_t _byteLimit;
 
-    size_t ClientMaxBodySize::toBytes(const std::string &input);
+    size_t toBytes(const std::string &input);
 };
