@@ -166,8 +166,6 @@ void HttpRequest::buildAutoindexResponse(std::string filePath) {
     this->_response = response.str();
 }
 
-// TODO: our config parser could use enum HttpMethod
-// for now this is just translating to text
 std::string methodToString(HttpMethod method) {
     switch (method) {
         case METHOD_GET:
@@ -288,8 +286,7 @@ std::string unchunkBody(const std::string& rawBody) {
     std::string line;
 
     while (std::getline(stream, line)) {
-        if (!line.empty() && line[line.length() - 1] == '\r')
-            line.erase(line.length() - 1);
+        if (!line.empty() && line[line.length() - 1] == '\r') line.erase(line.length() - 1);
 
         std::istringstream hexStream(line);
         size_t chunkSize;
@@ -524,7 +521,6 @@ void HttpRequest::parseResponse() {
     std::string filePath = _root + _cleanUri + _index;
     std::string fileContent = Utils::readFile(filePath);
     if (fileContent.empty() && _method != METHOD_DELETE) {
-        // TODO [CGI] - now it returns error, because we can't open HTML with that. we can fix later
         if (Utils::isDirectory(filePath) && this->_autoindex) {
             this->buildAutoindexResponse(filePath);
         } else {
@@ -535,7 +531,6 @@ void HttpRequest::parseResponse() {
         return;
     }
 
-    // IT HAS TO BE BEFORE CGI because the path removed
     if (_method == METHOD_DELETE) {
         if (fileContent.empty()) {
             this->buildErrorResponse(NOT_FOUND_DELETE);
@@ -552,7 +547,6 @@ void HttpRequest::parseResponse() {
         std::cout << "[CGI] Detected CGI Script " << filePath << std::endl;
 
         CgiHandler cgi(filePath);
-        // std::cout << "[DEBUG] CGI Body: " << _body << std::endl;
         std::string cgiResult =
             cgi.execute(_body, _method == METHOD_POST ? "POST" : "GET", _cgiType);
 
@@ -568,7 +562,7 @@ void HttpRequest::parseResponse() {
             return;
         }
 
-        // I wrap CGI response in HTML style now
+        // Wrap CGI response in HTML style now
         this->buildOKResponse(cgiResult, "text/html");
         if (_method == METHOD_POST) {
             std::ostringstream postFile;
@@ -648,7 +642,8 @@ void HttpRequest::initFromRaw() {
     parseIndex();
     parseHeaders();
     parseBody();
-    // checking max_body_size
+    // Parse Body checks max_body_size, so we check if the flag was False, other methods don't use
+    // it
     if (!_isValid) {
         buildErrorResponse(_errorCode);
         return;

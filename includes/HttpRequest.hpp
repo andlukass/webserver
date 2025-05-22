@@ -84,10 +84,10 @@ class HttpRequest {
     CgiType getCgiType() const;
     bool getIsCgi() const;
     std::string getResponse() const;
-    bool getIsValid() const;
-    bool getErrorCode() const;
+    // bool getIsValid() const;
+    // bool getErrorCode() const;
 
-	bool parseMultipartBody();
+    bool parseMultipartBody();
     // void	HttpRequest::handlePOSTRequest();TODO
 };
 
