@@ -52,13 +52,25 @@ print(f"""
     a.button:hover {{
       background-color: #333333;
     }}
+	.message-box {{
+	display: inline-block; /* shrink-wraps the content */
+	background-color: #f9f9f9;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	padding: 1rem 1.5rem;
+	font-size: 1.1rem;
+	font-style: italic;
+	color: #333;
+	margin: 0.5rem 1rem;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	}}
   </style>
 </head>
 <body>
   <main>
     <h1>Thank You!</h1>
     <p>Your message has been submitted:</p>
-    <blockquote>{html.escape(message)}</blockquote>
+    <p><div class="message-box">{html.escape(message)}</div></p>
     {upload_info}
     <a href="/feedback" class="button">Return to Feedback</a>
   </main>

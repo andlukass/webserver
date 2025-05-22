@@ -28,37 +28,6 @@ cat <<EOF
       color: #000000;
     }
 
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background-color: white;
-    }
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-
-    .menu {
-      display: flex;
-      gap: 3rem;
-      padding: 1rem 2rem;
-    }
-
-    .menu a {
-      font-size: large;
-      text-decoration: none;
-      color: #000000;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-
-    .menu a:hover {
-      color: #a7a7a7;
-    }
-
     main {
       padding: 10rem;
       text-align: center;
@@ -106,16 +75,6 @@ cat <<EOF
   </style>
 </head>
 <body>
-  <nav>
-    <div class="logo">42Webserv</div>
-    <div class="menu">
-      <a href="/">Home</a>
-      <a href="/projects">Projects</a>
-      <a href="/our-team">Our Team</a>
-      <a href="/feedback">Feedback</a>
-      <a href="/upload">Upload</a>
-    </div>
-  </nav>
 
   <main>
     <h1>Thank You!</h1>
