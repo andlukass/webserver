@@ -115,8 +115,8 @@
   </nav>
 
   <main>
-    <h1>Upload Your Profile</h1>
-    <p>Enter your name and upload a profile picture:</p>
+    <h1>Upload Your Text File</h1>
+    <p>Please choose a .txt file and upload :</p>
     <form action="/upload" method="POST" enctype="multipart/form-data">
 
       <label for="file">Profile Picture</label>

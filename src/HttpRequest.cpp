@@ -445,8 +445,8 @@ void HttpRequest::parseRedirect() {
     // if (tempRedirect.empty()) {
     //     tempRedirect = _config.getRedirect()->getValue();
     // }
-    std::cout << "tempRedirect: " << tempRedirect << std::endl;
-    std::cout << "locationPath: " << _locationPath << std::endl;
+    // std::cout << "tempRedirect: " << tempRedirect << std::endl;
+    // std::cout << "locationPath: " << _locationPath << std::endl;
     _redirect = tempRedirect;
 }
 
