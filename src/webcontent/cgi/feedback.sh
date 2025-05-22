@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Чтение тела POST-запроса
 read -n "$CONTENT_LENGTH" QUERY_STRING
 
 MESSAGE=$(echo "$QUERY_STRING" | sed -n 's/^.*message=\([^&]*\).*$/\1/p' | sed 's/+/ /g' | sed 's/%20/ /g')

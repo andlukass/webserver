@@ -409,8 +409,7 @@ void HttpRequest::detectCgiAndMime() {
         if (ext == ".py") {
             _isCgi = true;
             _cgiType = CGI_PYTHON;
-        }
-        if (ext == ".sh") {
+        } else if (ext == ".sh") {
             _isCgi = true;
             _cgiType = CGI_BASH;
         } else {
@@ -462,14 +461,15 @@ bool HttpRequest::parseMultipartBody() {
     size_t pos = _body.find(boundary);
     while (pos != std::string::npos) {
         size_t next = _body.find(boundary, pos + boundary.length());
-        std::string part = _body.substr(pos + boundary.length() + 2, next - pos - boundary.length() - 4); // Skip \r\n
+        std::string part = _body.substr(pos + boundary.length() + 2,
+                                        next - pos - boundary.length() - 4);  // Skip \r\n
 
         // Parse headers from the part
         size_t headerEnd = part.find("\r\n\r\n");
         if (headerEnd == std::string::npos) break;
 
         std::string headers = part.substr(0, headerEnd);
-        std::string content = part.substr(headerEnd + 4); // skip header end
+        std::string content = part.substr(headerEnd + 4);  // skip header end
 
         if (headers.find("filename=") != std::string::npos) {
             // Extract filename
@@ -563,48 +563,48 @@ void HttpRequest::parseResponse() {
     }
 
     if (_method == METHOD_POST) {
-		   // Handle multipart/form-data uploads
-    if (_headers["Content-Type"].find("multipart/form-data") != std::string::npos) {
-        if (!parseMultipartBody()) {
-            buildErrorResponse(BAD_REQUEST);
+        // Handle multipart/form-data uploads
+        if (_headers["Content-Type"].find("multipart/form-data") != std::string::npos) {
+            if (!parseMultipartBody()) {
+                buildErrorResponse(BAD_REQUEST);
+                return;
+            }
+
+            // Redirect to the upload success page
+            _redirect = "/upload-success";     // URL of your success page
+            buildOKResponse("", "text/html");  // Trigger redirect
             return;
         }
+        // Handle plain POST body uploads
+        else {
+            if (_body.empty()) {
+                buildErrorResponse(BAD_REQUEST);
+                return;
+            }
 
-        // Redirect to the upload success page
-        _redirect = "/upload-success";  // URL of your success page
-        buildOKResponse("", "text/html");  // Trigger redirect
-        return;
-    } 
-    // Handle plain POST body uploads
-    else {
-        if (_body.empty()) {
-            buildErrorResponse(BAD_REQUEST);
+            // Create a filename using the current timestamp
+            std::ostringstream postFile;
+            postFile << time(NULL);
+            std::string filePath = _config.getRoot()->getValue() + postFile.str() + ".txt";
+
+            // Save the POST body to the file
+            std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
+            if (!outFile) {
+                buildErrorResponse(NOT_FOUND_DELETE);
+                return;
+            }
+
+            outFile << _body;
+            outFile.close();
+
+            // Build success HTML response
+            std::string successHtml =
+                "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath +
+                "</p>\n</body>\n</html>\n";
+            _redirect = "/cgi/submit-feedback.py";
+            buildOKResponse(successHtml, "text/html");
             return;
         }
-
-        // Create a filename using the current timestamp
-        std::ostringstream postFile;
-        postFile << time(NULL);
-        std::string filePath = _config.getRoot()->getValue() + postFile.str() + ".txt";
-
-        // Save the POST body to the file
-        std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
-        if (!outFile) {
-            buildErrorResponse(NOT_FOUND_DELETE);
-            return;
-        }
-
-        outFile << _body;
-        outFile.close();
-
-        // Build success HTML response
-        std::string successHtml =
-            "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath +
-            "</p>\n</body>\n</html>\n";
-		_redirect = "/cgi/submit-feedback.py";
-        buildOKResponse(successHtml, "text/html");
-        return;
-		}
     }
     this->buildOKResponse(fileContent, _mimeType);
 }
