@@ -357,15 +357,12 @@ void HttpRequest::parseIndex() {
 void HttpRequest::parseRoot() {
     std::string tempRoot =
         _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRoot()->getValue();
-    std::cout << "Root: " << tempRoot << std::endl;
     if (tempRoot.empty()) {
         tempRoot = _config.getRoot()->getValue();
     }
     if (tempRoot.empty()) {
         tempRoot = DEFAULT_ROOT;
     }
-
-    std::cout << "Root: " << tempRoot << std::endl;
 
     // debug checks for root
     // if (tempRoot[0] != '/') {
