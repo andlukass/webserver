@@ -182,14 +182,15 @@ std::string methodToString(HttpMethod method) {
 }
 
 HttpRequest::HttpRequest(const ServerDirective& config, const std::string& request)
-    : _rawRequest(request),
-      _method(METHOD_UNKNOWN),
+    : _method(METHOD_UNKNOWN),
+      _rawRequest(request),
       _httpVersion(HTTP_VERSION_UNKNOWN),
+      _isChunked(false),
       _cgiType(CGI_NONE),
       _isCgi(false),
       _config(config),
-      _isChunked(false),
-      _isValid(true) {
+      _isValid(true),
+      _errorCode(0) {
     this->initFromRaw();
 }
 
@@ -287,7 +288,8 @@ std::string unchunkBody(const std::string& rawBody) {
     std::string line;
 
     while (std::getline(stream, line)) {
-        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (!line.empty() && line[line.length() - 1] == '\r')
+            line.erase(line.length() - 1);
 
         std::istringstream hexStream(line);
         size_t chunkSize;

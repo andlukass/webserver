@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 
 CgiHandler::CgiHandler(const std::string& scriptPath) : _scriptPath(scriptPath) {}
 
@@ -44,7 +45,10 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         close(stdinPipe[1]);
         close(stdoutPipe[0]);
 
-        std::string contentLength = std::to_string(body.size());
+        std::ostringstream oss;
+        oss << body.size();
+        std::string contentLength = oss.str();
+
 
         std::string methodEnv = "REQUEST_METHOD=" + method;
         std::string lengthEnv = "CONTENT_LENGTH=" + contentLength;
@@ -52,7 +56,7 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         char* const env[] = {(char*)methodEnv.c_str(), (char*)lengthEnv.c_str(),
                              (char*)"CONTENT_TYPE=application/x-www-form-urlencoded", NULL};
 
-        char* const args[] = {(char*)_scriptPath.c_str(), NULL};
+        // char* const args[] = {(char*)_scriptPath.c_str(), NULL};
 
         if (cgi_type == CGI_PYTHON) {
             char* const pyArgs[] = {(char*)"python3", (char*)_scriptPath.c_str(), NULL};
