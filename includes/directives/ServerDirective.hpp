@@ -1,5 +1,5 @@
-#ifndef SERVERDIRECTIVE_HPP
-#define SERVERDIRECTIVE_HPP
+#ifndef SERVER_DIRECTIVE_HPP
+#define SERVER_DIRECTIVE_HPP
 
 #include <iostream>
 #include <map>

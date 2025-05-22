@@ -1,5 +1,5 @@
-#ifndef MULTIDIRECTIVE_HPP
-#define MULTIDIRECTIVE_HPP
+#ifndef MULTI_DIRECTIVE_HPP
+#define MULTI_DIRECTIVE_HPP
 
 #include <iostream>
 #include <string>

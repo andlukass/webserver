@@ -1,5 +1,5 @@
-#ifndef LOCATIONDIRECTIVE_HPP
-#define LOCATIONDIRECTIVE_HPP
+#ifndef LOCATION_DIRECTIVE_HPP
+#define LOCATION_DIRECTIVE_HPP
 
 #include <iostream>
 #include <map>

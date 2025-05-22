@@ -1,5 +1,5 @@
-#ifndef FILEPATHDIRECTIVE_HPP
-#define FILEPATHDIRECTIVE_HPP
+#ifndef FILE_PATH_DIRECTIVE_HPP
+#define FILE_PATH_DIRECTIVE_HPP
 
 #include <iostream>
 #include <string>

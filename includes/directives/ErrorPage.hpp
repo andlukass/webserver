@@ -1,5 +1,5 @@
-#ifndef ERRORPAGE_HPP
-#define ERRORPAGE_HPP
+#ifndef ERROR_PAGE_HPP
+#define ERROR_PAGE_HPP
 
 #include <iostream>
 #include <string>

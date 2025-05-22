@@ -1,5 +1,5 @@
-#ifndef ALLOWEDMETHODS_HPP
-#define ALLOWEDMETHODS_HPP
+#ifndef ALLOWED_METHODS_HPP
+#define ALLOWED_METHODS_HPP
 
 #include <iostream>
 #include <string>

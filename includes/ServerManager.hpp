@@ -1,5 +1,5 @@
-#ifndef SERVERMANAGER_HPP
-#define SERVERMANAGER_HPP
+#ifndef SERVER_MANAGER_HPP
+#define SERVER_MANAGER_HPP
 
 #include <poll.h>
 

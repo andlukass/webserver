@@ -1,5 +1,5 @@
-#ifndef CLIENTMAXBODYSIZE_HPP
-#define CLIENTMAXBODYSIZE_HPP
+#ifndef CLIENT_MAX_BODY_SIZE_HPP
+#define CLIENT_MAX_BODY_SIZE_HPP
 
 #include <iostream>
 #include <string>
