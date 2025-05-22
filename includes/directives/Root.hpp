@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ROOT_HPP
+#define ROOT_HPP
 
 #include <iostream>
 #include <string>
@@ -16,3 +17,5 @@ class Root : public Directive {
    private:
     std::string _value;
 };
+
+#endif

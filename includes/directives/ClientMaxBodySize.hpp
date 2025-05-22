@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CLIENTMAXBODYSIZE_HPP
+#define CLIENTMAXBODYSIZE_HPP
 
 #include <iostream>
 #include <string>
@@ -22,3 +23,5 @@ class ClientMaxBodySize : public Directive {
 
     size_t toBytes(const std::string &input);
 };
+
+#endif

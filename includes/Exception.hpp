@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EXCEPTION_HPP
+#define EXCEPTION_HPP
 
 #include <exception>
 #include <string>
@@ -13,3 +14,5 @@ class Exception : public std::exception {
     virtual const char *what() const throw() { return (_message.c_str()); }
     virtual ~Exception() throw() {}
 };
+
+#endif

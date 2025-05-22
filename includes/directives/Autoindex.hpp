@@ -1,4 +1,5 @@
-#pragma once
+#ifndef AUTOINDEX_HPP
+#define AUTOINDEX_HPP
 
 #include <iostream>
 #include <string>
@@ -16,3 +17,5 @@ class Autoindex : public Directive {
    private:
     std::string _value;
 };
+
+#endif

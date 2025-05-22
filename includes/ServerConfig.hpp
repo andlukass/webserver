@@ -1,5 +1,5 @@
-// TODO: (Yulia) make sure that this allowed. As far as I know it's not C++98 standard :(
-#pragma once
+#ifndef SERVER_CONFIG_HPP
+#define SERVER_CONFIG_HPP
 
 #include <iostream>
 #include <string>
@@ -23,3 +23,5 @@ class ServerConfig {
     void parse();
     void removeComments();
 };
+
+#endif

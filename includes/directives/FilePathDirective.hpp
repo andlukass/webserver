@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FILEPATHDIRECTIVE_HPP
+#define FILEPATHDIRECTIVE_HPP
 
 #include <iostream>
 #include <string>
@@ -7,7 +8,7 @@
 
 class FilePathDirective : public Directive {
    public:
-    FilePathDirective(const std::string& name);
+    FilePathDirective(const std::string &name);
     void print() const;
     void parse(std::string &config);
     void validate();
@@ -17,3 +18,5 @@ class FilePathDirective : public Directive {
    private:
     std::string _value;
 };
+
+#endif

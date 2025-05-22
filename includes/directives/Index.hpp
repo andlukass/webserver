@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INDEX_HPP
+#define INDEX_HPP
 
 #include <iostream>
 #include <string>
@@ -17,3 +18,5 @@ class Index : public Directive {
    private:
     std::string _value;
 };
+
+#endif

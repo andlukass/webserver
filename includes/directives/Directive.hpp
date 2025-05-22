@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DIRECTIVE_HPP
+#define DIRECTIVE_HPP
 
 #include <cstdlib>
 #include <iostream>
@@ -29,3 +30,5 @@ class Directive {
 };
 
 typedef std::map<std::string, Directive *> DirectiveMap;
+
+#endif
