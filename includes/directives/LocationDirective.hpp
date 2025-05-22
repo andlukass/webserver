@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOCATION_DIRECTIVE_HPP
+#define LOCATION_DIRECTIVE_HPP
 
 #include <iostream>
 #include <map>
@@ -8,10 +9,10 @@
 #include "Autoindex.hpp"
 #include "Directive.hpp"
 #include "ErrorPage.hpp"
+#include "FilePathDirective.hpp"
 #include "Index.hpp"
 #include "Path.hpp"
 #include "Root.hpp"
-#include "FilePathDirective.hpp"
 
 class LocationDirective : public Directive {
    public:
@@ -35,3 +36,5 @@ class LocationDirective : public Directive {
    private:
     DirectiveMap _value;
 };
+
+#endif

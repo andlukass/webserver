@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ERROR_PAGE_HPP
+#define ERROR_PAGE_HPP
 
 #include <iostream>
 #include <string>
@@ -16,3 +17,5 @@ class ErrorPage : public Directive {
    private:
     std::map<int, std::string> _value;
 };
+
+#endif

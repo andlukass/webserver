@@ -1,4 +1,7 @@
-#pragma once
+#ifndef UTILS_HPP
+#define UTILS_HPP
+
+#include <sys/stat.h>
 
 #include <cctype>
 #include <fstream>
@@ -6,7 +9,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <sys/stat.h>
 
 #include "Exception.hpp"
 
@@ -28,11 +30,11 @@ class Utils {
 
     static std::string cleanSlashes(const std::string &path);
 
-    static bool isDirectory(const std::string& path);
+    static bool isDirectory(const std::string &path);
 
-    static bool isFile(const std::string& path);
+    static bool isFile(const std::string &path);
 
-    static std::string removeLastPathLevel(const std::string& path);
+    static std::string removeLastPathLevel(const std::string &path);
 
     static bool hasProtocol(const std::string &url);
 
@@ -44,3 +46,5 @@ class Utils {
         return false;
     }
 };
+
+#endif

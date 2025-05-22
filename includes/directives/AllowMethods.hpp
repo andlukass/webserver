@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ALLOWED_METHODS_HPP
+#define ALLOWED_METHODS_HPP
 
 #include <iostream>
 #include <string>
@@ -17,3 +18,5 @@ class AllowMethods : public Directive {
    private:
     std::vector<std::string> _value;
 };
+
+#endif

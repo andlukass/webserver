@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SERVER_DIRECTIVE_HPP
+#define SERVER_DIRECTIVE_HPP
 
 #include <iostream>
 #include <map>
@@ -40,3 +41,5 @@ class ServerDirective : public Directive {
    private:
     DirectiveMap _value;
 };
+
+#endif

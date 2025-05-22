@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MULTI_DIRECTIVE_HPP
+#define MULTI_DIRECTIVE_HPP
 
 #include <iostream>
 #include <string>
@@ -16,3 +17,5 @@ class MultiDirective : public Directive {
    private:
     std::vector<std::string> _value;
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LISTEN_HPP
+#define LISTEN_HPP
 
 #include <iostream>
 #include <string>
@@ -25,3 +26,5 @@ class Listen : public Directive {
     void checkIp();
     void checkPort();
 };
+
+#endif

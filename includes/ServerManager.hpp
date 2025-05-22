@@ -1,11 +1,12 @@
 #ifndef SERVER_MANAGER_HPP
 #define SERVER_MANAGER_HPP
 
-#include <vector>
 #include <poll.h>
 
-#include "Server.hpp"
+#include <vector>
+
 #include "Client.hpp"
+#include "Server.hpp"
 #include "ServerConfig.hpp"
 
 class ServerManager {

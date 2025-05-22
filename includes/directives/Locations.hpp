@@ -1,8 +1,9 @@
-#pragma once
+#ifndef LOCATIONS_HPP
+#define LOCATIONS_HPP
 
 #include <iostream>
-#include <string>
 #include <map>
+#include <string>
 
 #include "Directive.hpp"
 #include "LocationDirective.hpp"
@@ -21,3 +22,5 @@ class Locations : public Directive {
    private:
     std::map<std::string, LocationDirective> _value;
 };
+
+#endif

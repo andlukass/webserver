@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PATH_HPP
+#define PATH_HPP
 
 #include <iostream>
 #include <string>
@@ -16,3 +17,5 @@ class Path : public Directive {
    private:
     std::string _value;
 };
+
+#endif
