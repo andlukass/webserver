@@ -17,17 +17,114 @@ cat <<EOF
   <meta charset="UTF-8" />
   <title>Feedback Submitted</title>
   <style>
-    body { font-family: sans-serif; background: #f9f9f9; color: #222; }
-    main { padding: 10rem; text-align: center; }
-    .button { padding: 0.8rem 1.5rem; background: black; color: white; text-decoration: none; border-radius: 5px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: white;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .menu {
+      display: flex;
+      gap: 3rem;
+      padding: 1rem 2rem;
+    }
+
+    .menu a {
+      font-size: large;
+      text-decoration: none;
+      color: #000000;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .menu a:hover {
+      color: #a7a7a7;
+    }
+
+    main {
+      padding: 10rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .button {
+      font-size: 1rem;
+      padding: 0.8rem 1.5rem;
+      background-color: #000000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #333333;
+    }
+
+	.message-box {
+	display: inline-block; /* shrink-wraps the content */
+	background-color: #f9f9f9;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	padding: 1rem 1.5rem;
+	font-size: 1.1rem;
+	font-style: italic;
+	color: #333;
+	margin: 0.5rem 1rem;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	}
   </style>
 </head>
 <body>
+  <nav>
+    <div class="logo">42Webserv</div>
+    <div class="menu">
+      <a href="/">Home</a>
+      <a href="/projects">Projects</a>
+      <a href="/our-team">Our Team</a>
+      <a href="/feedback">Feedback</a>
+      <a href="/upload">Upload</a>
+    </div>
+  </nav>
+
   <main>
     <h1>Thank You!</h1>
     <p>Your message has been submitted:</p>
-    <blockquote>$MESSAGE_ESCAPED</blockquote>
-    <a href="/feedback" class="button">Return to Feedback</a>
+	<p><div class="message-box">
+	$MESSAGE_ESCAPED
+	</div></p>
+    <a href="/feedback_sh" class="button">Return to Feedback</a>
   </main>
 </body>
 </html>

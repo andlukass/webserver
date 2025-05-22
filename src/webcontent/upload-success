@@ -54,30 +54,16 @@
     }
 
     h1 {
-      font-weight: 1;
-      font-size: 2rem;
-      margin-top: 3rem;
+      font-size: 2.5rem;
       margin-bottom: 1rem;
     }
 
     p {
-      font-size: 1rem;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
     }
 
-    .success-box {
-      font-size: 1rem;
-      color: #006633;
-      background-color: #e6fff2;
-      border: 2px solid #00cc66;
-      border-radius: 10px;
-      padding: 1rem 2rem;
-      display: inline-block;
-      margin-top: 2rem;
-      margin-bottom: 3rem;
-      font-weight: 500;
-    }
-
-    .btn {
+    .button {
       font-size: 1rem;
       padding: 0.8rem 1.5rem;
       background-color: #000000;
@@ -90,7 +76,7 @@
       transition: background-color 0.3s ease;
     }
 
-    .btn:hover {
+    .button:hover {
       background-color: #333333;
     }
   </style>
@@ -110,7 +96,7 @@
   <main>
     <h1>Upload Successful</h1>
     <p>Your file was uploaded without any issues.</p>
-    <a href="/upload" class="btn">Return to Upload Page</a>
+    <a href="/upload" class="button">Return to Upload Page</a>
   </main>
 </body>
 </html>

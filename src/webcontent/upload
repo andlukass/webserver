@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upload a File</title>
-  <style>
+   <style>
     * {
       margin: 0;
       padding: 0;
@@ -23,7 +23,6 @@
       align-items: center;
       padding: 1rem 2rem;
       background-color: white;
-      border-bottom: 1px solid #e0e0e0;
     }
 
     .logo {
@@ -34,6 +33,7 @@
     .menu {
       display: flex;
       gap: 3rem;
+      padding: 1rem 2rem;
     }
 
     .menu a {
@@ -110,7 +110,7 @@
       <a href="/projects">Projects</a>
       <a href="/our-team">Our Team</a>
       <a href="/feedback">Feedback</a>
-      <a href="/account">Account</a>
+      <a href="/upload">Upload</a>
     </div>
   </nav>
 
