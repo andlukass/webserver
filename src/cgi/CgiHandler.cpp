@@ -52,7 +52,7 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         char* const env[] = {(char*)methodEnv.c_str(), (char*)lengthEnv.c_str(),
                              (char*)"CONTENT_TYPE=application/x-www-form-urlencoded", NULL};
 
-        char* const args[] = {(char*)_scriptPath.c_str(), NULL};
+        // char* const args[] = {(char*)_scriptPath.c_str(), NULL};
 
         if (cgi_type == CGI_PYTHON) {
             char* const pyArgs[] = {(char*)"python3", (char*)_scriptPath.c_str(), NULL};

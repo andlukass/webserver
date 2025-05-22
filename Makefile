@@ -1,5 +1,5 @@
-#CFLAGS = -std=c++98 #-Wall -Werror -Wextra
-CC = g++
+CFLAGS = -std=c++98 -Wall -Werror -Wextra
+CC = c++
 		
 SRCS =  ./src/main.cpp                         \
 		./src/Utils.cpp                        \
