@@ -1,5 +1,9 @@
 #include "../includes/HttpRequest.hpp"
 
+#include <unistd.h>
+
+#include <cerrno>
+
 enum ErrorStatus {
     NOT_FOUND = 404,
     NOT_FOUND_DELETE = 600,
@@ -359,6 +363,23 @@ void HttpRequest::parseRoot() {
     if (tempRoot.empty()) {
         tempRoot = DEFAULT_ROOT;
     }
+
+    // debug checks for root
+    // if (tempRoot[0] != '/') {
+    //     // relative path
+    //     std::cout << "[parseRoot] Relative root: " << tempRoot << std::endl;
+    //     // absolute path
+    // } else {
+    //     std::cout << "[parseRoot] Absolute root: " << tempRoot << std::endl;
+    // }
+
+    // checking that dir is accessible
+    if (access(tempRoot.c_str(), F_OK) != 0) {
+        std::cerr << "[parseRoot] Root path does not exist: " << tempRoot << std::endl;
+        _isValid = false;
+        _errorCode = NOT_FOUND;
+    }
+
     _root = tempRoot;
 }
 

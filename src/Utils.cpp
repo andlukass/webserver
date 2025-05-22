@@ -1,7 +1,7 @@
 #include "../includes/Utils.hpp"
 
 std::string Utils::readFile(const std::string &filePath) {
- std::ifstream file(
+    std::ifstream file(
         filePath.c_str(),
         std::ios::in |
             std::ios::binary);  // it is needed because if it's error it has to read again
@@ -10,7 +10,7 @@ std::string Utils::readFile(const std::string &filePath) {
     std::string fileContent((std::istreambuf_iterator<char>(file)),
                             std::istreambuf_iterator<char>());
 
-    file.close();          // close the file after reading
+    file.close();  // close the file after reading
     return (fileContent);
 }
 
@@ -77,7 +77,7 @@ std::vector<std::string> Utils::split(const std::string &str, const std::string 
 std::string Utils::cleanSlashes(const std::string &path) {
     std::string normalized;
     bool lastWasSlash = false;
-    
+
     for (size_t i = 0; i < path.length(); i++) {
         if (path[i] == '/') {
             if (!lastWasSlash) {
@@ -89,15 +89,15 @@ std::string Utils::cleanSlashes(const std::string &path) {
             lastWasSlash = false;
         }
     }
-    
-    if (normalized.empty() || normalized[0] != '/') {
-        normalized = '/' + normalized;
-    }
-    
+
+    // if (normalized.empty() || normalized[0] != '/') {
+    //     normalized = '/' + normalized;
+    // }
+
     return normalized;
 }
 
-bool Utils::isDirectory(const std::string& path) {
+bool Utils::isDirectory(const std::string &path) {
     struct stat info;
     if (stat(path.c_str(), &info) != 0) {
         return false;
@@ -105,7 +105,7 @@ bool Utils::isDirectory(const std::string& path) {
     return (info.st_mode & S_IFMT) == S_IFDIR;
 }
 
-bool Utils::isFile(const std::string& path) {
+bool Utils::isFile(const std::string &path) {
     struct stat info;
     if (stat(path.c_str(), &info) != 0) {
         return false;
@@ -113,7 +113,7 @@ bool Utils::isFile(const std::string& path) {
     return (info.st_mode & S_IFMT) == S_IFREG;
 }
 
-std::string Utils::removeLastPathLevel(const std::string& path) {
+std::string Utils::removeLastPathLevel(const std::string &path) {
     if (path.empty()) return "/";
 
     std::string cleanPath = path;
@@ -123,20 +123,16 @@ std::string Utils::removeLastPathLevel(const std::string& path) {
 
     std::string::size_type lastSlash = cleanPath.rfind('/');
 
-    if (lastSlash == std::string::npos || lastSlash == 0)
-        return "/";
+    if (lastSlash == std::string::npos || lastSlash == 0) return "/";
 
     return cleanPath.substr(0, lastSlash + 1);
 }
 
 bool Utils::hasProtocol(const std::string &url) {
     std::vector<std::string> parts = Utils::split(url, "://");
-    if (parts.size() < 2)
-        return false;
+    if (parts.size() < 2) return false;
     size_t protoLen = parts[0].length();
-    if (protoLen == 0)
-        return false;
-    if (url.substr(protoLen, 3) == "://")
-        return true;
+    if (protoLen == 0) return false;
+    if (url.substr(protoLen, 3) == "://") return true;
     return false;
 }
