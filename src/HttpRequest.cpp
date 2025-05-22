@@ -6,6 +6,7 @@
 
 enum ErrorStatus {
     NOT_FOUND = 404,
+	FORBIDDEN = 403,
     NOT_FOUND_DELETE = 600,
     METHOD_NOT_ALLOWED = 405,
     BAD_REQUEST = 400,
@@ -18,6 +19,8 @@ std::string statusToString(int errorStatus) {
     switch (errorStatus) {
         case NOT_FOUND:
             return "404 Not Found";
+		case FORBIDDEN:
+            return "403 Forbidden";
         case NOT_FOUND_DELETE:
             return "404 Not Found";
         case METHOD_NOT_ALLOWED:
@@ -276,6 +279,17 @@ void HttpRequest::parseHeaders() {
             value = "";
 
         _headers[key] = value;
+
+		if (key == "Host") {
+			if (value.empty()) {
+				buildErrorResponse(BAD_REQUEST); // Missing Host header in HTTP/1.1 is illegal
+				return;
+			}
+			std::vector<std::string> serverNames = _config.getServerName()->getValue();
+			if (std::find(serverNames.begin(), serverNames.end(), value) == serverNames.end()) {
+				buildErrorResponse(FORBIDDEN);
+			}
+		}
         if (key == "Transfer-Encoding" && toLower(value) == "chunked") {
             this->_isChunked = true;
         }
