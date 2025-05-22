@@ -288,7 +288,8 @@ std::string unchunkBody(const std::string& rawBody) {
     std::string line;
 
     while (std::getline(stream, line)) {
-        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (!line.empty() && line[line.length() - 1] == '\r')
+            line.erase(line.length() - 1);
 
         std::istringstream hexStream(line);
         size_t chunkSize;
