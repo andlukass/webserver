@@ -563,44 +563,48 @@ void HttpRequest::parseResponse() {
     }
 
     if (_method == METHOD_POST) {
-		if (_headers["Content-Type"].find("multipart/form-data") != std::string::npos) {
+		   // Handle multipart/form-data uploads
+    if (_headers["Content-Type"].find("multipart/form-data") != std::string::npos) {
         if (!parseMultipartBody()) {
             buildErrorResponse(BAD_REQUEST);
             return;
         }
-		    // Redirect to the upload success page
-		_redirect = "/upload-success";  // URL of your success page
-		buildOKResponse("", "text/html");  // Send the redirect
-		return;
-        // std::string successHtml =
-        //     "<html><body><h1>Upload successful</h1></body></html>";
-        // buildOKResponse(successHtml, "text/html");
-        //return;
-    } else {
-        // handle Errors
-    }
-	//OLD METHO-POST part
-        // if (_body.empty()) {
-        //     buildErrorResponse(BAD_REQUEST);
-        //     return;
-        // }
 
-        // std::ostringstream postFile;
-        // postFile << time(NULL);
-        // std::string filePath = _config.getRoot()->getValue() + postFile.str() + ".txt";
-        // std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
-        // if (!outFile) {
-        //     buildErrorResponse(NOT_FOUND_DELETE);
-        //     return;
-        // }
-        // outFile << _body;
-        // outFile.close();
+        // Redirect to the upload success page
+        _redirect = "/upload-success";  // URL of your success page
+        buildOKResponse("", "text/html");  // Trigger redirect
+        return;
+    } 
+    // Handle plain POST body uploads
+    else {
+        if (_body.empty()) {
+            buildErrorResponse(BAD_REQUEST);
+            return;
+        }
 
-        // std::string successHtml =
-        //     "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath +
-        //     "</p>\n</body>\n</html>\n";
-        // buildOKResponse(successHtml, "text/html");
-        // return;
+        // Create a filename using the current timestamp
+        std::ostringstream postFile;
+        postFile << time(NULL);
+        std::string filePath = _config.getRoot()->getValue() + postFile.str() + ".txt";
+
+        // Save the POST body to the file
+        std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
+        if (!outFile) {
+            buildErrorResponse(NOT_FOUND_DELETE);
+            return;
+        }
+
+        outFile << _body;
+        outFile.close();
+
+        // Build success HTML response
+        std::string successHtml =
+            "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath +
+            "</p>\n</body>\n</html>\n";
+		_redirect = "/cgi/submit-feedback.py";
+        buildOKResponse(successHtml, "text/html");
+        return;
+		}
     }
     this->buildOKResponse(fileContent, _mimeType);
 }
