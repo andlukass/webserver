@@ -38,18 +38,22 @@ void ServerManager::run() {
             exit(EXIT_FAILURE);
         }
 
+        // Iterate through all monitored file descriptors
         for (size_t i = 0; i < _pollFds.size(); i++) {
             int fd = _pollFds[i].fd;
 
-            Server* server = _serversMap[fd];
-            Client* client = _clientsMap[fd];
+            Server* server = _serversMap[fd];  // Check if fd belongs to a server
+            Client* client = _clientsMap[fd];  // Or to a client
 
+            // Accept new client if fd belongs to a server and is ready for reading
             if (server) {
                 if (_pollFds[i].revents & POLLIN) {
                     int newClientFd = server->acceptClient();
                     if (newClientFd > 0) {
                         Client* newClient = new Client(newClientFd, server->getConfig());
                         _clientsMap[newClientFd] = newClient;
+
+                        // Add new client to poll monitoring
                         pollfd newPfd;
                         newPfd.fd = newClientFd;
                         newPfd.events = POLLIN;
@@ -57,26 +61,37 @@ void ServerManager::run() {
                         _pollFds.push_back(newPfd);
                     }
                 }
-                continue;
+                continue;  // Do not process further if it's a server socket
             }
 
+            // If it's not a client - just skip all the rest
             if (!client) continue;
 
+            // If client socket is ready to read
             if (_pollFds[i].revents & POLLIN) {
+                // Only one recv per client per poll()
                 ssize_t receivedDataLength = client->receive();
                 if (receivedDataLength <= 0) {
+                    // Cleanup
                     client->close();
                     delete client;
                     _clientsMap.erase(fd);
                     _pollFds.erase(_pollFds.begin() + i);
                     i--;
                 } else {
+                    // Ready to send a response next time
                     _pollFds[i].events = POLLOUT;
                 }
+                // If client socket is ready to write
             } else if (_pollFds[i].revents & POLLOUT) {
                 HttpRequest request(client->getConfig(), client->getBuffer());
+
+                // If nothing to send then skip
                 if (request.getResponse().empty()) continue;
+                // Only one send per client per poll()
                 client->send(request.getResponse());
+
+                // Cleanup after sending
                 client->close();
                 delete client;
                 _clientsMap.erase(fd);
