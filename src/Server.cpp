@@ -63,7 +63,7 @@ void Server::start() {
         exit(EXIT_FAILURE);
     }
 
-    std::cout << "Binding!" << std::endl;
+    // std::cout << "Binding!" << std::endl;
 
     // Bind socket to resolved address (IP and port)
     if (bind(_socketFd, res->ai_addr, res->ai_addrlen) < 0) {

@@ -6,9 +6,10 @@ ServerManager::ServerManager(const ServerConfig& config) {
         try {
             Server* server = new Server(directive);
             _serversMap[server->getSocketFd()] = server;
-            std::cout << "Server created with fd: " << server->getSocketFd() << std::endl;
+            // std::cout << "Server created with fd: " << server->getSocketFd() << std::endl;
         } catch (std::exception& e) {
-            throw Exception("Failed to initialize server " + config.getServer(i).getListen()->getIp() + ":" +
+            throw Exception("Failed to initialize server " +
+                            config.getServer(i).getListen()->getIp() + ":" +
                             config.getServer(i).getListen()->getPort());
         }
     }
@@ -22,9 +23,9 @@ void ServerManager::run() {
         server->start();
 
         struct pollfd pfd;
-        pfd.fd = fd;          // socket for our server
+        pfd.fd = fd;                    // socket for our server
         pfd.events = POLLIN | POLLOUT;  // we are waiting for incoming connections
-        pfd.revents = 0;      // system will fill it later, once some event happens (incoming message)
+        pfd.revents = 0;  // system will fill it later, once some event happens (incoming message)
 
         _pollFds.push_back(pfd);
     }
@@ -44,7 +45,6 @@ void ServerManager::run() {
             Server* server = _serversMap[fd];
             Client* client = _clientsMap[fd];
 
-
             // TODO: remove this (its just for debugging)
             // std::string revents = (_pollFds[i].revents & POLLIN) ? "POLLIN" : "POLLOUT";
             // std::string type = "";
@@ -52,13 +52,13 @@ void ServerManager::run() {
             // if (client) type = "client";
             // if (!server && !client) type = "unknown";
             // if (server && client) type = "both";
-            // std::cout << "<<<<<<poll called with fd: " << fd << " and revents: " << revents << " and type: " << type << ">>>>>>" << std::endl;
+            // std::cout << "<<<<<<poll called with fd: " << fd << " and revents: " << revents << "
+            // and type: " << type << ">>>>>>" << std::endl;
             // ================================
-
 
             if (server) {
                 if (_pollFds[i].revents & POLLIN) {
-                     int newClientFd = server->acceptClient();
+                    int newClientFd = server->acceptClient();
                     if (newClientFd > 0) {
                         Client* newClient = new Client(newClientFd, server->getConfig());
                         _clientsMap[newClientFd] = newClient;
@@ -89,7 +89,7 @@ void ServerManager::run() {
                 HttpRequest request(client->getConfig(), client->getBuffer());
                 if (request.getResponse().empty()) continue;
                 client->send(request.getResponse());
-                std::cout << "CONNECTION WITH CLIENT CLOSED: " << client->getFd() << std::endl;
+                // std::cout << "CONNECTION WITH CLIENT CLOSED: " << client->getFd() << std::endl;
                 client->close();
                 delete client;
                 _clientsMap.erase(fd);

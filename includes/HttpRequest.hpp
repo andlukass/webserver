@@ -39,7 +39,7 @@ class HttpRequest {
     std::vector<std::string> _allowMethods;
     std::string _index;
     std::string _root;
-	std::string _host;
+    std::string _host;
 
     bool _isValid;
     int _errorCode;
@@ -64,6 +64,8 @@ class HttpRequest {
     void parseIndex();
     void parseRoot();
     void initFromRaw();
+
+    void logResponse(int statusCode) const;
 
     // std::string unchunkBody(const std::string& rawBody);
 
