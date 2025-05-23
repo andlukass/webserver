@@ -29,7 +29,7 @@ int Server::acceptClient() {
     if (clientFd < 0) {
         std::cerr << "Error: Cannot accept client connection" << std::endl;
     } else {
-        std::cout << "Client connected!" << clientFd << std::endl;
+        std::cout << "Client connected!" << std::endl;
     }
     return clientFd;
 }
