@@ -6,20 +6,22 @@
 
 enum ErrorStatus {
     NOT_FOUND = 404,
-	FORBIDDEN = 403,
+    FORBIDDEN = 403,
     NOT_FOUND_DELETE = 600,
     METHOD_NOT_ALLOWED = 405,
     BAD_REQUEST = 400,
     PAYLOAD_TOO_LARGE = 413,
     NO_CONTENT = 204,
     INTERNAL_SERVER_ERROR = 500,
+    OK = 200,
+    FOUND = 302
 };
 
 std::string statusToString(int errorStatus) {
     switch (errorStatus) {
         case NOT_FOUND:
             return "404 Not Found";
-		case FORBIDDEN:
+        case FORBIDDEN:
             return "403 Forbidden";
         case NOT_FOUND_DELETE:
             return "404 Not Found";
@@ -33,16 +35,39 @@ std::string statusToString(int errorStatus) {
             return "204 No Content";
         case INTERNAL_SERVER_ERROR:
             return "500 Internal Server Error";
+        case OK:
+            return "200 OK";
+        case FOUND:
+            return "302 Found";
         default:
             return "NOT HANDLED ERROR";
     }
+}
+
+std::string methodToString(HttpMethod method) {
+    switch (method) {
+        case METHOD_GET:
+            return "GET";
+        case METHOD_POST:
+            return "POST";
+        case METHOD_DELETE:
+            return "DELETE";
+        default:
+            return "UNKNOWN";
+    }
+}
+
+void HttpRequest::logResponse(int statusCode) const {
+    std::cout << "[" << methodToString(_method) << "] " << _cleanUri << " → "
+              << statusToString(statusCode);
+    std::cout << std::endl;
 }
 
 void HttpRequest::buildErrorResponse(int errorStatus) {
     std::stringstream response;
     parseErrorPagePath(errorStatus);
     std::string fileContent = Utils::readFile(this->_errorPagePath);
-    response << "HTTP/1.1 " << errorStatus << " " << statusToString(errorStatus) << "\r\n";
+    response << "HTTP/1.1 " << statusToString(errorStatus) << "\r\n";
     if (fileContent.empty() || errorStatus == NOT_FOUND_DELETE) {
         fileContent =
             "<html>\n"
@@ -60,6 +85,7 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
     response << "Content-Length: " << fileContent.size() << "\r\n";
     response << "Connection: close\r\n\r\n";
     response << fileContent;
+    logResponse(errorStatus);
     this->_response = response.str();
 }
 
@@ -83,11 +109,13 @@ void HttpRequest::parseErrorPagePath(int errorStatus) {
 void HttpRequest::buildOKResponse(std::string fileContent, std::string contentType) {
     std::stringstream response;
     if (!_redirect.empty()) {
+        std::cout << "Redirect: " << _redirect << std::endl;
         response << "HTTP/1.1 302 Found\r\n";
         response << "Location: " << _redirect << "\r\n";
         response << "Connection: close\r\n\r\n";
         this->_response = response.str();
-        std::cout << "response: " << this->_response << std::endl;
+        logResponse(FOUND);
+        // std::cout << "response: " << this->_response << std::endl;
         return;
     }
     response << "HTTP/1.1 200 OK\r\n";
@@ -95,6 +123,7 @@ void HttpRequest::buildOKResponse(std::string fileContent, std::string contentTy
     response << "Content-Length: " << fileContent.size() << "\r\n";
     response << "Connection: close\r\n\r\n";
     response << fileContent;
+    logResponse(OK);
     this->_response = response.str();
 }
 
@@ -167,19 +196,6 @@ void HttpRequest::buildAutoindexResponse(std::string filePath) {
     response << "Connection: close\r\n\r\n";
     response << fileContent;
     this->_response = response.str();
-}
-
-std::string methodToString(HttpMethod method) {
-    switch (method) {
-        case METHOD_GET:
-            return "GET";
-        case METHOD_POST:
-            return "POST";
-        case METHOD_DELETE:
-            return "DELETE";
-        default:
-            return "";
-    }
 }
 
 HttpRequest::HttpRequest(const ServerDirective& config, const std::string& request)
@@ -278,32 +294,34 @@ bool HttpRequest::parseHeaders() {
 
         _headers[key] = value;
 
-		if (key == "Host") {
-			if (value.empty()) {
-				buildErrorResponse(BAD_REQUEST); // Missing Host header in HTTP/1.1 is illegal
-				return false;
-			}
+        if (key == "Host") {
+            if (value.empty()) {
+                buildErrorResponse(BAD_REQUEST);  // Missing Host header in HTTP/1.1 is illegal
+                return false;
+            }
 
-			// Split host:port if port is present
-			size_t colonPos = value.find(':');
-			std::string hostOnly = (colonPos != std::string::npos) ? value.substr(0, colonPos) : value;
+            // Split host:port if port is present
+            size_t colonPos = value.find(':');
+            std::string hostOnly =
+                (colonPos != std::string::npos) ? value.substr(0, colonPos) : value;
 
-			std::vector<std::string> serverNames = _config.getServerName()->getValue();
-			//std::cout << "THIS IS THE VALUE: " << hostOnly << std::endl;
-			for (size_t i = 0; i < serverNames.size(); i++)
-			//std::cout << "THIS IS THE SERVER NAME: " << serverNames[i] << std::endl;
+            std::vector<std::string> serverNames = _config.getServerName()->getValue();
+            // std::cout << "THIS IS THE VALUE: " << hostOnly << std::endl;
+            for (size_t i = 0; i < serverNames.size(); i++)
+                // std::cout << "THIS IS THE SERVER NAME: " << serverNames[i] << std::endl;
 
-			if (std::find(serverNames.begin(), serverNames.end(), hostOnly) == serverNames.end()) {
-				buildErrorResponse(FORBIDDEN);
-				return false;
-			}
-		}
+                if (std::find(serverNames.begin(), serverNames.end(), hostOnly) ==
+                    serverNames.end()) {
+                    buildErrorResponse(FORBIDDEN);
+                    return false;
+                }
+        }
 
         if (key == "Transfer-Encoding" && toLower(value) == "chunked") {
             this->_isChunked = true;
         }
     }
-	return true;
+    return true;
 }
 
 std::string unchunkBody(const std::string& rawBody) {
@@ -666,8 +684,7 @@ void HttpRequest::initFromRaw() {
     parseAutoindex();
     parseRoot();
     parseIndex();
-    if (!parseHeaders())
-		return;
+    if (!parseHeaders()) return;
     parseBody();
     // Parse Body checks max_body_size, so we check if the flag was False, other methods don't use
     // it
