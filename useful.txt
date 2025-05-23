@@ -37,8 +37,16 @@ chmod +x submit-feedback.py
 File Type	Purpose
 .txt	Simple, human-readable upload/download test.
 .html	To serve static pages and verify content-type.
-.png / .jpg	To ensure your server correctly handles binary files (e.g. image uploads/downloads).
-****.json or .xml	Bonus: show handling structured data.
+
+
+✅ How to trigger your 403 check correctly
+To trigger the Host mismatch check inside your server, you need to send a request to the server, but with an invalid Host header. Here's how:
+
+Command																What it does									What you get
+curl --resolve example.com:8005:127.0.0.1 http://example.com:8005/	Works 											✅	200 OK
+curl --resolve example.com:8005:127.0.0.1 http://example.co:8005/	DNS fail 										❌	curl error (not server)
+curl -H "Host: wronghost.com" http://127.0.0.1:8005/				Connects to server, sends invalid Host header	403 Forbidden ✅
+
 
 Yulia:
 0. What parameters are mandatory in config?

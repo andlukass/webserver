@@ -6,6 +6,7 @@
 
 enum ErrorStatus {
     NOT_FOUND = 404,
+	FORBIDDEN = 403,
     NOT_FOUND_DELETE = 600,
     METHOD_NOT_ALLOWED = 405,
     BAD_REQUEST = 400,
@@ -18,6 +19,8 @@ std::string statusToString(int errorStatus) {
     switch (errorStatus) {
         case NOT_FOUND:
             return "404 Not Found";
+		case FORBIDDEN:
+            return "403 Forbidden";
         case NOT_FOUND_DELETE:
             return "404 Not Found";
         case METHOD_NOT_ALLOWED:
@@ -248,7 +251,7 @@ std::string toLower(const std::string& input) {
     return result;
 }
 
-void HttpRequest::parseHeaders() {
+bool HttpRequest::parseHeaders() {
     std::istringstream stream(_rawHeaders);
     std::string line;
 
@@ -274,10 +277,33 @@ void HttpRequest::parseHeaders() {
             value = "";
 
         _headers[key] = value;
+
+		if (key == "Host") {
+			if (value.empty()) {
+				buildErrorResponse(BAD_REQUEST); // Missing Host header in HTTP/1.1 is illegal
+				return false;
+			}
+
+			// Split host:port if port is present
+			size_t colonPos = value.find(':');
+			std::string hostOnly = (colonPos != std::string::npos) ? value.substr(0, colonPos) : value;
+
+			std::vector<std::string> serverNames = _config.getServerName()->getValue();
+			//std::cout << "THIS IS THE VALUE: " << hostOnly << std::endl;
+			for (size_t i = 0; i < serverNames.size(); i++)
+			//std::cout << "THIS IS THE SERVER NAME: " << serverNames[i] << std::endl;
+
+			if (std::find(serverNames.begin(), serverNames.end(), hostOnly) == serverNames.end()) {
+				buildErrorResponse(FORBIDDEN);
+				return false;
+			}
+		}
+
         if (key == "Transfer-Encoding" && toLower(value) == "chunked") {
             this->_isChunked = true;
         }
     }
+	return true;
 }
 
 std::string unchunkBody(const std::string& rawBody) {
@@ -640,7 +666,8 @@ void HttpRequest::initFromRaw() {
     parseAutoindex();
     parseRoot();
     parseIndex();
-    parseHeaders();
+    if (!parseHeaders())
+		return;
     parseBody();
     // Parse Body checks max_body_size, so we check if the flag was False, other methods don't use
     // it
