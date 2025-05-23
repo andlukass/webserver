@@ -18,11 +18,7 @@ ssize_t Client::receive() {
         ssize_t receivedDataLength =
             recv(this->_fd, tempBuffer, sizeof(tempBuffer) - 1, MSG_DONTWAIT);
         // If recv returns 0 (connection closed) or -1 (error), stop reading
-        if (receivedDataLength <= 0) {
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
-                break;  // No data available now — not a fatal error, no need to delete client
-            return -1;  // Fatal error
-        }
+        if (receivedDataLength <= 0) break;
         // Null-terminate the buffer
         tempBuffer[receivedDataLength] = '\0';
         // Append received data to internal buffer

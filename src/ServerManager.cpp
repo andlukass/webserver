@@ -4,9 +4,12 @@ ServerManager::ServerManager(const ServerConfig& config) {
     for (size_t i = 0; i < config.getServersCount(); i++) {
         const ServerDirective& directive = config.getServer(i);
         try {
+            // Create a new Server using its configuration directive
             Server* server = new Server(directive);
+            // Add new server to a map: key = socket FD, value = Server pointer
             _serversMap[server->getSocketFd()] = server;
         } catch (std::exception& e) {
+            // If construction fails, throw a custom exception with IP and port info
             throw Exception("Failed to initialize server " +
                             config.getServer(i).getListen()->getIp() + ":" +
                             config.getServer(i).getListen()->getPort());
@@ -104,13 +107,16 @@ void ServerManager::run() {
 }
 
 ServerManager::~ServerManager() {
+    // Clear monitored descriptors
     _pollFds.clear();
 
+    // Delete all server objects created with new
     for (std::map<int, Server*>::iterator it = _serversMap.begin(); it != _serversMap.end(); it++) {
         delete it->second;
     }
     _serversMap.clear();
 
+    // Delete all client objects created with new
     for (std::map<int, Client*>::iterator it = _clientsMap.begin(); it != _clientsMap.end(); it++) {
         delete it->second;
     }
