@@ -47,6 +47,9 @@ curl --resolve example.com:8005:127.0.0.1 http://example.com:8005/	Works 							
 curl --resolve example.com:8005:127.0.0.1 http://example.co:8005/	DNS fail 										❌	curl error (not server)
 curl -H "Host: wronghost.com" http://127.0.0.1:8005/				Connects to server, sends invalid Host header	403 Forbidden ✅
 
+curl -X POST http://localhost:8005/ \
+  -H "Content-Type: text/plain" \
+  --data "BODY IS HERE write something shorter or longer than body limit"
 
 Yulia:
 0. What parameters are mandatory in config?

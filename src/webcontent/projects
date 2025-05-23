@@ -117,21 +117,21 @@
 
     <div class="projects-grid">
       <div class="project-card">
-        <img src="/images/miniRT.gif" alt="Webserv">
+        <img src="/images/webserver.gif" alt="Webserv">
         <div class="project-content">
           <h2>Webserv</h2>
           <p>Our very own HTTP server in C++98.</p>
         </div>
       </div>
       <div class="project-card">
-        <img src="/images/miniRT.gif" alt="Minishell">
+        <img src="/images/minishell.gif" alt="Minishell">
         <div class="project-content">
           <h2>Minishell</h2>
           <p>A custom Unix shell supporting pipes, redirections, environment variables, and built-ins.</p>
         </div>
       </div>
       <div class="project-card">
-        <img src="/images/miniRT.gif" alt="Push_swap">
+        <img src="/images/push-swap.gif" alt="Push_swap">
         <div class="project-content">
           <h2>Push_swap</h2>
           <p>Optimized sorting algorithm with limited stack operations.</p>
@@ -145,14 +145,14 @@
         </div>
       </div>
       <div class="project-card">
-        <img src="/images/miniRT.gif" alt="Libft">
+        <img src="/images/libft.gif" alt="Libft">
         <div class="project-content">
           <h2>Libft</h2>
           <p>Recreation of fundamental C functions.</p>
         </div>
       </div>
       <div class="project-card">
-        <img src="/images/miniRT.gif" alt="Philosophers">
+        <img src="/images/philosophers.gif" alt="Philosophers">
         <div class="project-content">
           <h2>Philosophers</h2>
           <p>Classic dining philosophers problem solved with threads and mutexes in C.</p>

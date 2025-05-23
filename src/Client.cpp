@@ -23,7 +23,7 @@ ssize_t Client::receive() {
 
 ssize_t Client::send(const std::string& response) {
     ssize_t sentDataLength = ::send(this->_fd, response.c_str(), response.size(), MSG_NOSIGNAL);
-    std::cout << "Enviado com sucesso: " << sentDataLength << " bytes" << std::endl;
+    std::cout << "Successfully sent: " << sentDataLength << " bytes" << std::endl;
     return sentDataLength;
 }
 
