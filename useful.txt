@@ -92,3 +92,6 @@ curl -X POST http://localhost:8080/feedback \
   -H "Content-Type: application/x-www-form-urlencoded" \
   --data-binary "message=chunkedtebkjgbjgbsjfgbjkdbgjdkbgjajhfdfbvjzvbdvbhjdfbgkjsdhbsjdhbgvjhdfbghjdsbgahjdfbkasfjaksfbajksfbhdvbgfdjhfgjkfbst" \ 
   --trace-ascii debug.log
+
+  how to check port used or not:
+  lsof -i :8080

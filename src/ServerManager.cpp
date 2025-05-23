@@ -4,10 +4,12 @@ ServerManager::ServerManager(const ServerConfig& config) {
     for (size_t i = 0; i < config.getServersCount(); i++) {
         const ServerDirective& directive = config.getServer(i);
         try {
+            // Create a new Server using its configuration directive
             Server* server = new Server(directive);
+            // Add new server to a map: key = socket FD, value = Server pointer
             _serversMap[server->getSocketFd()] = server;
-            // std::cout << "Server created with fd: " << server->getSocketFd() << std::endl;
         } catch (std::exception& e) {
+            // If construction fails, throw a custom exception with IP and port info
             throw Exception("Failed to initialize server " +
                             config.getServer(i).getListen()->getIp() + ":" +
                             config.getServer(i).getListen()->getPort());
@@ -39,29 +41,22 @@ void ServerManager::run() {
             exit(EXIT_FAILURE);
         }
 
+        // Iterate through all monitored file descriptors
         for (size_t i = 0; i < _pollFds.size(); i++) {
             int fd = _pollFds[i].fd;
 
-            Server* server = _serversMap[fd];
-            Client* client = _clientsMap[fd];
+            Server* server = _serversMap[fd];  // Check if fd belongs to a server
+            Client* client = _clientsMap[fd];  // Or to a client
 
-            // TODO: remove this (its just for debugging)
-            // std::string revents = (_pollFds[i].revents & POLLIN) ? "POLLIN" : "POLLOUT";
-            // std::string type = "";
-            // if (server) type = "server";
-            // if (client) type = "client";
-            // if (!server && !client) type = "unknown";
-            // if (server && client) type = "both";
-            // std::cout << "<<<<<<poll called with fd: " << fd << " and revents: " << revents << "
-            // and type: " << type << ">>>>>>" << std::endl;
-            // ================================
-
+            // Accept new client if fd belongs to a server and is ready for reading
             if (server) {
                 if (_pollFds[i].revents & POLLIN) {
                     int newClientFd = server->acceptClient();
                     if (newClientFd > 0) {
                         Client* newClient = new Client(newClientFd, server->getConfig());
                         _clientsMap[newClientFd] = newClient;
+
+                        // Add new client to poll monitoring
                         pollfd newPfd;
                         newPfd.fd = newClientFd;
                         newPfd.events = POLLIN;
@@ -69,27 +64,37 @@ void ServerManager::run() {
                         _pollFds.push_back(newPfd);
                     }
                 }
-                continue;
+                continue;  // Do not process further if it's a server socket
             }
 
+            // If it's not a client - just skip all the rest
             if (!client) continue;
 
+            // If client socket is ready to read
             if (_pollFds[i].revents & POLLIN) {
+                // Only one recv per client per poll()
                 ssize_t receivedDataLength = client->receive();
                 if (receivedDataLength <= 0) {
+                    // Cleanup
                     client->close();
                     delete client;
                     _clientsMap.erase(fd);
                     _pollFds.erase(_pollFds.begin() + i);
                     i--;
                 } else {
+                    // Ready to send a response next time
                     _pollFds[i].events = POLLOUT;
                 }
+                // If client socket is ready to write
             } else if (_pollFds[i].revents & POLLOUT) {
                 HttpRequest request(client->getConfig(), client->getBuffer());
+
+                // If nothing to send then skip
                 if (request.getResponse().empty()) continue;
+                // Only one send per client per poll()
                 client->send(request.getResponse());
-                // std::cout << "CONNECTION WITH CLIENT CLOSED: " << client->getFd() << std::endl;
+
+                // Cleanup after sending
                 client->close();
                 delete client;
                 _clientsMap.erase(fd);
@@ -102,13 +107,16 @@ void ServerManager::run() {
 }
 
 ServerManager::~ServerManager() {
+    // Clear monitored descriptors
     _pollFds.clear();
 
+    // Delete all server objects created with new
     for (std::map<int, Server*>::iterator it = _serversMap.begin(); it != _serversMap.end(); it++) {
         delete it->second;
     }
     _serversMap.clear();
 
+    // Delete all client objects created with new
     for (std::map<int, Client*>::iterator it = _clientsMap.begin(); it != _clientsMap.end(); it++) {
         delete it->second;
     }
