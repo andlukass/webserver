@@ -6,7 +6,6 @@ ServerManager::ServerManager(const ServerConfig& config) {
         try {
             Server* server = new Server(directive);
             _serversMap[server->getSocketFd()] = server;
-            // std::cout << "Server created with fd: " << server->getSocketFd() << std::endl;
         } catch (std::exception& e) {
             throw Exception("Failed to initialize server " +
                             config.getServer(i).getListen()->getIp() + ":" +
@@ -45,17 +44,6 @@ void ServerManager::run() {
             Server* server = _serversMap[fd];
             Client* client = _clientsMap[fd];
 
-            // TODO: remove this (its just for debugging)
-            // std::string revents = (_pollFds[i].revents & POLLIN) ? "POLLIN" : "POLLOUT";
-            // std::string type = "";
-            // if (server) type = "server";
-            // if (client) type = "client";
-            // if (!server && !client) type = "unknown";
-            // if (server && client) type = "both";
-            // std::cout << "<<<<<<poll called with fd: " << fd << " and revents: " << revents << "
-            // and type: " << type << ">>>>>>" << std::endl;
-            // ================================
-
             if (server) {
                 if (_pollFds[i].revents & POLLIN) {
                     int newClientFd = server->acceptClient();
@@ -89,7 +77,6 @@ void ServerManager::run() {
                 HttpRequest request(client->getConfig(), client->getBuffer());
                 if (request.getResponse().empty()) continue;
                 client->send(request.getResponse());
-                // std::cout << "CONNECTION WITH CLIENT CLOSED: " << client->getFd() << std::endl;
                 client->close();
                 delete client;
                 _clientsMap.erase(fd);
