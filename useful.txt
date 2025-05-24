@@ -29,7 +29,6 @@ Requires body?	✅ Usually (like a file or form) 	❌ No
 curl -X POST localhost:8005/feedback "okay" *WRONG input*
 curl -X POST -d "message=okay" localhost:8005/feedback *GOOD input*
 
-
 *MAKE SURE .py executable*
 chmod +x submit-feedback.py
 

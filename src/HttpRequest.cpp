@@ -522,42 +522,41 @@ void HttpRequest::parseRedirect() {
 }
 
 bool HttpRequest::parseMultipartBody() {
+
     std::string contentType = _headers["Content-Type"];
     size_t boundaryPos = contentType.find("boundary=");
+
     if (boundaryPos == std::string::npos) {
         return false;
     }
-    std::string boundary = "--" + contentType.substr(boundaryPos + 9);  // Skip "boundary="
 
+    std::string boundary = "--" + contentType.substr(boundaryPos + 9);
     size_t pos = _body.find(boundary);
     while (pos != std::string::npos) {
         size_t next = _body.find(boundary, pos + boundary.length());
-        std::string part = _body.substr(pos + boundary.length() + 2,
-                                        next - pos - boundary.length() - 4);  // Skip \r\n
+        std::string part = _body.substr(pos + boundary.length() + 2, next - pos - boundary.length() - 4); // skip \r\n
 
-        // Parse headers from the part
+        // parse headers from the part
         size_t headerEnd = part.find("\r\n\r\n");
-        if (headerEnd == std::string::npos) break;
+        if (headerEnd == std::string::npos) break; //incomplete multipart body
 
         std::string headers = part.substr(0, headerEnd);
-        std::string content = part.substr(headerEnd + 4);  // skip header end
+        std::string content = part.substr(headerEnd + 4);// skip header end
 
         if (headers.find("filename=") != std::string::npos) {
-            // Extract filename
+            // extract filename
             size_t fnStart = headers.find("filename=\"") + 10;
             size_t fnEnd = headers.find("\"", fnStart);
             std::string filename = headers.substr(fnStart, fnEnd - fnStart);
 
-            // Save file
+            // save file
             std::string filePath = _config.getRoot()->getValue() + filename;
             std::ofstream file(filePath.c_str(), std::ios::binary);
             file.write(content.c_str(), content.size());
             file.close();
         }
-
         pos = next;
     }
-
     return true;
 }
 
@@ -663,7 +662,6 @@ void HttpRequest::parseResponse() {
                 buildErrorResponse(NOT_FOUND_DELETE);
                 return;
             }
-
             outFile << _body;
             outFile.close();
 
