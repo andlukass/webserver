@@ -576,7 +576,14 @@ void HttpRequest::parseResponse() {
 
     std::string filePath = _root + _cleanUri + _index;
     std::string fileContent = Utils::readFile(filePath);
-    if (fileContent.empty() && _method != METHOD_DELETE) {
+    //if (fileContent.empty() && _method != METHOD_DELETE)
+	
+	// check if file exists
+	std::ifstream fileStream(filePath.c_str());
+	bool fileExists = fileStream.is_open();
+	fileStream.close();
+	if (!fileExists && _method != METHOD_DELETE)
+	{
         if (Utils::isDirectory(filePath) && this->_autoindex) {
             this->buildAutoindexResponse(filePath);
         } else {
@@ -588,10 +595,14 @@ void HttpRequest::parseResponse() {
     }
 
     if (_method == METHOD_DELETE) {
-        if (fileContent.empty()) {
+		if (!fileExists) {
             this->buildErrorResponse(NOT_FOUND_DELETE);
             return;
         }
+        // if (fileContent.empty()) {
+        //     this->buildErrorResponse(NOT_FOUND_DELETE);
+        //     return;
+        // }
         if (std::remove(filePath.c_str()) == 0) {
             this->buildErrorResponse(NO_CONTENT);
             return;
