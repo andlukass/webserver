@@ -49,7 +49,6 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         oss << body.size();
         std::string contentLength = oss.str();
 
-
         std::string methodEnv = "REQUEST_METHOD=" + method;
         std::string lengthEnv = "CONTENT_LENGTH=" + contentLength;
 
@@ -77,7 +76,12 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         close(stdoutPipe[1]);
 
         // request body
-        write(stdinPipe[1], body.c_str(), body.size());
+        ssize_t written = write(stdinPipe[1], body.c_str(), body.size());
+        if (written < 0) {
+            std::cerr << "[CGI] Error writing to stdin pipe" << std::endl;
+        } else if (written == 0) {
+            std::cerr << "[CGI] Warning: write() wrote 0 bytes to stdin pipe" << std::endl;
+        }
         close(stdinPipe[1]);
 
         int status;
@@ -114,6 +118,12 @@ std::string CgiHandler::execute(const std::string& body, const std::string& meth
         while ((bytesRead = read(stdoutPipe[0], buffer, sizeof(buffer) - 1)) > 0) {
             buffer[bytesRead] = '\0';
             result += buffer;
+        }
+
+        if (bytesRead < 0) {
+            std::cerr << "[CGI] Error reading from CGI stdout pipe" << std::endl;
+        } else if (bytesRead == 0 && result.empty()) {
+            std::cerr << "[CGI] Warning: read() returned 0, CGI output is empty" << std::endl;
         }
 
         close(stdoutPipe[0]);

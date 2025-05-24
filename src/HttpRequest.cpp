@@ -69,8 +69,8 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
     std::string fileContent = Utils::readFile(this->_errorPagePath);
     response << "HTTP/1.1 " << statusToString(errorStatus) << "\r\n";
 
-	//*FIX DELETE*
-	if (errorStatus == NO_CONTENT) {
+    //*FIX DELETE*
+    if (errorStatus == NO_CONTENT) {
         // no body allowed for 204, so no Content-Length and no body
         response << "Connection: close\r\n\r\n";
         this->_response = response.str();
@@ -79,7 +79,6 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
     }
 
     if (fileContent.empty() || errorStatus == NOT_FOUND_DELETE) {
-		
         fileContent =
             "<html>\n"
             "<head><title>" +
@@ -263,6 +262,13 @@ bool HttpRequest::parseRequestLine() {
 
     _method = parseMethod(methodStr);
     _cleanUri = Utils::cleanSlashes(uriStr);
+
+    // Strip query string (if present)
+    size_t queryPos = _cleanUri.find('?');
+    if (queryPos != std::string::npos) {
+        _cleanUri = _cleanUri.substr(0, queryPos);
+    }
+
     _httpVersion = parseHttpVersion(versionStr);
     _rawHeaders = _rawRequest.substr(headersStart, headersEnd);
 
@@ -306,8 +312,7 @@ bool HttpRequest::parseHeaders() {
         _headers[key] = value;
 
         if (key == "Host") {
-
-			// missing Host header isn't allowed
+            // missing Host header isn't allowed
             if (value.empty()) {
                 buildErrorResponse(BAD_REQUEST);
                 return false;
@@ -523,7 +528,6 @@ void HttpRequest::parseRedirect() {
 }
 
 bool HttpRequest::parseMultipartBody() {
-
     std::string contentType = _headers["Content-Type"];
     size_t boundaryPos = contentType.find("boundary=");
 
@@ -535,14 +539,15 @@ bool HttpRequest::parseMultipartBody() {
     size_t pos = _body.find(boundary);
     while (pos != std::string::npos) {
         size_t next = _body.find(boundary, pos + boundary.length());
-        std::string part = _body.substr(pos + boundary.length() + 2, next - pos - boundary.length() - 4); // skip \r\n
+        std::string part = _body.substr(pos + boundary.length() + 2,
+                                        next - pos - boundary.length() - 4);  // skip \r\n
 
         // parse headers from the part
         size_t headerEnd = part.find("\r\n\r\n");
-        if (headerEnd == std::string::npos) break; //incomplete multipart body
+        if (headerEnd == std::string::npos) break;  // incomplete multipart body
 
         std::string headers = part.substr(0, headerEnd);
-        std::string content = part.substr(headerEnd + 4);// skip header end
+        std::string content = part.substr(headerEnd + 4);  // skip header end
 
         if (headers.find("filename=") != std::string::npos) {
             // extract filename
@@ -562,8 +567,7 @@ bool HttpRequest::parseMultipartBody() {
 }
 
 void HttpRequest::parseResponse() {
-    
-	std::string strMethod = methodToString(_method);
+    std::string strMethod = methodToString(_method);
 
     if (std::find(_allowMethods.begin(), _allowMethods.end(), strMethod) == _allowMethods.end()) {
         this->buildErrorResponse(METHOD_NOT_ALLOWED);
@@ -593,7 +597,7 @@ void HttpRequest::parseResponse() {
             return;
         } else
             this->buildErrorResponse(NOT_FOUND_DELETE);
-			return;
+        return;
     }
 
     if (_isCgi) {
@@ -640,7 +644,7 @@ void HttpRequest::parseResponse() {
                 buildErrorResponse(BAD_REQUEST);
                 return;
             }
-			// send OK HTML response with redirect
+            // send OK HTML response with redirect
             _redirect = "/upload-success";
             buildOKResponse("", "text/html");
             return;
@@ -707,7 +711,6 @@ void HttpRequest::initFromRaw() {
 HttpMethod HttpRequest::getMethod() const { return _method; };
 std::string HttpRequest::getRawRequest() const { return _rawRequest; };
 std::string HttpRequest::getCleanUri() const { return _cleanUri; };
-std::map<std::string, std::string> HttpRequest::getQueryParams() const { return _queryParams; };
 HttpVersion HttpRequest::getHttpVersion() const { return _httpVersion; };
 std::map<std::string, std::string> HttpRequest::getHeaders() const { return _headers; };
 std::string HttpRequest::getBody() const { return _body; };
