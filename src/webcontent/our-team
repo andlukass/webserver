@@ -67,7 +67,6 @@
       display: flex;
       justify-content: center;
       gap: 10rem;
-      flex-wrap: wrap;
     }
 
     .team-member {
@@ -75,14 +74,13 @@
       text-align: center;
 	  display: flex;
 	  flex-direction: column;
-	  align-items: center; /* This is the key fix */
+	  align-items: center;
     }
 
     .team-member img {
       width: 100%;
       border-radius: 50%;
       margin-bottom: 1rem;
-      background-color: #ccc; /* Placeholder background */
     }
 
     .team-member h2 {

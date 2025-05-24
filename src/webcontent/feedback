@@ -128,10 +128,7 @@
   <main>
     <h1>Leave Us a Message</h1>
     <p>Share your thoughts and we send the message to a CGI script.</p>
-
-    <!-- Message POST Form with File Upload -->
-    <!--<form method="POST" action="/submit-feedback" enctype="multipart/form-data">-->
-		<form method="POST" action="/cgi/submit-feedback.py">
+	<form method="POST" action="/cgi/submit-feedback.py">
       <textarea name="message" rows="5" placeholder="Your message..." required></textarea>
 	  <button type="submit">Send Message</button>
 	  <button class="switch-cgi" onclick="window.location.href='/feedback_sh'">Switch CGI Script</button> 
