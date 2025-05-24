@@ -521,9 +521,13 @@ void HttpRequest::detectCgiAndMime() {
 }
 
 void HttpRequest::parseRedirect() {
-    std::string tempRedirect =
-        _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRedirect()->getValue();
-    _redirect = tempRedirect;
+    if (!_locationPath.empty()) {
+        std::string tempRedirect = _config.getLocation(_locationPath).getRedirect()->getValue();
+        _redirect = tempRedirect;
+    } else {
+        std::string tempRedirect = _config.getRedirect()->getValue();
+        _redirect = tempRedirect;
+    }
 }
 
 bool HttpRequest::parseMultipartBody() {
