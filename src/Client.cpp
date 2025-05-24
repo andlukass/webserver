@@ -10,7 +10,7 @@ Client::~Client() {}
 /// - Appends to internal _buffer
 /// - Stops on error or when less than buffer size received
 ssize_t Client::receive() {
-    char tempBuffer[2000000];  // Large temporary buffer
+    char tempBuffer[8192];  // Large temporary buffer
     this->_buffer.clear();     // Clear previous buffer
     while (true) {
         // MSG_DONTWAIT ensures non-blocking mode of recv even if there is no data yet
