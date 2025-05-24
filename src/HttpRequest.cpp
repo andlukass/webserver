@@ -323,10 +323,11 @@ bool HttpRequest::parseHeaders() {
 
             std::vector<std::string> serverNames = _config.getServerName()->getValue();
             // std::cout << "THIS IS THE VALUE: " << hostOnly << std::endl;
+            std::cout << "THIS IS THE IP" <<  _config.getListen()->getIp() << std::endl;
             for (size_t i = 0; i < serverNames.size(); i++)
                 // std::cout << "THIS IS THE SERVER NAME: " << serverNames[i] << std::endl;
-                if (std::find(serverNames.begin(), serverNames.end(), hostOnly) ==
-                    serverNames.end()) {
+                if ((std::find(serverNames.begin(), serverNames.end(), hostOnly) ==
+                    serverNames.end()) && hostOnly != _config.getListen()->getIp()) {
                     buildErrorResponse(FORBIDDEN);
                     return false;
                 }
