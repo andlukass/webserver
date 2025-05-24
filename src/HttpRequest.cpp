@@ -69,9 +69,7 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
     std::string fileContent = Utils::readFile(this->_errorPagePath);
     response << "HTTP/1.1 " << statusToString(errorStatus) << "\r\n";
 
-    //*FIX DELETE*
     if (errorStatus == NO_CONTENT) {
-        // no body allowed for 204, so no Content-Length and no body
         response << "Connection: close\r\n\r\n";
         this->_response = response.str();
         logResponse(errorStatus);
@@ -575,9 +573,19 @@ void HttpRequest::parseResponse() {
     }
 
     std::string filePath = _root + _cleanUri + _index;
+    if (_method == METHOD_DELETE) {
+        if (filePath[filePath.size() - 1] == '/')
+        {
+            this->buildErrorResponse(NOT_FOUND_DELETE);
+            return;
+        }
+    }
     std::string fileContent = Utils::readFile(filePath);
     //if (fileContent.empty() && _method != METHOD_DELETE)
 	
+ 
+
+
 	// check if file exists
 	std::ifstream fileStream(filePath.c_str());
 	bool fileExists = fileStream.is_open();
@@ -595,6 +603,13 @@ void HttpRequest::parseResponse() {
     }
 
     if (_method == METHOD_DELETE) {
+        std::cout << "here: " << filePath[filePath.size() - 1] << std::endl;
+        std::cout << "fullPath: " << filePath<< std::endl;
+        if (filePath[filePath.size() - 1] == '/')
+        {
+            this->buildErrorResponse(NOT_FOUND_DELETE);
+            return;
+        }
 		if (!fileExists) {
             this->buildErrorResponse(NOT_FOUND_DELETE);
             return;
