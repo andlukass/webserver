@@ -35,12 +35,21 @@ LocationDirective::~LocationDirective() {
 
 LocationDirective &LocationDirective::operator=(const LocationDirective &other) {
     if (this != &other) {
+        // Clean up current values to avoid memory leak
+        delete this->_value["path"];
+        for (size_t i = 0; validLocationProps[i]; i++) {
+            delete this->_value[validLocationProps[i]];
+        }
+
+        // Deep copy from other
         this->_value["path"] = other._value.at("path")->clone();
-        for (size_t i = 0; validLocationProps[i]; i++)
+        for (size_t i = 0; validLocationProps[i]; i++) {
             this->_value[validLocationProps[i]] = other._value.at(validLocationProps[i])->clone();
+        }
     }
     return *this;
 }
+
 
 void LocationDirective::parse(std::string &config) {
     this->_value["path"]->parse(config);
