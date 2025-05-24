@@ -306,12 +306,14 @@ bool HttpRequest::parseHeaders() {
         _headers[key] = value;
 
         if (key == "Host") {
+
+			// missing Host header isn't allowed
             if (value.empty()) {
-                buildErrorResponse(BAD_REQUEST);  // Missing Host header in HTTP/1.1 is illegal
+                buildErrorResponse(BAD_REQUEST);
                 return false;
             }
 
-            // Split host:port if port is present
+            // split host:port
             size_t colonPos = value.find(':');
             std::string hostOnly =
                 (colonPos != std::string::npos) ? value.substr(0, colonPos) : value;
@@ -320,7 +322,6 @@ bool HttpRequest::parseHeaders() {
             // std::cout << "THIS IS THE VALUE: " << hostOnly << std::endl;
             for (size_t i = 0; i < serverNames.size(); i++)
                 // std::cout << "THIS IS THE SERVER NAME: " << serverNames[i] << std::endl;
-
                 if (std::find(serverNames.begin(), serverNames.end(), hostOnly) ==
                     serverNames.end()) {
                     buildErrorResponse(FORBIDDEN);
