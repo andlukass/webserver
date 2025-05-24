@@ -37,8 +37,7 @@ void ServerManager::run() {
         int ready = poll(&_pollFds[0], _pollFds.size(), -1);  // -1 means wait forever
 
         if (ready < 0) {
-            std::cerr << "Error: poll() failed" << std::endl;
-            exit(EXIT_FAILURE);
+            throw Exception("Error: poll() failed");
         }
 
         // Iterate through all monitored file descriptors

@@ -1,6 +1,7 @@
 #include "../includes/Server.hpp"
 
 #include "../includes/Client.hpp"
+#include "../includes/Exception.hpp"
 
 Server::Server(const ServerDirective& config) : _config(config) {
     std::cout << "Creating server with IP: " << config.getListen()->getIp()
@@ -8,8 +9,8 @@ Server::Server(const ServerDirective& config) : _config(config) {
 
     _socketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketFd < 0) {
-        std::cerr << "Error: Can not create socket" << std::endl;
-        exit(EXIT_FAILURE);
+        //std::cerr << "Error: Can not create socket" << std::endl;
+        throw Exception("Error: Can not create socket");
     }
     std::cout << "Socket created successfully!" << std::endl;
 }
@@ -37,8 +38,7 @@ int Server::acceptClient() {
 void Server::start() {
     // Check if the socket is already closed or invalid
     if (_socketFd == -1) {
-        std::cerr << "Error: Server already stopped" << std::endl;
-        exit(EXIT_FAILURE);
+        throw Exception("Error: Server already stopped");
     }
 
     // allow reusing port to avoid "Address already in use" error
@@ -60,16 +60,16 @@ void Server::start() {
     if (addrInfoError) {
         // gai_strerror gets error message from getaddrinfo
         std::cerr << "Error: getaddrinfo failed: " << gai_strerror(addrInfoError) << std::endl;
-        exit(EXIT_FAILURE);
+        throw Exception("Error: getaddrinfo failed");
     }
 
     // std::cout << "Binding!" << std::endl;
 
     // Bind socket to resolved address (IP and port)
     if (bind(_socketFd, res->ai_addr, res->ai_addrlen) < 0) {
-        std::cerr << "Error: Cannot bind socket" << std::endl;
+        //std::cerr << "Error: Cannot bind socket" << std::endl;
         freeaddrinfo(res);
-        exit(EXIT_FAILURE);
+        throw Exception("Error: Cannot bind socket");
     }
 
     std::cout << "Binding successful!" << std::endl;
@@ -78,8 +78,7 @@ void Server::start() {
 
     // Start listening on the socket with a queue size of 10
     if (listen(_socketFd, 10) < 0) {
-        std::cerr << "Error: listen failed" << std::endl;
-        exit(EXIT_FAILURE);
+        throw Exception("Error: listen failed");
     }
     std::cout << "Server started (for real!) and listening on port "
               << _config.getListen()->getPort() << std::endl;
