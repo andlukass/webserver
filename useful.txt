@@ -28,6 +28,8 @@ Requires body?	✅ Usually (like a file or form) 	❌ No
 *test for evaluation*
 curl -X POST localhost:8005/feedback "okay" *WRONG input*
 curl -X POST -d "message=okay" localhost:8005/feedback *GOOD input*
+curl -i -X POST -F "file=@test2.txt" http://localhost:8005/
+
 
 *MAKE SURE .py executable*
 chmod +x submit-feedback.py
