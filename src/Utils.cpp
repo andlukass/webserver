@@ -6,7 +6,7 @@ std::string Utils::readFile(const std::string &filePath) {
         std::ios::in |
             std::ios::binary);  // it is needed because if it's error it has to read again
 
-    // read file content into a string, maybe I should use this at the http header file
+    // read file content into a string
     std::string fileContent((std::istreambuf_iterator<char>(file)),
                             std::istreambuf_iterator<char>());
 

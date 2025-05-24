@@ -68,7 +68,18 @@ void HttpRequest::buildErrorResponse(int errorStatus) {
     parseErrorPagePath(errorStatus);
     std::string fileContent = Utils::readFile(this->_errorPagePath);
     response << "HTTP/1.1 " << statusToString(errorStatus) << "\r\n";
+
+	//*FIX DELETE*
+	if (errorStatus == NO_CONTENT) {
+        // no body allowed for 204, so no Content-Length and no body
+        response << "Connection: close\r\n\r\n";
+        this->_response = response.str();
+        logResponse(errorStatus);
+        return;
+    }
+
     if (fileContent.empty() || errorStatus == NOT_FOUND_DELETE) {
+		
         fileContent =
             "<html>\n"
             "<head><title>" +
@@ -467,6 +478,7 @@ void HttpRequest::parseLocation() {
 void HttpRequest::detectCgiAndMime() {
     std::string filePath = _root + _cleanUri + _index;
     size_t dotPos = filePath.rfind('.');
+
     if (dotPos != std::string::npos) {
         std::string ext = filePath.substr(dotPos);
 
@@ -550,7 +562,8 @@ bool HttpRequest::parseMultipartBody() {
 }
 
 void HttpRequest::parseResponse() {
-    std::string strMethod = methodToString(_method);
+    
+	std::string strMethod = methodToString(_method);
 
     if (std::find(_allowMethods.begin(), _allowMethods.end(), strMethod) == _allowMethods.end()) {
         this->buildErrorResponse(METHOD_NOT_ALLOWED);
@@ -580,6 +593,7 @@ void HttpRequest::parseResponse() {
             return;
         } else
             this->buildErrorResponse(NOT_FOUND_DELETE);
+			return;
     }
 
     if (_isCgi) {
@@ -601,8 +615,9 @@ void HttpRequest::parseResponse() {
             return;
         }
 
-        // Wrap CGI response in HTML style now
+        // CGI response in HTML style
         this->buildOKResponse(cgiResult, "text/html");
+
         if (_method == METHOD_POST) {
             std::ostringstream postFile;
             postFile << time(NULL);
@@ -619,31 +634,30 @@ void HttpRequest::parseResponse() {
     }
 
     if (_method == METHOD_POST) {
-        // Handle multipart/form-data uploads
+        // multipart/form-data uploads
         if (_headers["Content-Type"].find("multipart/form-data") != std::string::npos) {
             if (!parseMultipartBody()) {
                 buildErrorResponse(BAD_REQUEST);
                 return;
             }
-
-            // Redirect to the upload success page
-            _redirect = "/upload-success";     // URL of your success page
-            buildOKResponse("", "text/html");  // Trigger redirect
+			// send OK HTML response with redirect
+            _redirect = "/upload-success";
+            buildOKResponse("", "text/html");
             return;
         }
-        // Handle plain POST body uploads
+        // plain POST body uploads
         else {
             if (_body.empty()) {
                 buildErrorResponse(BAD_REQUEST);
                 return;
             }
 
-            // Create a filename using the current timestamp
+            // create a filename with current timestamp
             std::ostringstream postFile;
             postFile << time(NULL);
             std::string filePath = _config.getRoot()->getValue() + postFile.str() + ".txt";
 
-            // Save the POST body to the file
+            // save POST body to the file
             std::ofstream outFile(filePath.c_str(), std::ios::out | std::ios::binary);
             if (!outFile) {
                 buildErrorResponse(NOT_FOUND_DELETE);
@@ -653,7 +667,7 @@ void HttpRequest::parseResponse() {
             outFile << _body;
             outFile.close();
 
-            // Build success HTML response
+            // send success HTML response
             std::string successHtml =
                 "<html>\n<body>\n<h1>Upload successful</h1>\n<p>Saved to: " + filePath +
                 "</p>\n</body>\n</html>\n";
@@ -681,7 +695,7 @@ void HttpRequest::initFromRaw() {
     parseIndex();
     if (!parseHeaders()) return;
     parseBody();
-    // parse Body checks max_body_size, so we check if the flag was False, other methods don't use it
+    // parseBody checks max_body_size, so we check if the flag was False, other methods don't use it
     if (!_isValid) {
         buildErrorResponse(_errorCode);
         return;
