@@ -69,12 +69,6 @@
       text-align: left;
     }
 
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-    }
-
     input[type="text"],
     input[type="file"] {
       width: 100%;
@@ -119,7 +113,6 @@
     <p>Please choose a .txt file and upload :</p>
     <form action="/upload" method="POST" enctype="multipart/form-data">
 
-      <label for="file">Some very useful text</label>
       <input type="file" id="file" name="file" accept=".txt" required />
 
       <button type="submit">Upload</button>
