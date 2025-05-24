@@ -7,7 +7,6 @@
 #include "../includes/ServerManager.hpp"
 #include "../includes/cgi/CgiHandler.hpp"
 
-// TODO: check for leaks before submitting program
 
 enum { NONE, TEST, CGI_MODE };
 

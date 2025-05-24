@@ -91,7 +91,6 @@ class HttpRequest {
     // bool getErrorCode() const;
 
     bool parseMultipartBody();
-    // void	HttpRequest::handlePOSTRequest();TODO
 };
 
 #endif
