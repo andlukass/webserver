@@ -38,9 +38,12 @@ ssize_t Client::send(const std::string& response) {
     ssize_t sentDataLength = ::send(this->_fd, response.c_str(), response.size(), MSG_NOSIGNAL);
     if (sentDataLength < 0) {
         std::cerr << "Error sending data to client" << std::endl;
+    } else if (sentDataLength == 0) {
+        std::cerr << "Warning: send() returned 0, no data was sent." << std::endl;
     } else {
         std::cout << "Successfully sent: " << sentDataLength << " bytes" << std::endl;
     }
+
     return sentDataLength;
 }
 

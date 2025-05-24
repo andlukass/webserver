@@ -21,7 +21,6 @@ class HttpRequest {
     std::string _rawRequest;
     std::string _cleanUri;
     std::string _rawHeaders;
-    std::map<std::string, std::string> _queryParams;
     HttpVersion _httpVersion;
     std::map<std::string, std::string> _headers;
     bool _isChunked;
@@ -78,7 +77,6 @@ class HttpRequest {
     std::string getRawRequest() const;
     std::string getCleanUri() const;
     std::string getPath() const;
-    std::map<std::string, std::string> getQueryParams() const;
     HttpVersion getHttpVersion() const;
     std::map<std::string, std::string> getHeaders() const;
     std::string getBody() const;
