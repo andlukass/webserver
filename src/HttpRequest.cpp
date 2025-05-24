@@ -573,6 +573,7 @@ void HttpRequest::parseResponse() {
     }
 
     std::string filePath = _root + _cleanUri + _index;
+    // Verify that we are not trying to delete directory
     if (_method == METHOD_DELETE) {
         if (filePath[filePath.size() - 1] == '/')
         {
@@ -581,10 +582,6 @@ void HttpRequest::parseResponse() {
         }
     }
     std::string fileContent = Utils::readFile(filePath);
-    //if (fileContent.empty() && _method != METHOD_DELETE)
-	
- 
-
 
 	// check if file exists
 	std::ifstream fileStream(filePath.c_str());
@@ -603,8 +600,6 @@ void HttpRequest::parseResponse() {
     }
 
     if (_method == METHOD_DELETE) {
-        std::cout << "here: " << filePath[filePath.size() - 1] << std::endl;
-        std::cout << "fullPath: " << filePath<< std::endl;
         if (filePath[filePath.size() - 1] == '/')
         {
             this->buildErrorResponse(NOT_FOUND_DELETE);
@@ -614,10 +609,6 @@ void HttpRequest::parseResponse() {
             this->buildErrorResponse(NOT_FOUND_DELETE);
             return;
         }
-        // if (fileContent.empty()) {
-        //     this->buildErrorResponse(NOT_FOUND_DELETE);
-        //     return;
-        // }
         if (std::remove(filePath.c_str()) == 0) {
             this->buildErrorResponse(NO_CONTENT);
             return;
