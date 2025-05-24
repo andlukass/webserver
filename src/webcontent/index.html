@@ -61,6 +61,30 @@
     }
 
   </style>
+  <script>
+    window.onload = function() {
+      // Function to get cookie value by name
+      function getCookie(name) {
+      console.log("cookie: " + document.cookie);
+      const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+      }
+
+      // Check for user cookie
+      const userCookie = getCookie('user');
+      console.log("userCookie: " + userCookie);
+      if (userCookie) {
+        const userDisplay = document.createElement('div');
+        userDisplay.style.textAlign = 'center';
+        userDisplay.style.marginTop = '1rem';
+        userDisplay.style.fontSize = '1.2rem';
+        userDisplay.textContent = `Welcome back, ${userCookie}!`;
+        document.querySelector('main').appendChild(userDisplay);
+      }
+    }
+  </script>
 </head>
 <body>
   <nav>
