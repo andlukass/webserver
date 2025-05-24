@@ -506,11 +506,6 @@ void HttpRequest::detectCgiAndMime() {
 void HttpRequest::parseRedirect() {
     std::string tempRedirect =
         _locationPath.empty() ? "" : _config.getLocation(_locationPath).getRedirect()->getValue();
-    // if (tempRedirect.empty()) {
-    //     tempRedirect = _config.getRedirect()->getValue();
-    // }
-    // std::cout << "tempRedirect: " << tempRedirect << std::endl;
-    // std::cout << "locationPath: " << _locationPath << std::endl;
     _redirect = tempRedirect;
 }
 
@@ -686,8 +681,7 @@ void HttpRequest::initFromRaw() {
     parseIndex();
     if (!parseHeaders()) return;
     parseBody();
-    // Parse Body checks max_body_size, so we check if the flag was False, other methods don't use
-    // it
+    // parse Body checks max_body_size, so we check if the flag was False, other methods don't use it
     if (!_isValid) {
         buildErrorResponse(_errorCode);
         return;
