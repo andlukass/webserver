@@ -1,7 +1,6 @@
-CFLAGS = -std=c++98 -Wall -Werror -Wextra
-CC = c++
-		
-SRCS =  ./src/main.cpp                         \
+NAME = webserv
+
+SRC =  ./src/main.cpp                         \
 		./src/Utils.cpp                        \
 		./src/ServerConfig.cpp                 \
 		./src/directives/Directive.cpp         \
@@ -23,17 +22,27 @@ SRCS =  ./src/main.cpp                         \
 		./src/HttpRequest.cpp                  \
 		./src/Client.cpp                       \
 
-NAME = webserver
+OBJ = $(SRC:.cpp=.o)
+
+CC = c++
+RM = rm -f
+
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 
 all: $(NAME)
 
-$(NAME): $(SRCS)
-	$(CC) $(CFLAGS) -o $@ $^
+$(NAME): $(OBJ)
+	$(CC) $(CPPFLAGS) $(OBJ) -o $(NAME)
+
+%.o: %.cpp
+	$(CC) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	@echo "no objects to clean..."
+	$(RM) $(OBJ)
 
-fclean:
-	rm -f $(NAME)
+fclean: clean
+	$(RM) $(NAME)
 
 re: fclean all
+
+.PHONY: all clean fclean re
