@@ -10,11 +10,13 @@ Locations::~Locations() {
 }
 
 Locations::Locations(const Locations &other) : Directive(other._name) {
-    this->_value = other._value;
     for (std::map<std::string, LocationDirective>::const_iterator it = other._value.begin(); it != other._value.end(); it++) {
-        this->_value[it->first] = *(it->second.clone());
+        LocationDirective* cloned = it->second.clone();
+        this->_value[it->first] = *cloned;
+        delete cloned;
     }
 }
+
 
 void Locations::parse(std::string &config) {
     LocationDirective location;
